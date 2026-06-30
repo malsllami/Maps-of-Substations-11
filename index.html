@@ -79,32 +79,18 @@ header{
 .hero{
   position:relative;
   min-height:100vh;
-  display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;
-  padding:110px 28px 50px;
-  gap:36px;
-  transition:flex-direction .4s ease;
+  display:flex;align-items:center;justify-content:center;
+  padding:110px 20px 50px;
 }
-.hero.expanded{flex-direction:column;}
-.hero-content{
-  flex:1 1 360px;max-width:440px;
-}
-.hero.expanded .hero-content{flex:0 0 auto;max-width:100%;}
 .globe-stage{
   position:relative;
-  flex:1 1 360px;
-  width:min(560px, 92vw);
-  height:min(480px, 54vh);
+  width:min(820px, 94vw);
+  height:min(620px, 72vh);
   border-radius:28px;
   overflow:hidden;
   background:var(--bg-elev);
   border:1px solid var(--border);
   box-shadow:0 20px 50px rgba(0,0,0,0.25);
-  transition:width .6s cubic-bezier(.25,.8,.3,1), height .6s cubic-bezier(.25,.8,.3,1), max-width .6s ease;
-}
-.hero.expanded .globe-stage{
-  width:min(900px, 94vw);
-  height:min(680px, 78vh);
-  flex:0 0 auto;
 }
 #globe-canvas{position:absolute;inset:0;width:100%;height:100%;}
 #map-container{
@@ -114,9 +100,13 @@ header{
 }
 #map-container.active{opacity:1;pointer-events:auto;}
 .hero-content{
-  position:relative;z-index:5;
-  display:flex;flex-direction:column;align-items:center;
+  position:absolute;inset:0;z-index:5;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 30px;pointer-events:none;
+  transition:opacity .4s ease;
 }
+.hero-content .search-wrap{pointer-events:auto;}
+.hero-content.hidden{opacity:0;pointer-events:none;}
 .eyebrow{
   font-family:'JetBrains Mono',monospace;
   font-size:11px;letter-spacing:2px;color:var(--teal);
@@ -253,10 +243,6 @@ footer{
   text-align:center;padding:24px;font-size:11px;color:var(--text-secondary);
   border-top:1px solid var(--border);
 }
-@media (max-width:900px){
-  .hero{flex-direction:column;}
-  .hero-content{max-width:560px;}
-}
 @media (max-width:600px){
   .search-lens.open{width:88vw;}
   header{padding:12px 14px;}
@@ -266,8 +252,8 @@ footer{
   .header-actions{gap:6px;}
   .login-btn{padding:7px 12px;font-size:12px;}
   .theme-toggle{width:34px;height:34px;}
-  .hero{padding-top:100px;gap:22px;flex-direction:column;}
-  .globe-stage{height:min(440px, 50vh);width:min(560px,92vw);}
+  .hero{padding-top:100px;}
+  .globe-stage{height:min(560px, 64vh);width:94vw;}
 }
 @media (max-width:340px){
   .logo-text{font-size:11px;}
@@ -302,22 +288,22 @@ footer{
 </header>
 
 <section class="hero" id="heroSection">
-  <div class="hero-content" id="heroContent">
-    <div class="eyebrow">SEC // DISTRIBUTION NETWORK</div>
-    <h1>ابحث عن <span class="h1-accent">إحداثيات</span> محطتك</h1>
-    <p class="subtitle">أدخل رقم محطة التوزيع أو محطة التحويل لعرض موقعها بدقة على الخريطة</p>
-    <div class="search-wrap">
-      <div class="search-lens" id="searchLens">
-        <svg id="searchLensIcon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input id="searchInput" type="text" placeholder="مثال: T-014 أو ١٤" inputmode="text">
-      </div>
-      <div class="search-hint" id="searchHint"></div>
-    </div>
-  </div>
-
   <div class="globe-stage" id="globeStage">
     <canvas id="globe-canvas"></canvas>
     <div id="map-container"></div>
+
+    <div class="hero-content" id="heroContent">
+      <div class="eyebrow">SEC // DISTRIBUTION NETWORK</div>
+      <h1>ابحث عن <span class="h1-accent">إحداثيات</span> محطتك</h1>
+      <p class="subtitle">أدخل رقم محطة التوزيع أو محطة التحويل لعرض موقعها بدقة على الخريطة</p>
+      <div class="search-wrap">
+        <div class="search-lens" id="searchLens">
+          <svg id="searchLensIcon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input id="searchInput" type="text" placeholder="مثال: T-014 أو ١٤" inputmode="text">
+        </div>
+        <div class="search-hint" id="searchHint"></div>
+      </div>
+    </div>
 
     <div class="back-btn" id="backBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -659,7 +645,7 @@ const teal = ()=> document.body.getAttribute('data-theme')==='dark' ? '#4DD6B5':
 function goToStation(s){
   if(!leafletMap) initMap();
   searchLens.classList.remove('open');
-  document.getElementById('heroSection').classList.add('expanded');
+  document.getElementById('heroContent').classList.add('hidden');
   rotSpeed = 0;
   let scale = 1;
   const expand = setInterval(()=>{
@@ -697,7 +683,7 @@ function goToStation(s){
 
 backBtn.addEventListener('click', ()=>{
   mapContainer.classList.remove('active');
-  document.getElementById('heroSection').classList.remove('expanded');
+  document.getElementById('heroContent').classList.remove('hidden');
   backBtn.classList.remove('show');
   stationTable.classList.remove('show');
   searchInput.value='';
