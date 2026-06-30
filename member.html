@@ -57,10 +57,27 @@ h2{font-size:17px;font-weight:700;margin-bottom:4px;}
     <h2 id="profileName">...</h2>
     <div style="font-size:12.5px;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;direction:ltr;text-align:right" id="profilePhone">-</div>
     <span class="role-badge" id="memberTypeBadge"></span>
-
     <div class="meta-row">
       <span>آخر دخول ناجح</span>
       <span id="lastLoginVal">—</span>
+    </div>
+  </div>
+
+  <div class="card" id="statsCard" style="display:none">
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text-secondary)">مساهماتك في قاعدة البيانات</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      <div style="text-align:center;padding:10px 6px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--teal)" id="statTotal">0</div>
+        <div style="font-size:10px;color:var(--text-secondary);margin-top:3px">إجمالي</div>
+      </div>
+      <div style="text-align:center;padding:10px 6px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--blue-mid)" id="statAdditions">0</div>
+        <div style="font-size:10px;color:var(--text-secondary);margin-top:3px">إضافات</div>
+      </div>
+      <div style="text-align:center;padding:10px 6px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:#C8A24E" id="statEdits">0</div>
+        <div style="font-size:10px;color:var(--text-secondary);margin-top:3px">تعديلات</div>
+      </div>
     </div>
   </div>
 
@@ -70,19 +87,18 @@ h2{font-size:17px;font-weight:700;margin-bottom:4px;}
 
     <div class="field">
       <label>الاسم الكامل</label>
-      <input type="text" class="input-base" id="nameInput">
+      <input type="text" class="input-base" id="nameInput" disabled>
     </div>
     <div class="field">
-      <label>رقم الجوال (غير قابل للتعديل)</label>
+      <label>رقم الجوال</label>
       <input type="text" class="input-base" id="phoneInput" disabled dir="ltr">
     </div>
     <div class="field">
       <label>الإيميل (اختياري)</label>
       <input type="email" class="input-base" id="emailInput" dir="ltr">
     </div>
-
     <button class="btn-progress" id="saveBtn">
-      <span class="label"><span id="saveLabel">حفظ التعديلات</span><span class="pct" id="savePct"></span></span>
+      <span class="label"><span id="saveLabel">حفظ الإيميل</span><span class="pct" id="savePct"></span></span>
       <span class="fill" id="saveFill"></span>
     </button>
   </div>
@@ -112,6 +128,12 @@ async function loadProfile(){
   document.getElementById('phoneInput').value = res.phone;
   document.getElementById('emailInput').value = res.email || '';
   document.getElementById('lastLoginVal').textContent = res.lastLogin ? new Date(res.lastLogin).toLocaleString('ar-SA') : 'أول دخول';
+  if(res.stats){
+    document.getElementById('statTotal').textContent = res.stats.total;
+    document.getElementById('statAdditions').textContent = res.stats.additions;
+    document.getElementById('statEdits').textContent = res.stats.edits;
+    document.getElementById('statsCard').style.display = 'block';
+  }
 }
 loadProfile();
 
@@ -124,9 +146,6 @@ let savingNow = false;
 saveBtn.addEventListener('click', async ()=>{
   if(savingNow) return;
   hideMsgs();
-  const name = document.getElementById('nameInput').value.trim();
-  if(name.length < 2){ showError('الرجاء إدخال الاسم الكامل'); return; }
-
   savingNow = true;
   saveBtn.disabled = true;
   saveLabel.style.display='none'; savePct.style.display='inline';
@@ -134,7 +153,7 @@ saveBtn.addEventListener('click', async ()=>{
   const tick = setInterval(()=>{ p=Math.min(p+Math.random()*15,92); saveFill.style.width=p+'%'; savePct.textContent=Math.round(p)+'%'; },120);
 
   try{
-    const res = await callBackend('updateMemberProfile', {phone, name, email: document.getElementById('emailInput').value.trim()});
+    const res = await callBackend('updateMemberProfile', {phone, name: document.getElementById('nameInput').value.trim(), email: document.getElementById('emailInput').value.trim()});
     clearInterval(tick);
     saveFill.style.width='100%'; savePct.textContent='100%';
     if(!res.success) throw new Error(res.error || 'فشل الحفظ');
