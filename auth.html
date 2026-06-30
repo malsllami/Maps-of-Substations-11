@@ -92,22 +92,32 @@ h2{font-size:18px; font-weight:700; margin-bottom:6px;}
 
 .fingerprint-step{display:none; text-align:center; padding:20px 0;}
 .fingerprint-step.show{display:block;}
+.fp-wrap{position:relative; width:96px; height:96px; margin:0 auto 18px;}
 .fp-icon{
+  position:relative; z-index:2;
   width:96px; height:96px; border-radius:50%;
   background: radial-gradient(circle at 35% 30%, var(--bg-elev), var(--bg-card) 70%);
   box-shadow:
     inset 0 0 0 7px var(--teal),
     inset 0 -2px 6px rgba(0,0,0,0.25),
-    0 8px 22px rgba(31,174,140,0.35),
     0 2px 8px rgba(0,0,0,0.2);
-  display:flex; align-items:center; justify-content:center; margin:0 auto 18px;
-  animation:pulse 1.6s ease-in-out infinite;
+  display:flex; align-items:center; justify-content:center;
 }
 .fp-icon svg{stroke:var(--text-primary); opacity:0.85;}
-@keyframes pulse{0%,100%{box-shadow:inset 0 0 0 7px var(--teal), inset 0 -2px 6px rgba(0,0,0,0.25), 0 8px 22px rgba(31,174,140,0.35), 0 0 0 0 rgba(31,174,140,.35);}50%{box-shadow:inset 0 0 0 7px var(--teal), inset 0 -2px 6px rgba(0,0,0,0.25), 0 8px 22px rgba(31,174,140,0.35), 0 0 0 12px rgba(31,174,140,0);}}
-.fp-icon.verifying{animation:pulse-fast 0.9s ease-in-out infinite;}
+.fp-spinner{
+  position:absolute; inset:-6px; border-radius:50%; z-index:1;
+  background: conic-gradient(from 0deg, transparent 0%, transparent 75%, var(--teal) 92%, transparent 100%);
+  animation: fp-spin 1.1s linear infinite;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+}
+.fp-spinner.verifying{
+  background: conic-gradient(from 0deg, transparent 0%, transparent 70%, var(--blue-mid) 92%, transparent 100%);
+  animation-duration:0.7s;
+}
+@keyframes fp-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.fp-progress{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--teal); margin-top:-10px; margin-bottom:10px; min-height:16px;}
 .fp-icon.verifying svg{opacity:1;}
-@keyframes pulse-fast{0%,100%{box-shadow:inset 0 0 0 7px var(--blue-mid), inset 0 -2px 6px rgba(0,0,0,0.25), 0 8px 22px rgba(46,125,209,0.45), 0 0 0 0 rgba(46,125,209,.4);}50%{box-shadow:inset 0 0 0 7px var(--blue-mid), inset 0 -2px 6px rgba(0,0,0,0.25), 0 8px 22px rgba(46,125,209,0.45), 0 0 0 14px rgba(46,125,209,0);}}
 .field-disabled{opacity:.5; pointer-events:none;}
 .switch-link{text-align:center; margin-top:18px; font-size:13px; color:var(--text-secondary);}
 .switch-link a{color:var(--teal); cursor:pointer; text-decoration:none; font-weight:500;}
@@ -174,17 +184,21 @@ h2{font-size:18px; font-weight:700; margin-bottom:6px;}
 
   <!-- ===== خطوة البصمة ===== -->
   <div class="fingerprint-step" id="fingerprintStep">
-    <div class="fp-icon">
-      <svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke-linecap="round">
-        <path d="M50 28c-13 0-22 9-22 22v8" stroke-width="3.2"/>
-        <path d="M50 22c-17 0-29 12-29 28v9" stroke-width="3.2"/>
-        <path d="M50 35c-9 0-15 6-15 15v10c0 4 1 7 3 10" stroke-width="3.2"/>
-        <path d="M50 42c-5 0-8 3-8 8v9c0 6 2 11 6 15" stroke-width="3.2"/>
-        <path d="M50 49c-1.5 0-2 1-2 2v8c0 9 4 16 11 21" stroke-width="3.2"/>
-        <path d="M65 47v10c0 12-6 21-16 27" stroke-width="3.2"/>
-        <path d="M71 44v12c0 16-9 28-23 35" stroke-width="3.2"/>
-      </svg>
+    <div class="fp-wrap">
+      <div class="fp-spinner" id="fpSpinner"></div>
+      <div class="fp-icon" id="fpIcon">
+        <svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke-linecap="round">
+          <path d="M50 28c-13 0-22 9-22 22v8" stroke-width="3.2"/>
+          <path d="M50 22c-17 0-29 12-29 28v9" stroke-width="3.2"/>
+          <path d="M50 35c-9 0-15 6-15 15v10c0 4 1 7 3 10" stroke-width="3.2"/>
+          <path d="M50 42c-5 0-8 3-8 8v9c0 6 2 11 6 15" stroke-width="3.2"/>
+          <path d="M50 49c-1.5 0-2 1-2 2v8c0 9 4 16 11 21" stroke-width="3.2"/>
+          <path d="M65 47v10c0 12-6 21-16 27" stroke-width="3.2"/>
+          <path d="M71 44v12c0 16-9 28-23 35" stroke-width="3.2"/>
+        </svg>
+      </div>
     </div>
+    <p class="fp-progress" id="fpProgress"></p>
     <p style="font-size:14px; font-weight:500; margin-bottom:6px;" id="fpTitle">استخدم بصمتك للمتابعة</p>
     <p style="font-size:12.5px; color:var(--text-secondary)">سيطلب جهازك التحقق ببصمة الإصبع أو الوجه</p>
   </div>
@@ -392,7 +406,9 @@ mainBtn.addEventListener('click', async ()=>{
     });
   }catch(e){
     document.getElementById('fingerprintStep').classList.remove('show');
-    document.querySelector('.fp-icon').classList.remove('verifying');
+    document.getElementById('fpIcon').classList.remove('verifying');
+    document.getElementById('fpSpinner').classList.remove('verifying');
+    document.getElementById('fpProgress').textContent = '';
     document.getElementById('phoneStep').style.display='block';
   }
 });
@@ -416,6 +432,7 @@ async function startWebAuthnRegistration(phone, displayName){
   document.getElementById('phoneStep').style.display='none';
   document.getElementById('fingerprintStep').classList.add('show');
   document.getElementById('fpTitle').textContent = 'سجّل بصمتك الآن لتأمين حسابك';
+  const fpProgress = startFpProgress();
 
   const begin = await callBackend('generateRegisterChallenge', {phone});
   if(!begin.success) throw new Error(begin.error || 'تعذّر بدء تسجيل البصمة');
@@ -448,7 +465,8 @@ async function startWebAuthnRegistration(phone, displayName){
   }
 
   document.getElementById('fpTitle').textContent = 'جاري التحقق من البصمة...';
-  document.querySelector('.fp-icon').classList.add('verifying');
+  document.getElementById('fpIcon').classList.add('verifying');
+  document.getElementById('fpSpinner').classList.add('verifying');
   const result = await callBackend('registerCredential', {
     phone,
     credentialId: bufferToB64url(credential.rawId),
@@ -456,9 +474,10 @@ async function startWebAuthnRegistration(phone, displayName){
     clientDataJSONB64: bufferToB64url(credential.response.clientDataJSON),
     deviceName: guessDeviceName()
   });
-  if(!result.success) throw new Error(result.error || 'فشل حفظ البصمة بالخادم');
+  if(!result.success){ fpProgress.fail(); throw new Error(result.error || 'فشل حفظ البصمة بالخادم'); }
+  fpProgress.finish();
 
-  localStorage.setItem('sec-phone', phone);
+  saveSession(phone, result.name || displayName, result.role || 'member');
   document.getElementById('fpTitle').textContent = 'تم تسجيل البصمة بنجاح';
   return result;
 }
@@ -470,10 +489,12 @@ async function startWebAuthnLogin(phone){
   document.getElementById('phoneStep').style.display='none';
   document.getElementById('fingerprintStep').classList.add('show');
   document.getElementById('fpTitle').textContent = 'تحقق ببصمتك للدخول';
+  const fpProgress = startFpProgress();
 
   const begin = await callBackend('generateLoginChallenge', {phone});
   if(!begin.success){
     if(begin.notRegistered){
+      fpProgress.fail();
       document.getElementById('fingerprintStep').classList.remove('show');
       document.getElementById('phoneStep').style.display='block';
       setMode('register');
@@ -504,7 +525,8 @@ async function startWebAuthnLogin(phone){
   }
 
   document.getElementById('fpTitle').textContent = 'جاري التحقق من البصمة...';
-  document.querySelector('.fp-icon').classList.add('verifying');
+  document.getElementById('fpIcon').classList.add('verifying');
+  document.getElementById('fpSpinner').classList.add('verifying');
   const result = await callBackend('verifyAssertion', {
     phone,
     credentialId: bufferToB64url(credential.rawId),
@@ -512,10 +534,30 @@ async function startWebAuthnLogin(phone){
     clientDataJSONB64: bufferToB64url(credential.response.clientDataJSON),
     signatureB64: bufferToB64url(credential.response.signature)
   });
-  if(!result.success) throw new Error(result.error || 'فشل التحقق من تسجيل الدخول');
+  if(!result.success){ fpProgress.fail(); throw new Error(result.error || 'فشل التحقق من تسجيل الدخول'); }
+  fpProgress.finish();
 
-  localStorage.setItem('sec-phone', phone);
+  saveSession(phone, result.name, result.role || 'member');
   return result;
+}
+
+function saveSession(phone, name, role){
+  localStorage.setItem('sec-phone', phone);
+  localStorage.setItem('sec-session', JSON.stringify({phone, name, role, ts: Date.now()}));
+}
+
+function startFpProgress(){
+  const el = document.getElementById('fpProgress');
+  let p = 0;
+  el.textContent = '0%';
+  const timer = setInterval(()=>{
+    p = Math.min(p + Math.random()*9, 94);
+    el.textContent = Math.round(p) + '%';
+  }, 180);
+  return {
+    finish(){ clearInterval(timer); el.textContent = '100%'; },
+    fail(){ clearInterval(timer); el.textContent = ''; }
+  };
 }
 
 function guessDeviceName(){
