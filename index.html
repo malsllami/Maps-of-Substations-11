@@ -434,10 +434,12 @@ h1{
 .outage-panel textarea::placeholder{font-family:'IBM Plex Sans Arabic',sans-serif;font-size:11px;color:var(--text-secondary);}
 .outage-error{font-size:11px;color:#E0654F;min-height:14px;}
 .outage-submit-btn{
-  background:var(--teal);color:#fff;border:none;border-radius:8px;
+  background:rgba(31,174,140,0.14);color:var(--teal-light);
+  border:1px solid rgba(77,214,181,0.45);border-radius:8px;
   padding:9px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;
+  transition:.2s;
 }
-.outage-submit-btn:hover{opacity:.9;}
+.outage-submit-btn:hover{background:rgba(31,174,140,0.24);border-color:var(--teal);}
 
 /* ===== علامة المحطة المحددة — دائرة خضراء متوهجة بنبض مستمر، فوق هالة زرقاء داكنة ===== */
 .selected-station-marker{position:relative;width:46px;height:46px;}
@@ -725,7 +727,7 @@ footer{
     </div>
     <div class="outage-panel" id="outagePanel">
       <div class="outage-panel-title">محطات العطل — أدخل الأرقام بالترتيب</div>
-      <textarea id="outageInput" placeholder="مثال: 39070, 93080, ABN110&#10;افصل بينها بفاصلة أو سطر جديد"></textarea>
+      <textarea id="outageInput" placeholder="مثال: 39070-93080-ABN110&#10;افصل بينها بفاصلة أو / أو - أو سطر جديد"></textarea>
       <div id="outageError" class="outage-error"></div>
       <button class="outage-submit-btn" id="outageSubmitBtn">عرض على الخريطة</button>
     </div>
@@ -1542,7 +1544,7 @@ document.addEventListener('click', (e)=>{
 document.getElementById('outageSubmitBtn').addEventListener('click', async ()=>{
   if(!leafletMap) return;
   const raw = document.getElementById('outageInput').value;
-  const ids = raw.split(/[,\n،]+/).map(s=>s.trim()).filter(Boolean);
+  const ids = raw.split(/[,\n،\-\/]+/).map(s=>s.trim()).filter(Boolean);
   const errEl = document.getElementById('outageError');
   errEl.textContent = '';
 
@@ -1591,7 +1593,7 @@ document.getElementById('outageSubmitBtn').addEventListener('click', async ()=>{
   const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination.lat},${destination.lng}&waypoints=${encodeURIComponent(waypointsStr)}&travelmode=driving`;
 
   const notFoundNote = notFound.length ? ` — تعذّر إيجاد: ${notFound.join('، ')}` : '';
-  mapToolHint.innerHTML = `محطات العطل (${found.length}) بالترتيب A→${outageLetterFor(found.length-1)}${notFoundNote} <a href="${gmapsUrl}" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;background:${teal()};color:#fff;padding:6px 14px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">الانتقال بالترتيب على قوقل ماب</a>`;
+  mapToolHint.innerHTML = `محطات العطل (${found.length}) بالترتيب A→${outageLetterFor(found.length-1)}${notFoundNote} <a href="${gmapsUrl}" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;background:rgba(31,174,140,0.16);color:var(--teal-light);border:1px solid rgba(77,214,181,0.5);padding:6px 14px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">الانتقال بالترتيب على قوقل ماب</a>`;
 });
 
 function stationPinIcon(){
