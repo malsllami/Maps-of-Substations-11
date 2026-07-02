@@ -442,11 +442,18 @@ h1{
   color:var(--text-secondary);font-size:11.5px;cursor:pointer;font-family:inherit;transition:.2s;
 }
 .type-btn.active{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600;}
+.paste-coord-row{display:flex;flex-direction:column;gap:5px;margin-top:2px;}
+.paste-coord-label{font-size:10.5px;color:var(--text-secondary);}
+.paste-apply-btn{
+  background:rgba(31,174,140,0.14);color:var(--teal-light);border:1px solid rgba(77,214,181,0.45);
+  border-radius:7px;padding:0 14px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;
+  transition:.2s;flex-shrink:0;
+}
+.paste-apply-btn:hover{background:rgba(31,174,140,0.24);border-color:var(--teal);}
 .use-gps-btn{
   width:100%;font-size:11px;padding:8px;border-radius:7px;border:1px solid var(--border-strong);
   background:var(--bg);color:var(--teal);cursor:pointer;font-family:inherit;
 }
-.add-station-error{font-size:11px;color:#E0654F;min-height:14px;}
 .add-station-submit{
   background:rgba(31,174,140,0.14);color:var(--teal-light);border:1px solid rgba(77,214,181,0.45);
   border-radius:8px;padding:9px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;
@@ -795,6 +802,13 @@ footer{
           <input id="newStationLng" class="edit-input" placeholder="خط الطول">
         </div>
         <button class="use-gps-btn" id="newStationGpsBtn" type="button">📍 استخدام موقعي الحالي</button>
+        <div class="paste-coord-row">
+          <span class="paste-coord-label">أو الصق الإحداثية مباشرة</span>
+          <div style="display:flex;gap:6px;">
+            <input id="newStationPasteCoord" class="edit-input" placeholder="21.5234,39.1876" style="flex:1">
+            <button type="button" class="paste-apply-btn" id="newStationPasteApply">تطبيق</button>
+          </div>
+        </div>
         <div id="addStationError" class="add-station-error"></div>
         <button class="add-station-submit" id="addStationSubmitBtn">حفظ المحطة</button>
       </div>
@@ -1249,8 +1263,7 @@ async function performSearch(){
       goToStation({
         id: result.id, name: result.name, type: result.type,
         lat: result.lat, lng: result.lng,
-        region: result.region, feeder: result.feeder,
-        googleMapLink: result.googleMapLink
+        region: result.region, feeder: result.feeder
       });
     } else {
       progress.stop();
@@ -1675,7 +1688,7 @@ const RECENT_KEY = 'recent_stations';
 
 function addRecentStation(s){
   const recent = getRecentStations();
-  recent[s.id] = { id:s.id, name:s.name, type:s.type, lat:s.lat, lng:s.lng, region:s.region, feeder:s.feeder, googleMapLink:s.googleMapLink, visitedAt: Date.now() };
+  recent[s.id] = { id:s.id, name:s.name, type:s.type, lat:s.lat, lng:s.lng, region:s.region, feeder:s.feeder, visitedAt: Date.now() };
   localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
   renderRecentPanel();
 }
@@ -1733,6 +1746,16 @@ document.querySelectorAll('#addStationPanel .type-btn').forEach(btn=>{
   });
 });
 
+/* تفكيك إحداثية ملصوقة بصيغة "خط العرض,خط الطول" (نفس صيغة النسخ من قوقل ماب مباشرة) */
+function parsePastedCoord(raw){
+  const parts = String(raw).trim().split(/\s*,\s*/);
+  if(parts.length !== 2) return null;
+  const lat = parseFloat(parts[0]);
+  const lng = parseFloat(parts[1]);
+  if(isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+  return { lat, lng };
+}
+
 document.getElementById('newStationGpsBtn').addEventListener('click', ()=>{
   const errEl = document.getElementById('addStationError');
   if(!navigator.geolocation){ errEl.textContent = 'المتصفح لا يدعم تحديد الموقع'; return; }
@@ -1745,6 +1768,15 @@ document.getElementById('newStationGpsBtn').addEventListener('click', ()=>{
     },
     ()=>{ errEl.textContent = 'تعذّر تحديد الموقع، تأكد من صلاحية الوصول للموقع'; }
   );
+});
+
+document.getElementById('newStationPasteApply').addEventListener('click', ()=>{
+  const errEl = document.getElementById('addStationError');
+  const parsed = parsePastedCoord(document.getElementById('newStationPasteCoord').value);
+  if(!parsed){ errEl.textContent = 'صيغة غير صحيحة، المطلوب: خط العرض,خط الطول'; return; }
+  document.getElementById('newStationLat').value = parsed.lat.toFixed(6);
+  document.getElementById('newStationLng').value = parsed.lng.toFixed(6);
+  errEl.textContent = '';
 });
 
 document.getElementById('addStationSubmitBtn').addEventListener('click', async function(){
@@ -1770,7 +1802,7 @@ document.getElementById('addStationSubmitBtn').addEventListener('click', async f
   try{
     const res = await callBackend('updateCoordinates', {
       opKey, phone: session.phone, stationId, type: newStationType,
-      lat, lng, method: 'إضافة يدوي/GPS',
+      lat, lng, method: 'إضافة يدوي/GPS', isNewOnly: true,
       feeder: newStationType === 'توزيع' ? document.getElementById('newStationFeeder').value.trim() : undefined,
       region: newStationType === 'توزيع' ? document.getElementById('newStationRegion').value.trim() : undefined
     });
@@ -1826,7 +1858,7 @@ function startMorphExpand(s){
         if(marker) leafletMap.removeLayer(marker);
         marker = L.marker([s.lat,s.lng], {icon: stationPinIcon()}).addTo(leafletMap);
 
-        const mapsUrl = s.googleMapLink || `https://www.google.com/maps?q=${s.lat},${s.lng}`;
+        const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=driving`;
         stationTable.innerHTML = `
           <div class="sb-inner">
             <div class="sb-row">
@@ -1885,6 +1917,13 @@ function openEditForm(){
             <input id="editLng" class="edit-input" placeholder="خط الطول" value="${s.lng.toFixed(6)}">
           </div>
           <button id="useGpsBtn" type="button" style="width:100%;font-size:11px;padding:8px;border-radius:7px;border:1px solid var(--border-strong);background:var(--bg);color:var(--teal);cursor:pointer;">📍 استخدام موقعي الحالي</button>
+          <div class="paste-coord-row">
+            <span class="paste-coord-label">أو الصق الإحداثية مباشرة</span>
+            <div style="display:flex;gap:6px;">
+              <input id="editPasteCoord" class="edit-input" placeholder="21.5234,39.1876" style="flex:1">
+              <button type="button" class="paste-apply-btn" id="editPasteApply">تطبيق</button>
+            </div>
+          </div>
         </div>
         <div id="editPreviewMap" style="width:100%;height:150px;border-radius:8px;overflow:hidden;"></div>
       </div>
@@ -1930,6 +1969,20 @@ function openEditForm(){
       document.getElementById('editLng').value = pos.coords.longitude.toFixed(6);
       syncPreviewFromInputs();
     }, ()=> alert('تعذّر الحصول على الموقع، تأكد من تفعيل صلاحية الموقع'));
+  });
+
+  document.getElementById('editPasteApply').addEventListener('click', ()=>{
+    const errEl = document.getElementById('editError');
+    const parsed = parsePastedCoord(document.getElementById('editPasteCoord').value);
+    if(!parsed){
+      errEl.textContent = 'صيغة غير صحيحة، المطلوب: خط العرض,خط الطول';
+      errEl.style.display = 'block';
+      return;
+    }
+    document.getElementById('editLat').value = parsed.lat.toFixed(6);
+    document.getElementById('editLng').value = parsed.lng.toFixed(6);
+    errEl.style.display = 'none';
+    syncPreviewFromInputs();
   });
 
   document.getElementById('cancelEditBtn').addEventListener('click', ()=> goToStation(currentStation));
