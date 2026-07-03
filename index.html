@@ -66,6 +66,24 @@ header{
 }
 .logo-text{font-size:15px;font-weight:700;letter-spacing:.3px;white-space:nowrap;transition:color .2s;}
 .logo-sub{font-size:11px;color:var(--text-secondary);margin-top:1px;white-space:nowrap;}
+/* مؤشر حالة الاتصال بالخادم / Server connection status badge */
+.conn-status{
+  display:flex;align-items:center;gap:5px;
+  background:var(--bg-elev);border:1px solid var(--border-strong);
+  border-radius:20px;padding:5px 12px;margin-right:10px;
+  font-size:11px;color:var(--text-secondary);flex-shrink:0;
+}
+.conn-dot{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:#8FA3B8; /* رمادي = جاري الفحص / gray = checking */
+  transition:background .3s;
+}
+.conn-dot.online{background:#2ECC71;box-shadow:0 0 6px rgba(46,204,113,.6);}
+.conn-dot.offline{background:#E0654F;box-shadow:0 0 6px rgba(224,101,79,.6);}
+@media (max-width:600px){
+  .conn-status span:last-child{display:none;} /* بالجوال: النقطة فقط بلا نص، توفير مساحة */
+  .conn-status{padding:6px;margin-right:6px;}
+}
 .header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .mobile-user-menu{display:none;position:relative;}
 .mobile-menu-trigger{
@@ -124,35 +142,35 @@ header{
   position:relative;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;
   padding:85px 20px 100px;
-  min-height:calc(min(92vw, 82vh, 880px) + 125px);
-  min-height:calc(min(92vw, 82svh, 880px) + 125px);
+  min-height:calc(min(78vw, 66vh, 620px) + 125px);
+  min-height:calc(min(78vw, 66svh, 620px) + 125px);
 }
 @media (max-width:1199px) and (min-width:768px){
   .hero{
-    min-height:calc(min(94vw, 78vh, 700px) + 125px);
-    min-height:calc(min(94vw, 78svh, 700px) + 125px);
+    min-height:calc(min(82vw, 62vh, 540px) + 125px);
+    min-height:calc(min(82vw, 62svh, 540px) + 125px);
   }
 }
 @media (max-width:767px){
   .hero{
-    min-height:calc(min(96vw, 72vh, 560px) + 104px);
-    min-height:calc(min(96vw, 72svh, 560px) + 104px);
+    min-height:calc(min(88vw, 56vh, 420px) + 104px);
+    min-height:calc(min(88vw, 56svh, 420px) + 104px);
   }
 }
 body.guest-mode .hero{
-  min-height:calc(min(94vw, 86vh, 920px) + 125px);
-  min-height:calc(min(94vw, 86svh, 920px) + 125px);
+  min-height:calc(min(82vw, 70vh, 660px) + 125px);
+  min-height:calc(min(82vw, 70svh, 660px) + 125px);
 }
 @media (max-width:1199px) and (min-width:768px){
   body.guest-mode .hero{
-    min-height:calc(min(96vw, 82vh, 740px) + 125px);
-    min-height:calc(min(96vw, 82svh, 740px) + 125px);
+    min-height:calc(min(86vw, 66vh, 580px) + 125px);
+    min-height:calc(min(86vw, 66svh, 580px) + 125px);
   }
 }
 @media (max-width:767px){
   body.guest-mode .hero{
-    min-height:calc(min(98vw, 76vh, 600px) + 104px);
-    min-height:calc(min(98vw, 76svh, 600px) + 104px);
+    min-height:calc(min(92vw, 60vh, 460px) + 104px);
+    min-height:calc(min(92vw, 60svh, 460px) + 104px);
   }
 }
 .globe-stage{
@@ -172,21 +190,21 @@ body.guest-mode .hero{
 }
 @media (min-width:1200px){
   .globe-stage{
-    width:clamp(460px, min(92vw, 82vh), 880px);
-    width:clamp(460px, min(92vw, 82svh), 880px);
+    width:clamp(400px, min(78vw, 66vh), 620px);
+    width:clamp(400px, min(78vw, 66svh), 620px);
   }
 }
 @media (max-width:1199px) and (min-width:768px){
   .globe-stage{
-    width:clamp(400px, min(94vw, 78vh), 700px);
-    width:clamp(400px, min(94vw, 78svh), 700px);
+    width:clamp(360px, min(82vw, 62vh), 540px);
+    width:clamp(360px, min(82vw, 62svh), 540px);
   }
 }
 @media (max-width:767px){
   .globe-stage{
     top:64px;
-    width:clamp(340px, min(96vw, 72vh), 560px);
-    width:clamp(340px, min(96vw, 72svh), 560px);
+    width:clamp(300px, min(88vw, 56vh), 420px);
+    width:clamp(300px, min(88vw, 56svh), 420px);
   }
 }
 [data-theme="dark"] .globe-stage::before{
@@ -454,10 +472,15 @@ h1{
 
 /* ===== إضافة محطة جديدة — خارج نطاق الخريطة كلياً، جزء من شاشة البحث ===== */
 .add-station-toggle{
-  background:transparent;border:none;color:var(--teal-light);font-size:12px;
-  cursor:pointer;font-family:inherit;text-decoration:underline;margin-top:4px;
-  text-shadow:0 1px 4px rgba(0,0,0,0.6);
+  display:flex;align-items:center;gap:6px;
+  background:rgba(31,174,140,0.14);color:var(--teal-light);
+  border:1.3px solid rgba(77,214,181,0.5);border-radius:22px;
+  font-size:13px;font-weight:600;padding:10px 20px;
+  cursor:pointer;font-family:inherit;margin-top:10px;
+  transition:.2s;
 }
+.add-station-toggle:hover{background:rgba(31,174,140,0.24);border-color:var(--teal);}
+[data-theme="light"] .add-station-toggle{color:var(--teal);}
 [data-theme="light"] .add-station-toggle{color:var(--teal);text-shadow:none;}
 .add-station-panel{
   display:none;flex-direction:column;gap:8px;
@@ -609,25 +632,25 @@ body.guest-mode .station-table{width:min(1300px,96vw);}
 }
 .cards-section{
   position:relative;z-index:5;
-  padding:0 32px 60px;
+  padding:0 32px 30px;
   display:flex;flex-direction:column;align-items:center;
 }
 body.guest-mode #cardsSection{display:none;}
 body.guest-mode .search-wrap{display:none;}
 body.guest-mode .globe-stage{
-  width:clamp(500px, min(94vw, 86vh), 920px);
-  width:clamp(500px, min(94vw, 86svh), 920px);
+  width:clamp(420px, min(82vw, 70vh), 660px);
+  width:clamp(420px, min(82vw, 70svh), 660px);
 }
 @media (max-width:1199px) and (min-width:768px){
   body.guest-mode .globe-stage{
-    width:clamp(420px, min(96vw, 82vh), 740px);
-    width:clamp(420px, min(96vw, 82svh), 740px);
+    width:clamp(380px, min(86vw, 66vh), 580px);
+    width:clamp(380px, min(86vw, 66svh), 580px);
   }
 }
 @media (max-width:767px){
   body.guest-mode .globe-stage{
-    width:clamp(360px, min(98vw, 76vh), 600px);
-    width:clamp(360px, min(98vw, 76svh), 600px);
+    width:clamp(320px, min(92vw, 60vh), 460px);
+    width:clamp(320px, min(92vw, 60svh), 460px);
   }
 }
 .cards-row{
@@ -725,6 +748,11 @@ footer{
     <div>
       <div class="logo-text">الشركة السعودية للطاقة</div>
       <div class="logo-sub">نظام الإحداثيات الجغرافية</div>
+    </div>
+    <!-- مؤشر حالة الاتصال بالخادم / Server connection status indicator -->
+    <div class="conn-status" id="connStatus" title="جاري التحقق من الاتصال...">
+      <span class="conn-dot" id="connDot"></span>
+      <span id="connLabel">جاري التحقق...</span>
     </div>
   </div>
   <div class="header-actions" id="headerActions">
@@ -873,7 +901,7 @@ footer{
 
 <section class="cards-section" id="cardsSection">
   <div style="display:flex;justify-content:center;margin-bottom:8px;width:100%;max-width:760px">
-    <button id="refreshStatsBtn" style="background:transparent;border:1px solid var(--border);border-radius:14px;color:var(--text-secondary);font-size:10.5px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:5px 10px;font-family:'IBM Plex Sans Arabic',sans-serif" aria-label="تحديث الإحصائيات">
+    <button id="refreshStatsBtn" style="background:rgba(31,174,140,0.14);border:1.3px solid rgba(77,214,181,0.5);border-radius:14px;color:var(--teal-light);font-size:11.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;padding:7px 14px;font-family:'IBM Plex Sans Arabic',sans-serif" aria-label="تحديث الإحصائيات">
       <svg id="refreshIcon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path></svg>
       تحديث
     </button>
@@ -913,6 +941,43 @@ async function callBackend(action, payload){
   const res = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action, ...(payload||{}) }) });
   return await res.json();
 }
+
+/* ============================================================
+ *  فحص حالة الاتصال بالخادم (Google Apps Script)
+ *  Server connection health check — pings the backend periodically
+ *  فحص دوري + عند عودة التبويب لواجهة العرض، بلا تكرار مفرط
+ * ============================================================ */
+const connDot = document.getElementById('connDot');
+const connLabel = document.getElementById('connLabel');
+const connStatus = document.getElementById('connStatus');
+const CONN_CHECK_INTERVAL_MS = 60 * 1000; // فحص كل دقيقة / check every minute
+
+async function checkConnection(){
+  try{
+    // نستخدم getStats كطلب فحص خفيف — نفس الأكشن المستخدم أصلاً بالبطاقات
+    // Reuse the existing lightweight 'getStats' action as a health-check ping
+    const res = await Promise.race([
+      callBackend('getStats'),
+      new Promise((_, reject)=> setTimeout(()=> reject(new Error('timeout')), 8000))
+    ]);
+    if(res && !res.error){
+      connDot.className = 'conn-dot online';
+      connLabel.textContent = 'متصل';
+      connStatus.title = 'متصل بقاعدة البيانات — البيانات محدثة';
+    } else {
+      throw new Error('backend-error');
+    }
+  }catch(err){
+    connDot.className = 'conn-dot offline';
+    connLabel.textContent = 'بدون اتصال';
+    connStatus.title = 'تعذّر الوصول لقاعدة البيانات — قد تكون البيانات غير محدثة';
+  }
+}
+checkConnection();
+setInterval(checkConnection, CONN_CHECK_INTERVAL_MS);
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible') checkConnection();
+});
 
 let lastStatsFetch = 0;
 const STATS_STALE_MS = 3 * 60 * 1000; // لا يُعاد الجلب إلا بعد مرور 3 دقائق على آخر تحديث فعلي
