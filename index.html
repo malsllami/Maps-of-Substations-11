@@ -169,10 +169,24 @@ header{
     min-height:calc(min(88vw, 56svh, 420px) + 132px);
   }
 }
+/* ===== متغير حجم الكرة الموحّد — يُستخدم في تكبير الكرة وحساب موضع العدسة/زر الدخول أسفلها بنفس الوقت ===== */
+/* ===== Unified globe-size variable — used both to enlarge the globe and to sync the lens/login-button position below it ===== */
+:root{
+  --globe-size: clamp(360px, 92vw, 760px);
+}
+@media (min-width:1200px){
+  :root{ --globe-size: clamp(460px, min(84vw, 74vh), 820px); }
+}
+@media (max-width:1199px) and (min-width:768px){
+  :root{ --globe-size: clamp(420px, min(88vw, 68vh), 640px); }
+}
+@media (max-width:767px){
+  :root{ --globe-size: clamp(340px, min(94vw, 60vh), 480px); }
+}
 .globe-stage{
-  position:absolute;top:113px;left:50%;transform:translateX(-50%);
+  position:absolute;top:90px;left:50%;transform:translateX(-50%);
   z-index:1;
-  width:clamp(320px, 85vw, 680px);
+  width:var(--globe-size);
   aspect-ratio:1;
   overflow:visible;
   background:transparent;
@@ -185,23 +199,9 @@ header{
   height:min(42svh, 460px);
   min-height:280px;
 }
-@media (min-width:1200px){
-  .globe-stage{
-    width:clamp(400px, min(78vw, 66vh), 620px);
-    width:clamp(400px, min(78vw, 66svh), 620px);
-  }
-}
-@media (max-width:1199px) and (min-width:768px){
-  .globe-stage{
-    width:clamp(360px, min(82vw, 62vh), 540px);
-    width:clamp(360px, min(82vw, 62svh), 540px);
-  }
-}
 @media (max-width:767px){
   .globe-stage{
-    top:92px;
-    width:clamp(300px, min(88vw, 56vh), 420px);
-    width:clamp(300px, min(88vw, 56svh), 420px);
+    top:70px;
   }
 }
 [data-theme="dark"] .globe-stage::before{
@@ -223,7 +223,7 @@ header{
 .hero-content{
   position:relative;z-index:5;width:100%;
   display:flex;flex-direction:column;align-items:center;
-  padding:20px 30px 0;
+  padding:6px 30px 0;
   transition:opacity .4s ease;
 }
 .hero-content.hidden{display:none;}
@@ -249,7 +249,7 @@ header{
 }
 h1{
   width:min(700px,90%);
-  font-size:clamp(24px,4vw,42px);
+  font-size:clamp(19px,3.2vw,32px);
   font-weight:700;
   text-align:center;
   line-height:1.3;
@@ -260,6 +260,10 @@ h1{
   background-clip:text;
   -webkit-text-fill-color:transparent;
 }
+/* وضع الزائر (قبل تسجيل الدخول) — عنوان أكبر بطابع تسويقي/ترحيبي / Guest mode (before login) — larger, marketing-style title */
+body.guest-mode h1{
+  font-size:clamp(24px,4vw,42px);
+}
 [data-theme="light"] h1{
   background:linear-gradient(90deg, var(--text-primary), var(--teal));
   -webkit-background-clip:text;
@@ -267,9 +271,12 @@ h1{
   -webkit-text-fill-color:transparent;
   text-shadow:none;
 }
+/* ترسو العدسة أو زر الدخول عند قاع الكرة تلقائيًا مهما تغيّر حجمها / Anchors the lens or the login button to the globe's bottom edge, regardless of its size */
+.globe-bottom-anchor{
+  margin-top:calc(var(--globe-size) - 108px);
+}
 .search-wrap{
   width:100%;
-  margin-top:56px;
   pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:10px;
 }
 .search-lens{
@@ -792,6 +799,30 @@ body.guest-mode .station-table{width:min(1300px,96vw);}
 body.guest-mode #cardsSection{display:none;}
 .cards-section.hidden{display:none;}
 body.guest-mode .search-wrap{display:none;}
+
+/* ===== زر تسجيل الدخول الكبير المضيء أسفل الكرة — يظهر فقط لوضع الزائر بدل الزر الصغير بالهيدر ===== */
+/* ===== Large glowing login button below the globe — guest mode only, replacing the small header button ===== */
+.guest-login-cta{
+  display:none;
+  align-items:center;justify-content:center;gap:10px;
+  width:min(300px,80vw);
+  padding:17px 24px;border-radius:32px;
+  background:linear-gradient(135deg, var(--teal), var(--teal-light));
+  color:#052018;font-weight:700;font-size:16px;
+  text-decoration:none;
+  box-shadow:0 10px 30px rgba(31,174,140,0.5), 0 0 44px rgba(77,214,181,0.38);
+  transition:transform .2s ease, box-shadow .2s ease;
+  animation:guestCtaGlow 2.6s ease-in-out infinite;
+}
+.guest-login-cta:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(31,174,140,0.6), 0 0 52px rgba(77,214,181,0.48);}
+@keyframes guestCtaGlow{
+  0%, 100%{box-shadow:0 10px 30px rgba(31,174,140,0.5), 0 0 40px rgba(77,214,181,0.32);}
+  50%{box-shadow:0 10px 30px rgba(31,174,140,0.6), 0 0 58px rgba(77,214,181,0.5);}
+}
+body.guest-mode .guest-login-cta{display:flex;}
+/* الزر الصغير بالهيدر يبقى فقط لحالة الدخول (يعرض اسم العضو)، ويختفي لوضع الزائر لأن الزر الكبير أسفل الكرة يغنيه */
+/* The small header button remains only for the logged-in state (shows the member's name); hidden in guest mode since the big button below the globe replaces it */
+body.guest-mode #loginBtn{display:none;}
 .cards-row{
   display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;max-width:760px;width:100%;
   align-items:start;
@@ -1015,7 +1046,7 @@ footer{
       <div class="eyebrow">SEC // DISTRIBUTION NETWORK</div>
       <h1>ابحث عن محطات التوزيع والتحويل</h1>
     </div>
-    <div class="search-wrap">
+    <div class="search-wrap globe-bottom-anchor">
       <div class="search-lens" id="searchLens">
         <svg id="searchLensIcon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <input id="searchInput" type="text" placeholder="مثال: 39070 أو ABN" inputmode="text">
@@ -1026,6 +1057,10 @@ footer{
         <div class="search-progress-label"><span>جاري البحث عن المحطة...</span><span id="searchProgressPct">0%</span></div>
       </div>
     </div>
+    <a href="auth.html" class="guest-login-cta globe-bottom-anchor">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      تسجيل الدخول
+    </a>
   </div>
 
   <div class="station-search-bar" id="stationSearchBar">
@@ -2746,4 +2781,3 @@ backBtn.addEventListener('click', ()=>{
 </script>
 </body>
 </html>
-
