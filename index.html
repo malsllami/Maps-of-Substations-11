@@ -181,8 +181,9 @@ header{
 .globe-stage.map-active{
   width:min(1400px, 96vw);
   aspect-ratio:auto;
-  height:min(78vh, 820px);
-  height:min(78svh, 820px);
+  height:min(42vh, 460px);
+  height:min(42svh, 460px);
+  min-height:280px;
 }
 @media (min-width:1200px){
   .globe-stage{
@@ -215,11 +216,9 @@ header{
   transition:opacity .9s ease;
 }
 #map-container.active{opacity:1;pointer-events:auto;}
-[data-theme="dark"] .leaflet-tile-pane{filter:invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(0.9);}
-[data-theme="dark"] #map-container.satellite-active .leaflet-tile-pane{filter:none;}
 .hero.map-active{
-  min-height:calc(min(78vh, 820px) + 100px);
-  min-height:calc(min(78svh, 820px) + 100px);
+  min-height:calc(min(42vh, 460px) + 100px);
+  min-height:calc(min(42svh, 460px) + 100px);
 }
 .hero-content{
   position:relative;z-index:5;width:100%;
@@ -420,7 +419,7 @@ h1{
 .back-btn.show{display:flex;}
 .map-tools{
   pointer-events:auto;
-  position:absolute;top:14px;left:14px;display:none;
+  position:absolute;top:58px;left:14px;display:none;
   align-items:center;gap:6px;z-index:6;
 }
 .map-tools.show{display:flex;}
@@ -432,6 +431,43 @@ h1{
 }
 .map-tool-btn:hover{border-color:var(--teal);color:var(--teal);}
 .map-tool-btn.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+
+/* ===== عنصر التحكم الموحّد بنوع الخريطة — رسومات/أقمار صناعية + ليلي/نهاري + تلقائي ===== */
+/* ===== Unified map-type control — graphic/satellite + night/day + auto ===== */
+.map-mode-chip{
+  pointer-events:auto;
+  position:absolute;top:14px;left:14px;display:none;
+  align-items:center;gap:7px;z-index:7;
+  background:var(--bg-card);border:1px solid var(--border-strong);border-radius:20px;
+  padding:8px 12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-primary);
+  box-shadow:0 4px 14px rgba(0,0,0,.22);transition:border-color .2s;
+}
+.map-mode-chip.show{display:flex;}
+.map-mode-chip:hover{border-color:var(--border-strong);}
+.map-mode-chip .mm-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.map-mode-chip .mm-auto-badge{
+  font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:8px;
+  background:rgba(31,174,140,0.16);color:var(--teal);
+}
+.map-mode-chip .mm-chev{color:var(--text-secondary);transition:transform .2s;flex-shrink:0;}
+.map-mode-chip.open .mm-chev{transform:rotate(180deg);}
+.map-mode-panel{
+  position:absolute;top:56px;left:14px;z-index:7;
+  display:none;flex-direction:column;gap:2px;
+  background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;
+  padding:6px;box-shadow:0 10px 24px rgba(0,0,0,.3);min-width:210px;
+}
+.map-mode-panel.show{display:flex;}
+.map-mode-opt{
+  display:flex;align-items:center;gap:9px;text-align:right;background:transparent;border:none;
+  padding:9px 10px;border-radius:8px;font-size:12.5px;color:var(--text-primary);cursor:pointer;font-family:inherit;
+}
+.map-mode-opt:hover{background:var(--bg-elev);}
+.map-mode-opt.active{background:var(--bg-elev);font-weight:700;}
+.map-mode-opt .mm-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.map-mode-opt .mm-opt-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-secondary);}
+.map-mode-opt .mm-check{margin-right:auto;color:var(--teal);display:none;flex-shrink:0;}
+.map-mode-opt.active .mm-check{display:flex;}
 .zoom-controls{
   position:absolute;bottom:14px;left:14px;z-index:6;
   display:none;flex-direction:column;
@@ -448,7 +484,7 @@ h1{
 .zoom-btn:hover{background:var(--bg-elev);}
 .zoom-btn:active{background:var(--teal);color:#fff;}
 .nearby-panel{
-  position:absolute;top:54px;left:14px;z-index:6;
+  position:absolute;top:98px;left:14px;z-index:6;
   display:none;flex-direction:column;gap:6px;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;
   padding:8px;box-shadow:0 10px 24px rgba(0,0,0,.3);min-width:190px;
@@ -516,7 +552,7 @@ h1{
 }
 
 .outage-panel{
-  position:absolute;top:54px;left:14px;z-index:6;
+  position:absolute;top:98px;left:14px;z-index:6;
   display:none;flex-direction:column;gap:8px;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;
   padding:12px;box-shadow:0 10px 24px rgba(0,0,0,.3);width:min(260px, 80vw);
@@ -575,7 +611,7 @@ h1{
   border-top:5px solid;
 }
 .map-tool-hint{
-  position:absolute;top:56px;left:14px;right:14px;
+  position:absolute;top:98px;left:14px;right:14px;
   background:var(--bg-card);border:1px solid var(--border-strong);
   padding:6px 12px;border-radius:16px;font-size:11.5px;color:var(--text-secondary);
   display:none;z-index:6;pointer-events:none;
@@ -586,8 +622,8 @@ h1{
 .station-table{
   position:relative;z-index:6;
   width:min(1100px, 94vw);
-  margin-top:calc(min(78vh, 820px) + 16px);
-  margin-top:calc(min(78svh, 820px) + 16px);
+  margin-top:calc(min(42vh, 460px) + 16px);
+  margin-top:calc(min(42svh, 460px) + 16px);
   background:var(--bg-card);border:1px solid var(--border-strong);
   border-radius:16px;
   padding:0;
@@ -828,10 +864,39 @@ footer{
       رجوع للبحث
     </div>
 
+    <div class="map-mode-chip" id="mapModeChip" title="نوع الخريطة">
+      <span class="mm-icon" id="mapModeChipIcon"></span>
+      <span id="mapModeChipLabel">تلقائي</span>
+      <span class="mm-auto-badge" id="mapModeAutoBadge">تلقائي</span>
+      <svg class="mm-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </div>
+    <div class="map-mode-panel" id="mapModePanel">
+      <button class="map-mode-opt" data-mode="auto">
+        <span class="mm-dot" style="background:#1FAE8C"></span>
+        <span class="mm-opt-icon" data-icon-mode="auto"></span>
+        تلقائي (حسب وقت الجهاز)
+        <svg class="mm-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </button>
+      <button class="map-mode-opt" data-mode="light">
+        <span class="mm-dot" style="background:#C8A24E"></span>
+        <span class="mm-opt-icon" data-icon-mode="light"></span>
+        نهاري
+        <svg class="mm-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </button>
+      <button class="map-mode-opt" data-mode="dark">
+        <span class="mm-dot" style="background:#2E7DD1"></span>
+        <span class="mm-opt-icon" data-icon-mode="dark"></span>
+        ليلي
+        <svg class="mm-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </button>
+      <button class="map-mode-opt" data-mode="satellite">
+        <span class="mm-dot" style="background:#8B6DD6"></span>
+        <span class="mm-opt-icon" data-icon-mode="satellite"></span>
+        أقمار صناعية
+        <svg class="mm-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </button>
+    </div>
     <div class="map-tools" id="mapTools">
-      <div class="map-tool-btn" id="satelliteToggleBtn" title="تبديل صور الأقمار الصناعية">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20z"/></svg>
-      </div>
       <div class="map-tool-btn" id="measureToggleBtn" title="قياس المسافة">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M6 8v8M12 8v8M18 8v8"/></svg>
       </div>
@@ -1402,7 +1467,8 @@ const stationTable = document.getElementById('stationTable');
 const mapTools = document.getElementById('mapTools');
 const zoomControls = document.getElementById('zoomControls');
 const mapToolHint = document.getElementById('mapToolHint');
-const satelliteToggleBtn = document.getElementById('satelliteToggleBtn');
+const mapModeChip = document.getElementById('mapModeChip');
+const mapModePanel = document.getElementById('mapModePanel');
 const measureToggleBtn = document.getElementById('measureToggleBtn');
 const routeToggleBtn = document.getElementById('routeToggleBtn');
 const nearbyToggleBtn = document.getElementById('nearbyToggleBtn');
@@ -1529,13 +1595,101 @@ searchInput.addEventListener('keydown', (e)=>{
 });
 
 let leafletMap = null, currentTileLayer = null, marker = null;
-const TILE_URL = 'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+/* ============================================================
+ *  نظام وضع الخريطة الموحّد — تلقائي (حسب وقت الجهاز) أو يدوي
+ *  Unified map-mode system — automatic (device time) or manual
+ *  الأوضاع الأربعة: تلقائي / نهاري / ليلي / أقمار صناعية
+ *  التلقائي هو الافتراضي دائمًا حتى يبدّله المستخدم يدويًا، وبعدها يبقى على اختياره
+ * ============================================================ */
+const TILE_URL_LIGHT = 'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+const TILE_URL_DARK = 'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 const SATELLITE_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-let isSatelliteView = false;
+const MAP_MODE_STORAGE_KEY = 'sec-map-mode';
+let mapMode = localStorage.getItem(MAP_MODE_STORAGE_KEY) || 'auto';
+
+/* رمز لكل وضع + لون مميّز وواضح خاص به / Icon + distinct clear color per mode */
+const MAP_MODE_META = {
+  auto:      { label:'تلقائي',       color:'#1FAE8C' },
+  light:     { label:'نهاري',        color:'#C8A24E' },
+  dark:      { label:'ليلي',         color:'#2E7DD1' },
+  satellite: { label:'أقمار صناعية', color:'#8B6DD6' }
+};
+const MAP_MODE_ICON_SVG = {
+  auto: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>',
+  light: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/></svg>',
+  dark: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5A8.5 8.5 0 1 1 11.5 3 6.8 6.8 0 0 0 21 12.5z"/></svg>',
+  satellite: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="6" height="6" rx="1"/><rect x="1" y="10.5" width="5" height="3" rx="0.5"/><rect x="18" y="10.5" width="5" height="3" rx="0.5"/><line x1="6" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="18" y2="12"/><line x1="12" y1="9" x2="12" y2="4"/><circle cx="12" cy="3" r="1"/></svg>'
+};
+document.querySelectorAll('.mm-opt-icon[data-icon-mode]').forEach(el=>{
+  el.innerHTML = MAP_MODE_ICON_SVG[el.dataset.iconMode];
+});
+
+/* يحدد هل الوقت الحالي بجهاز المستخدم نهار أم ليل / Determines day or night based on device local time */
+function isDaytimeNow(){
+  const hour = new Date().getHours();
+  return hour >= 6 && hour < 18;
+}
+/* يحوّل الوضع المختار إلى نوع البلاطة الفعلي المطلوب تحميله / Resolves the selected mode to the actual tile type to load */
+function resolvedTileMode(){
+  if(mapMode === 'auto') return isDaytimeNow() ? 'light' : 'dark';
+  return mapMode;
+}
+function tileUrlFor(tileMode){
+  if(tileMode === 'satellite') return SATELLITE_URL;
+  if(tileMode === 'dark') return TILE_URL_DARK;
+  return TILE_URL_LIGHT;
+}
+/* يحدّث شريحة التحكم والقائمة المنسدلة لتعكس الوضع الحالي / Updates the chip and dropdown to reflect the current mode */
+function updateMapModeUI(){
+  const tileMode = resolvedTileMode();
+  const meta = MAP_MODE_META[tileMode];
+  const chipIcon = document.getElementById('mapModeChipIcon');
+  const chipLabel = document.getElementById('mapModeChipLabel');
+  chipIcon.innerHTML = MAP_MODE_ICON_SVG[tileMode];
+  chipIcon.style.color = meta.color;
+  chipLabel.textContent = meta.label;
+  chipLabel.style.color = meta.color;
+  document.getElementById('mapModeAutoBadge').style.display = (mapMode === 'auto') ? 'inline-block' : 'none';
+  document.querySelectorAll('.map-mode-opt').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.mode === mapMode);
+  });
+}
+/* يطبّق البلاطة المناسبة فعليًا على الخريطة / Actually applies the resolved tile layer to the map */
+function applyMapMode(){
+  if(!leafletMap) return;
+  const tileUrl = tileUrlFor(resolvedTileMode());
+  if(currentTileLayer) leafletMap.removeLayer(currentTileLayer);
+  currentTileLayer = L.tileLayer(tileUrl, {maxZoom:19}).addTo(leafletMap);
+  updateMapModeUI();
+}
+function setMapMode(mode){
+  mapMode = mode;
+  localStorage.setItem(MAP_MODE_STORAGE_KEY, mode);
+  applyMapMode();
+  closeMapModePanel();
+}
+function closeMapModePanel(){
+  mapModePanel.classList.remove('show');
+  mapModeChip.classList.remove('open');
+}
+mapModeChip.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  mapModePanel.classList.toggle('show');
+  mapModeChip.classList.toggle('open');
+});
+document.querySelectorAll('.map-mode-opt').forEach(btn=>{
+  btn.addEventListener('click', ()=> setMapMode(btn.dataset.mode));
+});
+document.addEventListener('click', (e)=>{
+  if(!mapModeChip.contains(e.target) && !mapModePanel.contains(e.target)) closeMapModePanel();
+});
+/* إعادة فحص الوقت كل ٥ دقائق فقط إذا كان المستخدم على الوضع التلقائي / Re-check time every 5 min only while on auto mode */
+setInterval(()=>{ if(mapMode === 'auto' && leafletMap) applyMapMode(); }, 5 * 60 * 1000);
 
 function initMap(){
   leafletMap = L.map('map-container', {zoomControl:false, attributionControl:false}).setView([21.54,39.19], 12);
-  currentTileLayer = L.tileLayer(TILE_URL, {maxZoom:19}).addTo(leafletMap);
+  applyMapMode();
   leafletMap.on('click', (e)=>{
     if(measureActive) handleMeasureClick(e.latlng);
     else if(routeActive) handleRouteClick(e.latlng);
@@ -1554,21 +1708,11 @@ function haversineKm(lat1, lng1, lat2, lng2){
 }
 
 function setActiveTool(name){
-  [satelliteToggleBtn, measureToggleBtn, routeToggleBtn].forEach(b=>b.classList.remove('active'));
+  [measureToggleBtn, routeToggleBtn].forEach(b=>b.classList.remove('active'));
   mapToolHint.classList.remove('show');
   if(name==='measure') measureToggleBtn.classList.add('active');
   if(name==='route') routeToggleBtn.classList.add('active');
 }
-
-/* ===== تبديل صور الأقمار الصناعية ↔ الخريطة ===== */
-satelliteToggleBtn.addEventListener('click', ()=>{
-  if(!leafletMap) return;
-  isSatelliteView = !isSatelliteView;
-  satelliteToggleBtn.classList.toggle('active', isSatelliteView);
-  leafletMap.removeLayer(currentTileLayer);
-  currentTileLayer = L.tileLayer(isSatelliteView ? SATELLITE_URL : TILE_URL, {maxZoom:19}).addTo(leafletMap);
-  mapContainer.classList.toggle('satellite-active', isSatelliteView);
-});
 
 /* ===== قياس المسافة (نقطتان فأكثر بالنقر على الخريطة) ===== */
 let measureActive = false, measurePoints = [], measureLine = null, measureMarkers = [];
@@ -2145,6 +2289,7 @@ function startMorphExpand(s){
       stageEl.classList.add('map-active');
       heroSection.classList.add('map-active');
       backBtn.classList.add('show');
+      mapModeChip.classList.add('show');
       mapTools.classList.add('show');
       zoomControls.classList.add('show');
       setTimeout(()=>{
@@ -2240,7 +2385,7 @@ function openEditForm(){
   setTimeout(()=>{
     if(editPreviewMap){ editPreviewMap.remove(); editPreviewMap = null; }
     editPreviewMap = L.map('editPreviewMap', {zoomControl:false, attributionControl:false, dragging:true}).setView([s.lat, s.lng], 17);
-    L.tileLayer(TILE_URL, {maxZoom:19}).addTo(editPreviewMap);
+    L.tileLayer(TILE_URL_LIGHT, {maxZoom:19}).addTo(editPreviewMap);
     editPreviewMarker = L.marker([s.lat, s.lng], {draggable:true}).addTo(editPreviewMap);
     editPreviewMarker.on('dragend', ()=>{
       const pos = editPreviewMarker.getLatLng();
@@ -2363,6 +2508,8 @@ backBtn.addEventListener('click', ()=>{
   heroSection.classList.remove('map-active');
   document.getElementById('heroContent').classList.remove('hidden');
   backBtn.classList.remove('show');
+  mapModeChip.classList.remove('show');
+  closeMapModePanel();
   mapTools.classList.remove('show');
   zoomControls.classList.remove('show');
   mapToolHint.classList.remove('show');
