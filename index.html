@@ -66,13 +66,14 @@ header{
 }
 .logo-text{font-size:15px;font-weight:700;letter-spacing:.3px;white-space:nowrap;transition:color .2s;}
 .logo-sub{font-size:11px;color:var(--text-secondary);margin-top:1px;white-space:nowrap;}
-/* مؤشر حالة الاتصال بالخادم / Server connection status badge */
-.conn-status{
-  display:flex;align-items:center;gap:5px;
-  background:var(--bg-elev);border:1px solid var(--border-strong);
-  border-radius:20px;padding:5px 12px;margin-right:10px;
-  font-size:11px;color:var(--text-secondary);flex-shrink:0;
+/* شريط حالة الاتصال + آخر تحديث / Connection status + last-update bar */
+.status-bar{
+  position:fixed;top:68px;left:0;right:0;z-index:49;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg-elev);border-bottom:1px solid var(--border);
+  padding:6px 24px;font-size:11px;color:var(--text-secondary);
 }
+.status-bar-item{display:flex;align-items:center;gap:6px;}
 .conn-dot{
   width:8px;height:8px;border-radius:50%;flex-shrink:0;
   background:#8FA3B8; /* رمادي = جاري الفحص / gray = checking */
@@ -81,8 +82,7 @@ header{
 .conn-dot.online{background:#2ECC71;box-shadow:0 0 6px rgba(46,204,113,.6);}
 .conn-dot.offline{background:#E0654F;box-shadow:0 0 6px rgba(224,101,79,.6);}
 @media (max-width:600px){
-  .conn-status span:last-child{display:none;} /* بالجوال: النقطة فقط بلا نص، توفير مساحة */
-  .conn-status{padding:6px;margin-right:6px;}
+  .status-bar{padding:6px 12px;font-size:10px;top:50px;}
 }
 .header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .mobile-user-menu{display:none;position:relative;}
@@ -141,40 +141,40 @@ header{
 .hero{
   position:relative;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;
-  padding:85px 20px 100px;
-  min-height:calc(min(78vw, 66vh, 620px) + 125px);
-  min-height:calc(min(78vw, 66svh, 620px) + 125px);
+  padding:113px 20px 100px;
+  min-height:calc(min(78vw, 66vh, 620px) + 153px);
+  min-height:calc(min(78vw, 66svh, 620px) + 153px);
 }
 @media (max-width:1199px) and (min-width:768px){
   .hero{
-    min-height:calc(min(82vw, 62vh, 540px) + 125px);
-    min-height:calc(min(82vw, 62svh, 540px) + 125px);
+    min-height:calc(min(82vw, 62vh, 540px) + 153px);
+    min-height:calc(min(82vw, 62svh, 540px) + 153px);
   }
 }
 @media (max-width:767px){
   .hero{
-    min-height:calc(min(88vw, 56vh, 420px) + 104px);
-    min-height:calc(min(88vw, 56svh, 420px) + 104px);
+    min-height:calc(min(88vw, 56vh, 420px) + 132px);
+    min-height:calc(min(88vw, 56svh, 420px) + 132px);
   }
 }
 body.guest-mode .hero{
-  min-height:calc(min(82vw, 70vh, 660px) + 125px);
-  min-height:calc(min(82vw, 70svh, 660px) + 125px);
+  min-height:calc(min(82vw, 70vh, 660px) + 153px);
+  min-height:calc(min(82vw, 70svh, 660px) + 153px);
 }
 @media (max-width:1199px) and (min-width:768px){
   body.guest-mode .hero{
-    min-height:calc(min(86vw, 66vh, 580px) + 125px);
-    min-height:calc(min(86vw, 66svh, 580px) + 125px);
+    min-height:calc(min(86vw, 66vh, 580px) + 153px);
+    min-height:calc(min(86vw, 66svh, 580px) + 153px);
   }
 }
 @media (max-width:767px){
   body.guest-mode .hero{
-    min-height:calc(min(92vw, 60vh, 460px) + 104px);
-    min-height:calc(min(92vw, 60svh, 460px) + 104px);
+    min-height:calc(min(92vw, 60vh, 460px) + 132px);
+    min-height:calc(min(92vw, 60svh, 460px) + 132px);
   }
 }
 .globe-stage{
-  position:absolute;top:85px;left:50%;transform:translateX(-50%);
+  position:absolute;top:113px;left:50%;transform:translateX(-50%);
   z-index:1;
   width:clamp(320px, 85vw, 680px);
   aspect-ratio:1;
@@ -202,7 +202,7 @@ body.guest-mode .hero{
 }
 @media (max-width:767px){
   .globe-stage{
-    top:64px;
+    top:92px;
     width:clamp(300px, min(88vw, 56vh), 420px);
     width:clamp(300px, min(88vw, 56svh), 420px);
   }
@@ -711,7 +711,7 @@ footer{
   #headerActions.logged-in .mobile-user-menu{display:block;}
   .login-btn{padding:7px 12px;font-size:12px;}
   .theme-toggle{width:34px;height:34px;}
-  .hero{padding:64px 6px 90px;}
+  .hero{padding:92px 6px 90px;}
   .station-table{width:99vw;}
   .eyebrow{font-size:10px;padding:5px 12px;}
   h1{font-size:clamp(22px,6vw,32px);}
@@ -749,11 +749,6 @@ footer{
       <div class="logo-text">الشركة السعودية للطاقة</div>
       <div class="logo-sub">نظام الإحداثيات الجغرافية</div>
     </div>
-    <!-- مؤشر حالة الاتصال بالخادم / Server connection status indicator -->
-    <div class="conn-status" id="connStatus" title="جاري التحقق من الاتصال...">
-      <span class="conn-dot" id="connDot"></span>
-      <span id="connLabel">جاري التحقق...</span>
-    </div>
   </div>
   <div class="header-actions" id="headerActions">
     <a href="auth.html" class="login-btn" id="loginBtn">تسجيل الدخول</a>
@@ -782,6 +777,19 @@ footer{
     </div>
   </div>
 </header>
+
+<!-- شريط حالة الاتصال + آخر تحديث / Connection status + last-update bar -->
+<div class="status-bar" id="statusBar">
+  <div class="status-bar-item">
+    <span class="conn-dot" id="connDot"></span>
+    <span id="connLabel">جاري التحقق...</span>
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+  </div>
+  <div class="status-bar-item">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span id="lastUpdateLabel">آخر تحديث: —</span>
+  </div>
+</div>
 
 <section class="hero" id="heroSection">
   <div class="globe-stage" id="globeStage">
@@ -949,31 +957,55 @@ async function callBackend(action, payload){
  * ============================================================ */
 const connDot = document.getElementById('connDot');
 const connLabel = document.getElementById('connLabel');
-const connStatus = document.getElementById('connStatus');
+const statusBar = document.getElementById('statusBar');
+const lastUpdateLabel = document.getElementById('lastUpdateLabel');
 const CONN_CHECK_INTERVAL_MS = 60 * 1000; // فحص كل دقيقة / check every minute
+const CONN_CHECK_TIMEOUT_MS = 15 * 1000; // مهلة أطول تراعي بطء إقلاع Apps Script الباردة / generous timeout for Apps Script cold starts
+let lastSuccessfulCheckAt = null;
+
+// نص نسبي لوقت آخر تحديث ناجح (قبل دقيقة، قبل ٥ دقائق...) — يُحدَّث كل ٣٠ ثانية
+// Relative "last updated" text, refreshed every 30s regardless of ping timing
+function formatRelativeTime(date){
+  const diffSec = Math.floor((Date.now() - date.getTime()) / 1000);
+  if(diffSec < 15) return 'الآن';
+  if(diffSec < 60) return `قبل ${diffSec} ثانية`;
+  const diffMin = Math.floor(diffSec / 60);
+  if(diffMin < 60) return diffMin === 1 ? 'قبل دقيقة' : `قبل ${diffMin} دقائق`;
+  const diffHour = Math.floor(diffMin / 60);
+  return diffHour === 1 ? 'قبل ساعة' : `قبل ${diffHour} ساعات`;
+}
+function refreshLastUpdateLabel(){
+  lastUpdateLabel.textContent = lastSuccessfulCheckAt
+    ? `آخر تحديث: ${formatRelativeTime(lastSuccessfulCheckAt)}`
+    : 'آخر تحديث: —';
+}
+setInterval(refreshLastUpdateLabel, 30 * 1000);
 
 async function checkConnection(){
   try{
-    // نستخدم getStats كطلب فحص خفيف — نفس الأكشن المستخدم أصلاً بالبطاقات
-    // Reuse the existing lightweight 'getStats' action as a health-check ping
+    // فحص مخصص وخفيف جداً (بلا أي قراءة شيت) — لا نستخدم getStats هنا
+    // Dedicated ultra-light ping (zero sheet reads) — deliberately not getStats
     const res = await Promise.race([
-      callBackend('getStats'),
-      new Promise((_, reject)=> setTimeout(()=> reject(new Error('timeout')), 8000))
+      callBackend('ping'),
+      new Promise((_, reject)=> setTimeout(()=> reject(new Error('timeout')), CONN_CHECK_TIMEOUT_MS))
     ]);
-    if(res && !res.error){
+    if(res && res.success){
       connDot.className = 'conn-dot online';
       connLabel.textContent = 'متصل';
-      connStatus.title = 'متصل بقاعدة البيانات — البيانات محدثة';
+      statusBar.title = 'متصل بقاعدة البيانات — البيانات محدثة';
+      lastSuccessfulCheckAt = new Date();
+      refreshLastUpdateLabel();
     } else {
       throw new Error('backend-error');
     }
   }catch(err){
     connDot.className = 'conn-dot offline';
     connLabel.textContent = 'بدون اتصال';
-    connStatus.title = 'تعذّر الوصول لقاعدة البيانات — قد تكون البيانات غير محدثة';
+    statusBar.title = 'تعذّر الوصول لقاعدة البيانات — قد تكون البيانات غير محدثة';
+    // لا نحدّث lastSuccessfulCheckAt هنا عمداً — يبقى يعرض آخر نجاح فعلي، لا وقت الفحص الفاشل
   }
 }
-checkConnection();
+setTimeout(checkConnection, 1500); // تأخير بسيط كي لا يتزاحم مع طلبات تحميل الصفحة الأولى
 setInterval(checkConnection, CONN_CHECK_INTERVAL_MS);
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState === 'visible') checkConnection();
