@@ -328,6 +328,31 @@ h1{
 .search-hint.err{color:#FF8A75;text-shadow:0 1px 4px rgba(0,0,0,0.6);}
 [data-theme="light"] .search-hint.err{color:#C8412C;text-shadow:none;}
 .search-hint.ok{color:var(--teal-light);}
+
+/* ===== بطاقة "المحطة غير موجودة" — تظهر داخل مكان تلميح البحث نفسه (الرئيسي أو داخل صفحة المحطة) ===== */
+.not-found-card{
+  width:min(360px, 92vw);margin:8px auto 0;
+  background:var(--bg-card);border:1px solid var(--border-strong);
+  border-radius:16px;padding:18px 20px;text-align:center;
+  box-shadow:0 10px 24px rgba(0,0,0,.22);
+}
+.nfc-head{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  color:#C8A24E;font-weight:700;font-size:13.5px;margin-bottom:10px;
+}
+.nfc-id{font-size:12.5px;color:var(--text-secondary);margin-bottom:4px;}
+.nfc-id b{color:var(--text-primary);font-family:'JetBrains Mono',monospace;direction:ltr;display:inline-block;}
+.nfc-question{font-size:12.5px;color:var(--text-secondary);margin-bottom:14px;}
+.nfc-actions{display:flex;gap:8px;}
+.nfc-btn{
+  flex:1;font-size:12.5px;padding:10px 8px;border-radius:8px;
+  border:1px solid var(--border-strong);background:var(--bg);color:var(--text-primary);
+  cursor:pointer;font-family:inherit;transition:.2s;white-space:nowrap;
+}
+.nfc-btn:hover{border-color:var(--teal);}
+.nfc-btn.primary{background:rgba(31,174,140,0.14);color:var(--teal-light);border-color:rgba(77,214,181,0.5);}
+.nfc-btn.primary:hover{background:rgba(31,174,140,0.24);border-color:var(--teal);}
+[data-theme="light"] .nfc-btn.primary{color:var(--teal);}
 .search-progress{
   display:none;flex-direction:column;gap:6px;
   width:min(300px,88vw);
@@ -593,6 +618,14 @@ h1{
   border-radius:50%;background:#2ECC71;border:2px solid #fff;
   box-shadow:0 0 10px rgba(46,204,113,.9);
 }
+.ssm-label{
+  position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+  margin-bottom:5px;white-space:nowrap;
+  background:rgba(8,16,26,0.92);color:#fff;
+  border:1.3px solid #2ECC71;border-radius:11px;
+  padding:2px 9px;font-size:10.5px;font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+}
 
 /* ===== بطاقات المحطات القريبة — شكل دبوس قوقل ماب (بطاقة + ذيل مثلث) ===== */
 .nearby-pin-wrap{display:flex;flex-direction:column;align-items:center;}
@@ -619,11 +652,39 @@ h1{
 }
 .map-tool-hint a{pointer-events:auto;}
 .map-tool-hint.show{display:block;}
+.station-search-bar{
+  display:none;
+  align-items:center;gap:10px;
+  width:min(1100px, 94vw);
+  position:relative;z-index:6;
+  margin-top:calc(min(42vh, 460px) + 16px);
+  margin-top:calc(min(42svh, 460px) + 16px);
+  background:var(--bg-card);border:1px solid var(--border-strong);
+  border-radius:24px;padding:12px 20px;
+  box-shadow:0 10px 24px rgba(0,0,0,.22);
+  transition:border-color .2s;
+}
+.station-search-bar.show{display:flex;}
+.station-search-bar:focus-within{border-color:var(--teal);}
+.station-search-bar svg{flex-shrink:0;color:var(--text-secondary);}
+.station-search-bar:focus-within svg{color:var(--teal);}
+.station-search-bar input{
+  flex:1;min-width:0;background:transparent;border:none;outline:none;
+  color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-size:13.5px;
+  direction:ltr;text-align:right;
+}
+.station-search-bar input::placeholder{color:var(--text-secondary);font-family:'IBM Plex Sans Arabic',sans-serif;}
+body.guest-mode .station-search-bar{width:min(1300px,96vw);}
+.station-search-hint{
+  width:min(1100px, 94vw);font-size:12px;color:var(--text-secondary);
+  min-height:16px;padding:6px 4px 0;
+}
+.station-search-hint.err{color:#E0654F;}
+body.guest-mode .station-search-hint{width:min(1300px,96vw);}
 .station-table{
   position:relative;z-index:6;
   width:min(1100px, 94vw);
-  margin-top:calc(min(42vh, 460px) + 16px);
-  margin-top:calc(min(42svh, 460px) + 16px);
+  margin-top:10px;
   background:var(--bg-card);border:1px solid var(--border-strong);
   border-radius:16px;
   padding:0;
@@ -714,6 +775,7 @@ body.guest-mode .station-table{width:min(1300px,96vw);}
 .storage-bar-fill{height:100%;min-width:2px;border-radius:4px;background:linear-gradient(90deg, var(--blue-mid), var(--teal-light));transition:width .4s ease;}
 
 body.guest-mode #cardsSection{display:none;}
+.cards-section.hidden{display:none;}
 body.guest-mode .search-wrap{display:none;}
 .cards-row{
   display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;max-width:760px;width:100%;
@@ -950,6 +1012,11 @@ footer{
     </div>
   </div>
 
+  <div class="station-search-bar" id="stationSearchBar">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <input id="stationSearchInput" type="text" placeholder="ابحث عن محطة أخرى..." inputmode="text">
+  </div>
+  <div class="station-search-hint" id="stationSearchHint"></div>
   <div class="station-table" id="stationTable"></div>
 </section>
 
@@ -1060,6 +1127,11 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbyxZUSLZNa6UlZLINsfAEe8
 async function callBackend(action, payload){
   const res = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action, ...(payload||{}) }) });
   return await res.json();
+}
+
+/* تعقيم أي نص يكتبه المستخدم قبل حقنه داخل innerHTML — حماية من الحقن / Sanitizes user-typed text before injecting into innerHTML — XSS protection */
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
 
 /* ============================================================
@@ -1469,6 +1541,10 @@ const zoomControls = document.getElementById('zoomControls');
 const mapToolHint = document.getElementById('mapToolHint');
 const mapModeChip = document.getElementById('mapModeChip');
 const mapModePanel = document.getElementById('mapModePanel');
+const cardsSection = document.getElementById('cardsSection');
+const stationSearchBar = document.getElementById('stationSearchBar');
+const stationSearchInput = document.getElementById('stationSearchInput');
+const stationSearchHint = document.getElementById('stationSearchHint');
 const measureToggleBtn = document.getElementById('measureToggleBtn');
 const routeToggleBtn = document.getElementById('routeToggleBtn');
 const nearbyToggleBtn = document.getElementById('nearbyToggleBtn');
@@ -1549,6 +1625,51 @@ function setSearchProgress(active){
   };
 }
 
+/* ============================================================
+ *  بطاقة "المحطة غير موجودة" — تُستخدم من بحث الصفحة الرئيسية وبحث صفحة المحطة معًا
+ *  "Station not found" card — shared by the main search and the station-page search
+ * ============================================================ */
+function renderNotFoundCard(container, rawQuery, onRetry){
+  container.innerHTML = `
+    <div class="not-found-card">
+      <div class="nfc-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>المحطة غير موجودة</span>
+      </div>
+      <div class="nfc-id">رقم المحطة: <b>${escapeHtml(rawQuery)}</b></div>
+      <div class="nfc-question">هل تريد إضافتها؟</div>
+      <div class="nfc-actions">
+        <button class="nfc-btn primary" id="nfcAddBtn">+ إضافة محطة</button>
+        <button class="nfc-btn" id="nfcRetryBtn">🔍 بحث آخر</button>
+      </div>
+    </div>`;
+  document.getElementById('nfcAddBtn').addEventListener('click', ()=> goAddStationFromNotFound(rawQuery));
+  document.getElementById('nfcRetryBtn').addEventListener('click', onRetry);
+}
+/* الانتقال لإضافة المحطة المبحوث عنها — يرجع للصفحة الرئيسية أولًا إذا كانت الخريطة مفتوحة / Returns home first if the map is open, then opens the form */
+function goAddStationFromNotFound(idValue){
+  const wasMapActive = mapContainer.classList.contains('active');
+  if(wasMapActive) backBtn.click();
+  openAddStationPanel(idValue);
+  setTimeout(()=>{
+    const input = document.getElementById('newStationId');
+    input.scrollIntoView({behavior:'smooth', block:'center'});
+    input.focus();
+  }, wasMapActive ? 80 : 0);
+}
+function retryMainSearch(){
+  searchHint.innerHTML = '';
+  searchHint.className = 'search-hint';
+  searchInput.value = '';
+  searchInput.focus();
+}
+function retryStationSearch(){
+  stationSearchHint.innerHTML = '';
+  stationSearchHint.className = 'station-search-hint';
+  stationSearchInput.value = '';
+  stationSearchInput.focus();
+}
+
 async function performSearch(){
   if(isSearching) return; // منع الضغط المتكرر أثناء البحث الجاري
   const raw = searchInput.value.trim();
@@ -1577,8 +1698,7 @@ async function performSearch(){
       });
     } else {
       progress.stop();
-      searchHint.textContent = 'رقم المحطة غير موجود، تحقق من الرقم وحاول مجددًا';
-      searchHint.className = 'search-hint err';
+      renderNotFoundCard(searchHint, raw, retryMainSearch);
     }
   }catch(err){
     progress.stop();
@@ -1592,6 +1712,49 @@ async function performSearch(){
 
 searchInput.addEventListener('keydown', (e)=>{
   if(e.key==='Enter') performSearch();
+});
+
+/* ============================================================
+ *  بحث سريع من داخل صفحة المحطة — بدون رجوع للصفحة الرئيسية
+ *  Quick search from within the station page — no need to go back
+ * ============================================================ */
+let isStationPageSearching = false;
+async function performStationPageSearch(){
+  if(isStationPageSearching) return; // منع الضغط المتكرر أثناء البحث الجاري
+  const raw = stationSearchInput.value.trim();
+  if(!raw) return;
+
+  if(!hasValidSession()){
+    stationSearchHint.innerHTML = 'سجّل دخول للحصول على النتيجة — <a href="auth.html" style="color:var(--teal);font-weight:500;text-decoration:underline">تسجيل الدخول</a>';
+    stationSearchHint.className = 'station-search-hint err';
+    return;
+  }
+
+  isStationPageSearching = true;
+  stationSearchHint.textContent = '';
+  stationSearchHint.className = 'station-search-hint';
+
+  try{
+    const result = await callBackend('searchStation', { query: raw });
+    if(result.found){
+      stationSearchInput.value = '';
+      goToStation({
+        id: result.id, name: result.name, type: result.type,
+        lat: result.lat, lng: result.lng,
+        region: result.region, feeder: result.feeder
+      });
+    } else {
+      renderNotFoundCard(stationSearchHint, raw, retryStationSearch);
+    }
+  }catch(err){
+    stationSearchHint.textContent = 'تعذّر الاتصال بالخادم، حاول مرة أخرى';
+    stationSearchHint.className = 'station-search-hint err';
+  }finally{
+    isStationPageSearching = false;
+  }
+}
+stationSearchInput.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter') performStationPageSearch();
 });
 
 let leafletMap = null, currentTileLayer = null, marker = null;
@@ -1857,6 +2020,12 @@ function clearNearbyMarkers(){
   nearbyMarkers.forEach(m=>leafletMap.removeLayer(m));
   nearbyMarkers = [];
 }
+/* تحديد مستوى تكبير ذكي حسب عدد المحطات الظاهرة بدل تكبير ثابت / Smart zoom level based on visible station count instead of a fixed zoom */
+function smartZoomForCount(count){
+  if(count >= 50) return 16;
+  if(count < 10) return 18;
+  return 17;
+}
 
 nearbyToggleBtn.addEventListener('click', (e)=>{
   e.stopPropagation();
@@ -1924,8 +2093,8 @@ function renderNearbyMarkers(){
   });
 
   const zoomHint = zoom <= 13 ? ' — قرّب الخريطة لعرض المحطات المجاورة' : (zoom <= 15 ? ' — أقرب 10 محطات' : ' — كل المحطات بالشاشة الحالية');
-  const label = nearbyModeActive==='feeder' ? `محطات المغذي "${currentStation.feeder}"` : (nearbyModeActive==='coords' ? 'محطات قريبة (إحداثيات)' : 'محطات قريبة (٢ كم)');
-  mapToolHint.textContent = `${label} — ${nearbyFullData.length} محطة${zoomHint}`;
+  const label = nearbyModeActive==='feeder' ? `⚡ المغذي "${currentStation.feeder}" — عدد ${nearbyFullData.length} محطة مرتبطة` : (nearbyModeActive==='coords' ? `📐 محطات قريبة (إحداثيات) — ${nearbyFullData.length} محطة` : `📍 محطات قريبة (٢ كم) — ${nearbyFullData.length} محطة`);
+  mapToolHint.textContent = `${label}${zoomHint}`;
 }
 
 document.querySelectorAll('.nearby-opt').forEach(btn=>{
@@ -1954,7 +2123,7 @@ document.querySelectorAll('.nearby-opt').forEach(btn=>{
         .map(s => ({...s, _dist: haversineKm(currentStation.lat, currentStation.lng, s.lat, s.lng)}));
 
       const bounds = [[currentStation.lat, currentStation.lng], ...nearbyFullData.map(s=>[s.lat,s.lng])];
-      if(bounds.length > 1) leafletMap.fitBounds(bounds, {padding:[50,50], maxZoom:17});
+      if(bounds.length > 1) leafletMap.setView([currentStation.lat, currentStation.lng], smartZoomForCount(nearbyFullData.length));
 
       renderNearbyMarkers();
       if(!leafletMap._nearbyHandlerBound){
@@ -2047,7 +2216,8 @@ document.getElementById('outageSubmitBtn').addEventListener('click', async ()=>{
     bounds.push([s.lat, s.lng]);
   });
   outageLine = L.polyline(bounds, {color:'#C8A24E', weight:2, dashArray:'5,5'}).addTo(leafletMap);
-  leafletMap.fitBounds(bounds, {padding:[60,60], maxZoom:16});
+  const outageCenter = L.latLngBounds(bounds).getCenter();
+  leafletMap.setView(outageCenter, smartZoomForCount(found.length));
 
   const destination = found[found.length-1];
   const middleStops = found.slice(0, -1);
@@ -2058,10 +2228,11 @@ document.getElementById('outageSubmitBtn').addEventListener('click', async ()=>{
   mapToolHint.innerHTML = `محطات العطل (${found.length}) بالترتيب A→${outageLetterFor(found.length-1)}${notFoundNote} <a href="${gmapsUrl}" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;background:rgba(31,174,140,0.16);color:var(--teal-light);border:1px solid rgba(77,214,181,0.5);padding:6px 14px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">الانتقال بالترتيب على قوقل ماب</a>`;
 });
 
-function stationPinIcon(){
+function stationPinIcon(id){
   return L.divIcon({
     className:'',
     html:`<div class="selected-station-marker">
+      <div class="ssm-label">🔍 ${escapeHtml(String(id))}</div>
       <div class="ssm-halo"></div>
       <div class="ssm-pulse"></div>
       <div class="ssm-dot"></div>
@@ -2129,9 +2300,21 @@ const addStationToggle = document.getElementById('addStationToggle');
 const addStationPanel = document.getElementById('addStationPanel');
 let newStationType = 'توزيع';
 
-addStationToggle.addEventListener('click', ()=>{
+/* فتح لوحة إضافة محطة، مع إمكانية تعبئة رقم المحطة مسبقًا (تُستخدم من الزر الرئيسي ومن بطاقة "غير موجودة") */
+/* Opens the add-station panel, optionally pre-filling the station id (used by the main button and the "not found" card) */
+function openAddStationPanel(prefillId){
   document.getElementById('recentPanel').classList.remove('show'); // إغلاق متبادل
-  addStationPanel.classList.toggle('show');
+  addStationPanel.classList.add('show');
+  if(prefillId !== undefined && prefillId !== null){
+    document.getElementById('newStationId').value = prefillId;
+  }
+}
+addStationToggle.addEventListener('click', ()=>{
+  if(addStationPanel.classList.contains('show')){
+    addStationPanel.classList.remove('show');
+  } else {
+    openAddStationPanel();
+  }
 });
 
 document.querySelectorAll('#addStationPanel .type-btn').forEach(btn=>{
@@ -2272,6 +2455,13 @@ function goToStation(s){
   if(!leafletMap) initMap();
   searchLens.classList.remove('open');
   document.getElementById('heroContent').classList.add('hidden');
+  cardsSection.classList.add('hidden');
+  if(mapContainer.classList.contains('active')){
+    /* الخريطة مفتوحة أصلًا (بحث من داخل صفحة المحطة) — قفز مباشر بدون إعادة تشغيل حركة الكرة الأرضية */
+    /* Map already open (searching from within the station page) — jump directly, skip the globe morph replay */
+    renderStationOnMap(s);
+    return;
+  }
   rotSpeed = 0;
   rotateGlobeToward(s.lat, s.lng, 550, ()=> startMorphExpand(s));
 }
@@ -2292,35 +2482,41 @@ function startMorphExpand(s){
       mapModeChip.classList.add('show');
       mapTools.classList.add('show');
       zoomControls.classList.add('show');
-      setTimeout(()=>{
-        leafletMap.invalidateSize();
-        leafletMap.flyTo([s.lat, s.lng], 18, {duration:1.4});
-        if(marker) leafletMap.removeLayer(marker);
-        marker = L.marker([s.lat,s.lng], {icon: stationPinIcon()}).addTo(leafletMap);
-
-        const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=driving`;
-        stationTable.innerHTML = `
-          <div class="sb-inner">
-            <div class="sb-row">
-              <div class="sb-info">
-                <div class="st-name">${s.name}</div>
-                <div class="sb-meta">
-                  <span>رقم المحطة <b>${s.id}</b></span>
-                  ${s.region ? `<span>المنطقة <b style="font-family:inherit;direction:rtl">${s.region}</b></span>` : ''}
-                  ${s.feeder ? `<span>المغذي <b style="font-family:inherit;direction:rtl">${s.feeder}</b></span>` : ''}
-                </div>
-              </div>
-              <div class="st-actions">
-                <a class="st-btn primary" href="${mapsUrl}" target="_blank" rel="noopener">انتقال لقوقل ماب</a>
-                <button class="st-btn" id="openEditBtn">تعديل</button>
-              </div>
-            </div>
-          </div>`;
-        stationTable.classList.add('show');
-        document.getElementById('openEditBtn').addEventListener('click', openEditForm);
-      }, 200);
+      cardsSection.classList.add('hidden');
+      setTimeout(()=> renderStationOnMap(s), 200);
     }
   }, 16);
+}
+
+/* عرض بيانات المحطة على الخريطة (الدبوس + بطاقة المعلومات) — دالة مستقلة تُستخدم عند أول بحث وعند التنقل السريع بين المحطات */
+/* Renders a station's pin and info card on the map — reusable for both the first search and fast in-page switching */
+function renderStationOnMap(s){
+  leafletMap.invalidateSize();
+  leafletMap.flyTo([s.lat, s.lng], 18, {duration:1.4});
+  if(marker) leafletMap.removeLayer(marker);
+  marker = L.marker([s.lat,s.lng], {icon: stationPinIcon(s.id)}).addTo(leafletMap);
+
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=driving`;
+  stationTable.innerHTML = `
+    <div class="sb-inner">
+      <div class="sb-row">
+        <div class="sb-info">
+          <div class="st-name">${s.name}</div>
+          <div class="sb-meta">
+            <span>رقم المحطة <b>${s.id}</b></span>
+            ${s.region ? `<span>المنطقة <b style="font-family:inherit;direction:rtl">${s.region}</b></span>` : ''}
+            ${s.feeder ? `<span>المغذي <b style="font-family:inherit;direction:rtl">${s.feeder}</b></span>` : ''}
+          </div>
+        </div>
+        <div class="st-actions">
+          <a class="st-btn primary" href="${mapsUrl}" target="_blank" rel="noopener">انتقال لقوقل ماب</a>
+          <button class="st-btn" id="openEditBtn">تعديل</button>
+        </div>
+      </div>
+    </div>`;
+  stationTable.classList.add('show');
+  stationSearchBar.classList.add('show');
+  document.getElementById('openEditBtn').addEventListener('click', openEditForm);
 }
 
 /* ============================================================
@@ -2513,11 +2709,15 @@ backBtn.addEventListener('click', ()=>{
   mapTools.classList.remove('show');
   zoomControls.classList.remove('show');
   mapToolHint.classList.remove('show');
+  cardsSection.classList.remove('hidden');
   measureActive = false; routeActive = false;
   resetMeasure(); resetRoute(); clearNearbyMarkers(); nearbyModeActive = null; nearbyPanel.classList.remove('show');
   clearOutageMarkers(); outagePanel.classList.remove('show'); document.getElementById('outageInput').value=''; document.getElementById('outageError').textContent='';
   setActiveTool(null);
   stationTable.classList.remove('show');
+  stationSearchBar.classList.remove('show');
+  stationSearchInput.value = '';
+  stationSearchHint.textContent = '';
   searchInput.value='';
   searchHint.textContent='';
   globeGroup.scale.set(1,1,1);
