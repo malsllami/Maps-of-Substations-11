@@ -87,6 +87,12 @@ header{
 }
 .header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .mobile-user-menu{display:none;position:relative;}
+.logout-icon-btn{
+  width:34px;height:34px;border-radius:50%;border:1px solid var(--border-strong);
+  background:var(--bg-card);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text-secondary);flex-shrink:0;transition:border-color .2s;
+}
+.logout-icon-btn:hover{border-color:var(--teal);}
 #headerActions.logged-in .login-btn,
 #headerActions.logged-in .theme-toggle,
 #headerActions.logged-in #logoutBtnDesktop{display:none;}
@@ -667,8 +673,8 @@ body.guest-mode .station-table{width:min(1300px,96vw);}
 }
 .storage-clear-btn:hover{color:#E0654F;}
 .storage-bar-wrap{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--text-secondary);flex:1;min-width:160px;}
-.storage-bar-track{flex:1;height:6px;border-radius:4px;background:var(--bg-elev);overflow:hidden;}
-.storage-bar-fill{height:100%;width:0%;border-radius:4px;background:linear-gradient(90deg, var(--blue-mid), var(--teal-light));transition:width .4s ease;}
+.storage-bar-track{flex:1;height:8px;border-radius:4px;background:var(--bg-elev);border:1px solid var(--border-strong);overflow:hidden;}
+.storage-bar-fill{height:100%;min-width:2px;border-radius:4px;background:linear-gradient(90deg, var(--blue-mid), var(--teal-light));transition:width .4s ease;}
 
 body.guest-mode #cardsSection{display:none;}
 body.guest-mode .search-wrap{display:none;}
@@ -1185,12 +1191,10 @@ const SESSION_MAX_AGE_MS = 4 * 24 * 60 * 60 * 1000;
 
     const logoutBtn = document.createElement('button');
     logoutBtn.id = 'logoutBtnDesktop';
+    logoutBtn.className = 'logout-icon-btn';
     logoutBtn.title = 'تسجيل الخروج';
     logoutBtn.setAttribute('aria-label', 'تسجيل الخروج');
-    logoutBtn.style.cssText = 'width:34px;height:34px;border-radius:50%;border:1px solid var(--border-strong);background:var(--bg-card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-secondary);flex-shrink:0;transition:border-color .2s';
     logoutBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
-    logoutBtn.addEventListener('mouseenter', ()=>logoutBtn.style.borderColor='var(--teal)');
-    logoutBtn.addEventListener('mouseleave', ()=>logoutBtn.style.borderColor='var(--border-strong)');
     const doLogout = ()=>{
       if(confirm('تسجيل الخروج؟')){
         localStorage.removeItem('sec-session');
