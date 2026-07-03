@@ -176,7 +176,6 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbyxZUSLZNa6UlZLINsfAEe8
 const session = JSON.parse(localStorage.getItem('sec-session') || '{}');
 let chartInstance = null;
 let fetching = false;
-
 document.getElementById('greetLine').textContent = 'مرحبًا ' + (session.name || 'المدير') + ' — ' + new Date().toLocaleDateString('ar-SA', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 
 /* ===== ثيم ===== */
