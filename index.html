@@ -173,6 +173,9 @@ header{
 /* ===== Unified globe-size variable — used both to enlarge the globe and to sync the lens/login-button position below it ===== */
 :root{
   --globe-size: clamp(360px, 92vw, 760px);
+  /* ارتفاع الشريط الثابت أعلى الخريطة (صف نوع الخريطة+رجوع، ثم صف أدوات القياس) — قيمة واحدة تُستخدم بكل الحسابات المرتبطة بارتفاع الخريطة */
+  /* Fixed toolbar-bar height above the map (mode+back row, then tools row) — single source of truth for every map-height-related calculation */
+  --map-toolbar-h: 98px;
 }
 @media (min-width:1200px){
   :root{ --globe-size: clamp(460px, min(84vw, 74vh), 820px); }
@@ -195,9 +198,10 @@ header{
 .globe-stage.map-active{
   width:min(1400px, 96vw);
   aspect-ratio:auto;
-  height:min(42vh, 460px);
-  height:min(42svh, 460px);
-  min-height:280px;
+  height:calc(min(42vh, 460px) + var(--map-toolbar-h));
+  height:calc(min(42svh, 460px) + var(--map-toolbar-h));
+  min-height:calc(280px + var(--map-toolbar-h));
+  display:flex;flex-direction:column;
 }
 @media (max-width:767px){
   .globe-stage{
@@ -216,9 +220,13 @@ header{
   transition:opacity .9s ease;
 }
 #map-container.active{opacity:1;pointer-events:auto;}
+.globe-stage.map-active #map-container{
+  position:relative;inset:auto;width:100%;height:auto;
+  flex:1 1 auto;min-height:0;
+}
 .hero.map-active{
-  min-height:calc(min(42vh, 460px) + 100px);
-  min-height:calc(min(42svh, 460px) + 100px);
+  min-height:calc(min(42vh, 460px) + var(--map-toolbar-h) + 100px);
+  min-height:calc(min(42svh, 460px) + var(--map-toolbar-h) + 100px);
 }
 .hero-content{
   position:relative;z-index:5;width:100%;
@@ -440,24 +448,38 @@ body.guest-mode h1{
   from{opacity:0;transform:translateY(6px);}
   to{opacity:1;transform:translateY(0);}
 }
+/* ===== الشريط الثابت أعلى الخريطة — عنصر بنيوي حقيقي يدفع الخريطة لأسفل، وليس أزرارًا عائمة فوقها ===== */
+/* ===== Fixed toolbar bar above the map — a real structural element that pushes the map down, not floating buttons over it ===== */
+.map-toolbar-bar{
+  display:none;flex-direction:column;flex-shrink:0;width:100%;
+  position:relative;z-index:3;
+  background:var(--bg-card);border-bottom:1px solid var(--border);
+}
+.globe-stage.map-active .map-toolbar-bar{display:flex;}
+.map-toolbar-row1{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:10px 14px;
+}
+.map-toolbar-row2{
+  display:flex;align-items:center;gap:6px;
+  padding:0 14px 10px;position:relative;
+}
 .back-btn{
-  pointer-events:auto;
-  position:absolute;top:8px;right:14px;display:none;
+  pointer-events:auto;display:none;
   align-items:center;gap:6px;
   font-size:12.5px;color:var(--text-secondary);
-  background:var(--bg-card);border:1px solid var(--border);
-  padding:7px 14px;border-radius:20px;cursor:pointer;z-index:6;
+  background:var(--bg-elev);border:1px solid var(--border);
+  padding:7px 14px;border-radius:20px;cursor:pointer;
 }
 .back-btn.show{display:flex;}
 .map-tools{
-  pointer-events:auto;
-  position:absolute;top:46px;left:14px;display:none;
-  align-items:center;gap:6px;z-index:6;
+  pointer-events:auto;display:none;
+  align-items:center;gap:6px;
 }
 .map-tools.show{display:flex;}
 .map-tool-btn{
   width:34px;height:34px;border-radius:50%;
-  background:var(--bg-card);border:1px solid var(--border);
+  background:var(--bg-elev);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;color:var(--text-secondary);transition:.2s;
 }
@@ -467,12 +489,11 @@ body.guest-mode h1{
 /* ===== عنصر التحكم الموحّد بنوع الخريطة — رسومات/أقمار صناعية + ليلي/نهاري + تلقائي ===== */
 /* ===== Unified map-type control — graphic/satellite + night/day + auto ===== */
 .map-mode-chip{
-  pointer-events:auto;
-  position:absolute;top:8px;left:14px;display:none;
-  align-items:center;gap:7px;z-index:7;
-  background:var(--bg-card);border:1px solid var(--border-strong);border-radius:20px;
+  pointer-events:auto;display:none;
+  align-items:center;gap:7px;
+  background:var(--bg-elev);border:1px solid var(--border-strong);border-radius:20px;
   padding:8px 12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-primary);
-  box-shadow:0 4px 14px rgba(0,0,0,.22);transition:border-color .2s;
+  transition:border-color .2s;
 }
 .map-mode-chip.show{display:flex;}
 .map-mode-chip:hover{border-color:var(--border-strong);}
@@ -484,7 +505,7 @@ body.guest-mode h1{
 .map-mode-chip .mm-chev{color:var(--text-secondary);transition:transform .2s;flex-shrink:0;}
 .map-mode-chip.open .mm-chev{transform:rotate(180deg);}
 .map-mode-panel{
-  position:absolute;top:50px;left:14px;z-index:7;
+  position:absolute;top:calc(var(--map-toolbar-h) + 4px);left:14px;z-index:7;
   display:none;flex-direction:column;gap:2px;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;
   padding:6px;box-shadow:0 10px 24px rgba(0,0,0,.3);min-width:210px;
@@ -500,16 +521,6 @@ body.guest-mode h1{
 .map-mode-opt .mm-opt-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-secondary);}
 .map-mode-opt .mm-check{margin-right:auto;color:var(--teal);display:none;flex-shrink:0;}
 .map-mode-opt.active .mm-check{display:flex;}
-/* تدرّج فاصل خلف شريط الأدوات — يفصلها بصريًا عن ازدحام دبابيس الخريطة أسفلها / Toolbar scrim — visually separates controls from busy map pins below */
-.map-toolbar-scrim{
-  position:absolute;top:0;left:0;right:0;height:96px;z-index:5;
-  pointer-events:none;display:none;
-  background:linear-gradient(to bottom, rgba(6,11,20,0.6) 0%, rgba(6,11,20,0) 100%);
-}
-[data-theme="light"] .map-toolbar-scrim{
-  background:linear-gradient(to bottom, rgba(234,241,246,0.72) 0%, rgba(234,241,246,0) 100%);
-}
-.globe-stage.map-active .map-toolbar-scrim{display:block;}
 .zoom-controls{
   position:absolute;bottom:14px;left:14px;z-index:6;
   display:none;flex-direction:column;
@@ -526,7 +537,7 @@ body.guest-mode h1{
 .zoom-btn:hover{background:var(--bg-elev);}
 .zoom-btn:active{background:var(--teal);color:#fff;}
 .nearby-panel{
-  position:absolute;top:86px;left:14px;z-index:6;
+  position:absolute;top:calc(var(--map-toolbar-h) + 4px);left:14px;z-index:6;
   display:none;flex-direction:column;gap:6px;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;
   padding:8px;box-shadow:0 10px 24px rgba(0,0,0,.3);min-width:190px;
@@ -594,7 +605,7 @@ body.guest-mode h1{
 }
 
 .outage-panel{
-  position:absolute;top:86px;left:14px;z-index:6;
+  position:absolute;top:calc(var(--map-toolbar-h) + 4px);left:14px;z-index:6;
   display:none;flex-direction:column;gap:8px;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;
   padding:12px;box-shadow:0 10px 24px rgba(0,0,0,.3);width:min(260px, 80vw);
@@ -661,7 +672,7 @@ body.guest-mode h1{
   border-top:5px solid;
 }
 .map-tool-hint{
-  position:absolute;top:86px;left:14px;right:14px;
+  position:absolute;top:calc(var(--map-toolbar-h) + 4px);left:14px;right:14px;
   background:var(--bg-card);border:1px solid var(--border-strong);
   padding:6px 12px;border-radius:16px;font-size:11.5px;color:var(--text-secondary);
   display:none;z-index:6;pointer-events:none;
@@ -674,11 +685,11 @@ body.guest-mode h1{
   align-items:center;gap:10px;
   width:min(1100px, 94vw);
   position:relative;z-index:6;
-  margin-top:calc(min(42vh, 460px) + 16px);
-  margin-top:calc(min(42svh, 460px) + 16px);
+  margin-top:calc(min(42vh, 460px) + var(--map-toolbar-h));
+  margin-top:calc(min(42svh, 460px) + var(--map-toolbar-h));
   background:var(--bg-elev);border:1px solid var(--border);
-  border-radius:24px;padding:9px 20px 9px 9px;
-  box-shadow:0 4px 14px rgba(0,0,0,.14);
+  border-radius:0 0 20px 20px;padding:12px 20px 12px 9px;
+  box-shadow:0 10px 22px rgba(0,0,0,.24);
   transition:border-color .2s, box-shadow .2s;
 }
 .station-search-bar.show{display:flex;}
@@ -965,20 +976,38 @@ footer{
 <section class="hero" id="heroSection">
   <div class="globe-stage" id="globeStage">
     <canvas id="globe-canvas"></canvas>
-    <div id="map-container"></div>
-    <div class="map-toolbar-scrim"></div>
 
-    <div class="back-btn" id="backBtn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-      رجوع للبحث
+    <div class="map-toolbar-bar">
+      <div class="map-toolbar-row1">
+        <div class="map-mode-chip" id="mapModeChip" title="نوع الخريطة">
+          <span class="mm-icon" id="mapModeChipIcon"></span>
+          <span id="mapModeChipLabel">تلقائي</span>
+          <span class="mm-auto-badge" id="mapModeAutoBadge">تلقائي</span>
+          <svg class="mm-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="back-btn" id="backBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          رجوع للبحث
+        </div>
+      </div>
+      <div class="map-toolbar-row2">
+        <div class="map-tools" id="mapTools">
+          <div class="map-tool-btn" id="measureToggleBtn" title="قياس المسافة">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M6 8v8M12 8v8M18 8v8"/></svg>
+          </div>
+          <div class="map-tool-btn" id="routeToggleBtn" title="رسم مسار متعدد النقاط">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8 7l8 10"/></svg>
+          </div>
+          <div class="map-tool-btn" id="nearbyToggleBtn" title="محطات قريبة / محطات المغذي">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          </div>
+          <div class="map-tool-btn" id="outageToggleBtn" title="محطات العطل (أكثر من محطة)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h8l-1 8 10-12h-8l1-8z"/></svg>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="map-mode-chip" id="mapModeChip" title="نوع الخريطة">
-      <span class="mm-icon" id="mapModeChipIcon"></span>
-      <span id="mapModeChipLabel">تلقائي</span>
-      <span class="mm-auto-badge" id="mapModeAutoBadge">تلقائي</span>
-      <svg class="mm-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-    </div>
     <div class="map-mode-panel" id="mapModePanel">
       <button class="map-mode-opt" data-mode="auto">
         <span class="mm-dot" style="background:#1FAE8C"></span>
@@ -1005,20 +1034,6 @@ footer{
         <svg class="mm-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </button>
     </div>
-    <div class="map-tools" id="mapTools">
-      <div class="map-tool-btn" id="measureToggleBtn" title="قياس المسافة">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M6 8v8M12 8v8M18 8v8"/></svg>
-      </div>
-      <div class="map-tool-btn" id="routeToggleBtn" title="رسم مسار متعدد النقاط">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8 7l8 10"/></svg>
-      </div>
-      <div class="map-tool-btn" id="nearbyToggleBtn" title="محطات قريبة / محطات المغذي">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
-      </div>
-      <div class="map-tool-btn" id="outageToggleBtn" title="محطات العطل (أكثر من محطة)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h8l-1 8 10-12h-8l1-8z"/></svg>
-      </div>
-    </div>
     <div class="nearby-panel" id="nearbyPanel">
       <button class="nearby-opt" data-mode="nearby">📍 محطات قريبة (٢ كم)</button>
       <button class="nearby-opt" data-mode="coords">📐 إحداثيات فقط</button>
@@ -1031,6 +1046,9 @@ footer{
       <button class="outage-submit-btn" id="outageSubmitBtn">عرض على الخريطة</button>
     </div>
     <div class="map-tool-hint" id="mapToolHint"></div>
+
+    <div id="map-container"></div>
+
     <div class="zoom-controls" id="zoomControls">
       <div class="zoom-btn" id="zoomInBtn" title="تكبير">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -2781,4 +2799,3 @@ backBtn.addEventListener('click', ()=>{
 </script>
 </body>
 </html>
-
