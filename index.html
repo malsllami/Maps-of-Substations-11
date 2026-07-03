@@ -435,7 +435,7 @@ h1{
 }
 .back-btn{
   pointer-events:auto;
-  position:absolute;top:14px;right:14px;display:none;
+  position:absolute;top:8px;right:14px;display:none;
   align-items:center;gap:6px;
   font-size:12.5px;color:var(--text-secondary);
   background:var(--bg-card);border:1px solid var(--border);
@@ -444,7 +444,7 @@ h1{
 .back-btn.show{display:flex;}
 .map-tools{
   pointer-events:auto;
-  position:absolute;top:58px;left:14px;display:none;
+  position:absolute;top:46px;left:14px;display:none;
   align-items:center;gap:6px;z-index:6;
 }
 .map-tools.show{display:flex;}
@@ -461,7 +461,7 @@ h1{
 /* ===== Unified map-type control — graphic/satellite + night/day + auto ===== */
 .map-mode-chip{
   pointer-events:auto;
-  position:absolute;top:14px;left:14px;display:none;
+  position:absolute;top:8px;left:14px;display:none;
   align-items:center;gap:7px;z-index:7;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:20px;
   padding:8px 12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-primary);
@@ -477,7 +477,7 @@ h1{
 .map-mode-chip .mm-chev{color:var(--text-secondary);transition:transform .2s;flex-shrink:0;}
 .map-mode-chip.open .mm-chev{transform:rotate(180deg);}
 .map-mode-panel{
-  position:absolute;top:56px;left:14px;z-index:7;
+  position:absolute;top:50px;left:14px;z-index:7;
   display:none;flex-direction:column;gap:2px;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;
   padding:6px;box-shadow:0 10px 24px rgba(0,0,0,.3);min-width:210px;
@@ -493,6 +493,16 @@ h1{
 .map-mode-opt .mm-opt-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text-secondary);}
 .map-mode-opt .mm-check{margin-right:auto;color:var(--teal);display:none;flex-shrink:0;}
 .map-mode-opt.active .mm-check{display:flex;}
+/* تدرّج فاصل خلف شريط الأدوات — يفصلها بصريًا عن ازدحام دبابيس الخريطة أسفلها / Toolbar scrim — visually separates controls from busy map pins below */
+.map-toolbar-scrim{
+  position:absolute;top:0;left:0;right:0;height:96px;z-index:5;
+  pointer-events:none;display:none;
+  background:linear-gradient(to bottom, rgba(6,11,20,0.6) 0%, rgba(6,11,20,0) 100%);
+}
+[data-theme="light"] .map-toolbar-scrim{
+  background:linear-gradient(to bottom, rgba(234,241,246,0.72) 0%, rgba(234,241,246,0) 100%);
+}
+.globe-stage.map-active .map-toolbar-scrim{display:block;}
 .zoom-controls{
   position:absolute;bottom:14px;left:14px;z-index:6;
   display:none;flex-direction:column;
@@ -509,7 +519,7 @@ h1{
 .zoom-btn:hover{background:var(--bg-elev);}
 .zoom-btn:active{background:var(--teal);color:#fff;}
 .nearby-panel{
-  position:absolute;top:98px;left:14px;z-index:6;
+  position:absolute;top:86px;left:14px;z-index:6;
   display:none;flex-direction:column;gap:6px;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;
   padding:8px;box-shadow:0 10px 24px rgba(0,0,0,.3);min-width:190px;
@@ -577,7 +587,7 @@ h1{
 }
 
 .outage-panel{
-  position:absolute;top:98px;left:14px;z-index:6;
+  position:absolute;top:86px;left:14px;z-index:6;
   display:none;flex-direction:column;gap:8px;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;
   padding:12px;box-shadow:0 10px 24px rgba(0,0,0,.3);width:min(260px, 80vw);
@@ -644,7 +654,7 @@ h1{
   border-top:5px solid;
 }
 .map-tool-hint{
-  position:absolute;top:98px;left:14px;right:14px;
+  position:absolute;top:86px;left:14px;right:14px;
   background:var(--bg-card);border:1px solid var(--border-strong);
   padding:6px 12px;border-radius:16px;font-size:11.5px;color:var(--text-secondary);
   display:none;z-index:6;pointer-events:none;
@@ -659,15 +669,20 @@ h1{
   position:relative;z-index:6;
   margin-top:calc(min(42vh, 460px) + 16px);
   margin-top:calc(min(42svh, 460px) + 16px);
-  background:var(--bg-card);border:1px solid var(--border-strong);
-  border-radius:24px;padding:12px 20px;
-  box-shadow:0 10px 24px rgba(0,0,0,.22);
-  transition:border-color .2s;
+  background:var(--bg-elev);border:1px solid var(--border);
+  border-radius:24px;padding:9px 20px 9px 9px;
+  box-shadow:0 4px 14px rgba(0,0,0,.14);
+  transition:border-color .2s, box-shadow .2s;
 }
 .station-search-bar.show{display:flex;}
-.station-search-bar:focus-within{border-color:var(--teal);}
-.station-search-bar svg{flex-shrink:0;color:var(--text-secondary);}
-.station-search-bar:focus-within svg{color:var(--teal);}
+.station-search-bar:focus-within{border-color:var(--teal);box-shadow:0 6px 18px rgba(31,174,140,.16);}
+.station-search-bar .ssb-icon{
+  flex-shrink:0;width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(31,174,140,0.14);color:var(--teal);
+  box-shadow:0 2px 6px rgba(31,174,140,.2);
+}
+.station-search-bar:focus-within .ssb-icon{background:var(--teal);color:#fff;}
 .station-search-bar input{
   flex:1;min-width:0;background:transparent;border:none;outline:none;
   color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-size:13.5px;
@@ -920,6 +935,7 @@ footer{
   <div class="globe-stage" id="globeStage">
     <canvas id="globe-canvas"></canvas>
     <div id="map-container"></div>
+    <div class="map-toolbar-scrim"></div>
 
     <div class="back-btn" id="backBtn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -1013,7 +1029,9 @@ footer{
   </div>
 
   <div class="station-search-bar" id="stationSearchBar">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <span class="ssb-icon">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    </span>
     <input id="stationSearchInput" type="text" placeholder="ابحث عن محطة أخرى..." inputmode="text">
   </div>
   <div class="station-search-hint" id="stationSearchHint"></div>
