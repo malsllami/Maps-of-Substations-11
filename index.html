@@ -200,8 +200,8 @@ body.guest-mode{
   top:calc(var(--header-h, 90px) + 18px);
   width:min(1400px, 96vw);
   aspect-ratio:auto;
-  height:calc(min(48vh, 520px) + var(--map-toolbar-h));
-  height:calc(min(48svh, 520px) + var(--map-toolbar-h));
+  height:calc(min(53vh, 570px) + var(--map-toolbar-h));
+  height:calc(min(53svh, 570px) + var(--map-toolbar-h));
   min-height:calc(280px + var(--map-toolbar-h));
   display:flex;flex-direction:column;
 }
@@ -227,8 +227,8 @@ body.guest-mode{
   flex:1 1 auto;min-height:0;border-radius:0 0 16px 16px;overflow:hidden;
 }
 .hero.map-active{
-  min-height:calc(var(--header-h, 90px) + 18px + min(48vh, 520px) + var(--map-toolbar-h) + 40px);
-  min-height:calc(var(--header-h, 90px) + 18px + min(48svh, 520px) + var(--map-toolbar-h) + 40px);
+  min-height:calc(var(--header-h, 90px) + 18px + min(53vh, 570px) + var(--map-toolbar-h) + 40px);
+  min-height:calc(var(--header-h, 90px) + 18px + min(53svh, 570px) + var(--map-toolbar-h) + 40px);
 }
 .hero-content{
   position:relative;z-index:5;width:100%;
@@ -689,8 +689,8 @@ body.guest-mode h1{
   align-items:center;gap:10px;
   width:min(1100px, 94vw);
   position:relative;z-index:6;
-  margin-top:calc(var(--header-h, 90px) + 18px + min(48vh, 520px) + var(--map-toolbar-h) + 6px);
-  margin-top:calc(var(--header-h, 90px) + 18px + min(48svh, 520px) + var(--map-toolbar-h) + 6px);
+  margin-top:calc(var(--header-h, 90px) + 18px + min(53vh, 570px) + var(--map-toolbar-h) + 2px);
+  margin-top:calc(var(--header-h, 90px) + 18px + min(53svh, 570px) + var(--map-toolbar-h) + 2px);
   background:var(--bg-elev);border:1.5px solid rgba(31,174,140,0.35);
   border-radius:20px;padding:12px 20px 12px 9px;
   box-shadow:0 10px 22px rgba(0,0,0,.24);
@@ -729,7 +729,7 @@ body.guest-mode .station-search-hint{width:min(1300px,96vw);}
 .station-table{
   position:relative;z-index:6;
   width:min(1100px, 94vw);
-  margin-top:8px;
+  margin-top:4px;
   background:var(--bg-card);border:1px solid var(--border-strong);
   border-radius:16px;
   padding:0;
@@ -1966,14 +1966,26 @@ function setMapMode(mode){
   applyMapMode();
   closeMapModePanel();
 }
+/* تغلق كل قوائم أدوات الخريطة المنسدلة معًا — تُستدعى قبل فتح أي قائمة جديدة حتى لا تتراكم فوق بعض */
+/* Closes every map-toolbar dropdown together — called before opening any new one so they never stack on top of each other */
+function closeAllMapDropdowns(){
+  mapModePanel.classList.remove('show');
+  mapModeChip.classList.remove('open');
+  nearbyPanel.classList.remove('show');
+  outagePanel.classList.remove('show');
+}
 function closeMapModePanel(){
   mapModePanel.classList.remove('show');
   mapModeChip.classList.remove('open');
 }
 mapModeChip.addEventListener('click', (e)=>{
   e.stopPropagation();
-  mapModePanel.classList.toggle('show');
-  mapModeChip.classList.toggle('open');
+  const willOpen = !mapModePanel.classList.contains('show');
+  closeAllMapDropdowns();
+  if(willOpen){
+    mapModePanel.classList.add('show');
+    mapModeChip.classList.add('open');
+  }
 });
 document.querySelectorAll('.map-mode-opt').forEach(btn=>{
   btn.addEventListener('click', ()=> setMapMode(btn.dataset.mode));
@@ -2163,7 +2175,9 @@ function smartZoomForCount(count){
 
 nearbyToggleBtn.addEventListener('click', (e)=>{
   e.stopPropagation();
-  nearbyPanel.classList.toggle('show');
+  const willOpen = !nearbyPanel.classList.contains('show');
+  closeAllMapDropdowns();
+  if(willOpen) nearbyPanel.classList.add('show');
 });
 document.addEventListener('click', (e)=>{
   if(!nearbyToggleBtn.contains(e.target) && !nearbyPanel.contains(e.target)) nearbyPanel.classList.remove('show');
@@ -2299,8 +2313,9 @@ function outageLetterFor(i){
 
 outageToggleBtn.addEventListener('click', (e)=>{
   e.stopPropagation();
-  outagePanel.classList.toggle('show');
-  nearbyPanel.classList.remove('show');
+  const willOpen = !outagePanel.classList.contains('show');
+  closeAllMapDropdowns();
+  if(willOpen) outagePanel.classList.add('show');
 });
 document.addEventListener('click', (e)=>{
   if(!outageToggleBtn.contains(e.target) && !outagePanel.contains(e.target)) outagePanel.classList.remove('show');
@@ -2863,4 +2878,3 @@ backBtn.addEventListener('click', ()=>{
 </script>
 </body>
 </html>
-
