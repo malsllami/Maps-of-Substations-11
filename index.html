@@ -54,11 +54,11 @@ body{
 header{
   position:fixed;top:0;right:0;left:0;z-index:50;
   display:flex;flex-direction:column;
+  background:var(--bg);border-bottom:1px solid var(--border);
 }
 .header-row-main{
   display:flex;align-items:center;justify-content:space-between;
-  padding:16px 32px;
-  background:linear-gradient(to bottom, var(--bg) 65%, transparent);
+  padding:14px 32px 8px;
 }
 .logo{display:flex;align-items:center;gap:10px;min-width:0;}
 .logo-mark{transition:transform .2s;}
@@ -69,15 +69,19 @@ header{
 }
 .logo-text{font-size:15px;font-weight:700;letter-spacing:.3px;white-space:nowrap;transition:color .2s;}
 .logo-sub{font-size:11px;color:var(--text-secondary);margin-top:1px;white-space:nowrap;}
-/* صف حالة الاتصال — جزء بنيوي فعلي من الهيدر، لا عنصر شقيق منفصل / Structural part of header, not a separate sibling */
+/* صف حالة الاتصال — نفس خلفية الهيدر تمامًا، لا لون منفصل ولا فراغ، سطر ثانٍ حقيقي بنفس العنصر / Same header background exactly, no separate color, no gap — a real second line of the same element */
 .header-row-status{
   display:flex;align-items:center;justify-content:space-between;
-  background:var(--bg-elev);border-bottom:1px solid var(--border);
-  padding:6px 24px;font-size:11px;color:var(--text-secondary);
+  padding:0 32px 12px;font-size:11px;color:var(--text-secondary);
+}
+.conn-status-pill{
+  display:flex;align-items:center;gap:10px;
+  border:1px solid var(--border-strong);border-radius:20px;
+  padding:6px 14px;background:var(--bg-card);
 }
 .status-bar-item{display:flex;align-items:center;gap:6px;}
 .status-refresh-btn{
-  margin-right:auto;display:flex;align-items:center;gap:5px;
+  display:flex;align-items:center;gap:5px;
   background:transparent;border:1px solid var(--border-strong);border-radius:20px;
   padding:4px 10px;font-size:10.5px;color:var(--text-secondary);cursor:pointer;
   font-family:inherit;transition:.2s;
@@ -90,6 +94,7 @@ header{
   background:#8FA3B8; /* رمادي = جاري الفحص / gray = checking */
   transition:background .3s;
 }
+.conn-dot.checking{background:#C8A24E;box-shadow:0 0 6px rgba(200,162,78,.6);}
 .conn-dot.online{background:#2ECC71;box-shadow:0 0 6px rgba(46,204,113,.6);}
 .conn-dot.offline{background:#E0654F;box-shadow:0 0 6px rgba(224,101,79,.6);}
 @media (max-width:600px){
@@ -177,7 +182,7 @@ header{
   --globe-size: clamp(360px, 92vw, 760px);
   /* ارتفاع الشريط الثابت أعلى الخريطة (صف نوع الخريطة+رجوع، ثم صف أدوات القياس) — قيمة واحدة تُستخدم بكل الحسابات المرتبطة بارتفاع الخريطة */
   /* Fixed toolbar-bar height above the map (mode+back row, then tools row) — single source of truth for every map-height-related calculation */
-  --map-toolbar-h: 98px;
+  --map-toolbar-h: 45px;
 }
 /* وضع الزائر يحصل على كرة أكبر (شاشة تسويقية/ترحيبية) — بعد تسجيل الدخول الحجم الحالي ممتاز ولا يُغيَّر */
 /* Guest mode gets a larger globe (welcome/marketing screen) — after login the current size is excellent and stays untouched */
@@ -206,11 +211,11 @@ body.guest-mode{
   transition:width .5s cubic-bezier(.4,0,.2,1), height .5s cubic-bezier(.4,0,.2,1);
 }
 .globe-stage.map-active{
-  top:calc(var(--header-h, 90px) + 18px);
+  top:calc(var(--header-h, 90px) + 8px);
   width:min(1400px, 96vw);
   aspect-ratio:auto;
-  height:calc(min(53vh, 570px) + var(--map-toolbar-h));
-  height:calc(min(53svh, 570px) + var(--map-toolbar-h));
+  height:calc(min(44vh, 480px) + var(--map-toolbar-h));
+  height:calc(min(44svh, 480px) + var(--map-toolbar-h));
   min-height:calc(280px + var(--map-toolbar-h));
   display:flex;flex-direction:column;
 }
@@ -236,8 +241,8 @@ body.guest-mode{
   flex:1 1 auto;min-height:0;border-radius:0 0 16px 16px;overflow:hidden;
 }
 .hero.map-active{
-  min-height:calc(var(--header-h, 90px) + 18px + min(53vh, 570px) + var(--map-toolbar-h) + 40px);
-  min-height:calc(var(--header-h, 90px) + 18px + min(53svh, 570px) + var(--map-toolbar-h) + 40px);
+  min-height:calc(var(--header-h, 90px) + 8px + min(44vh, 480px) + var(--map-toolbar-h) + 40px);
+  min-height:calc(var(--header-h, 90px) + 8px + min(44svh, 480px) + var(--map-toolbar-h) + 40px);
 }
 .hero-content{
   position:relative;z-index:5;width:100%;
@@ -461,54 +466,42 @@ body.guest-mode h1{
 /* ===== الشريط الثابت أعلى الخريطة — عنصر بنيوي حقيقي يدفع الخريطة لأسفل، وليس أزرارًا عائمة فوقها ===== */
 /* ===== Fixed toolbar bar above the map — a real structural element that pushes the map down, not floating buttons over it ===== */
 .map-toolbar-bar{
-  display:none;flex-direction:column;flex-shrink:0;width:100%;
+  display:none;flex-shrink:0;width:100%;
   position:relative;z-index:3;
-  background:var(--bg-card);border:1px solid var(--border-strong);
+  background:rgba(13,24,38,0.82);backdrop-filter:blur(10px);
+  border:1px solid var(--border-strong);
   border-radius:16px 16px 0 0;
   box-shadow:0 4px 14px rgba(0,0,0,.18);
+  overflow:hidden;
 }
+[data-theme="light"] .map-toolbar-bar{background:rgba(244,248,251,0.85);}
 .globe-stage.map-active .map-toolbar-bar{display:flex;}
-.map-toolbar-row1{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
-  padding:10px 14px;
+.toolbar-scroll{
+  display:flex;align-items:center;gap:4px;
+  padding:6px 10px;overflow-x:auto;scrollbar-width:none;white-space:nowrap;height:45px;box-sizing:border-box;
 }
-.map-toolbar-row2{
-  display:flex;align-items:center;gap:6px;
-  padding:0 14px 10px;position:relative;
+.toolbar-scroll::-webkit-scrollbar{display:none;}
+.tb-div{width:1px;height:20px;background:var(--border-strong);flex-shrink:0;margin:0 2px;}
+.toolbar-btn{
+  pointer-events:auto;flex-shrink:0;display:flex;align-items:center;gap:5px;
+  background:transparent;border:none;border-radius:12px;
+  padding:7px 11px;cursor:pointer;font-family:inherit;
+  color:var(--text-secondary);font-size:12px;font-weight:600;transition:.2s;
 }
-.back-btn{
-  pointer-events:auto;display:none;
-  align-items:center;gap:6px;
-  font-size:12.5px;color:var(--text-secondary);
-  background:var(--bg);border:1px solid var(--border-strong);
-  padding:7px 14px;border-radius:20px;cursor:pointer;
-}
-.back-btn.show{display:flex;}
-.map-tools{
-  pointer-events:auto;display:none;
-  align-items:center;gap:6px;
-}
-.map-tools.show{display:flex;}
-.map-tool-btn{
-  width:34px;height:34px;border-radius:50%;
-  background:var(--bg);border:1px solid var(--border-strong);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;color:var(--text-secondary);transition:.2s;
-  box-shadow:0 1px 4px rgba(0,0,0,.18);
-}
-.map-tool-btn:hover{border-color:var(--teal);color:var(--teal);}
-.map-tool-btn.active{background:var(--teal);border-color:var(--teal);color:#fff;}
+.toolbar-btn:hover{background:rgba(255,255,255,0.06);}
+.toolbar-btn.active{background:var(--teal);color:#04241c;}
+.toolbar-btn .tb-icon{font-size:13px;line-height:1;}
 
 /* ===== عنصر التحكم الموحّد بنوع الخريطة — رسومات/أقمار صناعية + ليلي/نهاري + تلقائي ===== */
 /* ===== Unified map-type control — graphic/satellite + night/day + auto ===== */
 .map-mode-chip{
-  pointer-events:auto;display:none;
-  align-items:center;gap:7px;
-  background:var(--bg);border:1px solid var(--border-strong);border-radius:20px;
-  padding:8px 12px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-primary);
-  transition:border-color .2s;box-shadow:0 1px 4px rgba(0,0,0,.18);
+  pointer-events:auto;flex-shrink:0;display:flex;
+  align-items:center;gap:6px;
+  background:transparent;border:none;border-radius:12px;
+  padding:7px 11px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text-primary);
+  transition:.2s;
 }
-.map-mode-chip.show{display:flex;}
+.map-mode-chip:hover{background:rgba(255,255,255,0.06);}
 .map-mode-chip:hover{border-color:var(--border-strong);}
 .map-mode-chip .mm-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .map-mode-chip .mm-auto-badge{
@@ -549,13 +542,22 @@ body.guest-mode h1{
 .zoom-btn:first-child{border-bottom:1px solid var(--border);}
 .zoom-btn:hover{background:var(--bg-elev);}
 .zoom-btn:active{background:var(--teal);color:#fff;}
-.nearby-panel{
+/* توست تعليمي مؤقت — يظهر ثانيتين فقط أول تفعيل لكل وضع / Instructional toast — shown for 2 seconds only on each mode's first activation */
+.map-toast{
+  position:absolute;bottom:16px;left:50%;transform:translateX(-50%) translateY(10px);
+  background:rgba(31,174,140,0.95);color:#04241c;
+  border-radius:20px;padding:9px 18px;font-size:12px;font-weight:700;
+  box-shadow:0 6px 18px rgba(31,174,140,.4);white-space:nowrap;
+  z-index:8;opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;
+}
+.map-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.more-panel{
   position:absolute;top:calc(var(--map-toolbar-h) + 4px);left:14px;z-index:6;
   display:none;flex-direction:column;gap:6px;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:12px;
-  padding:8px;box-shadow:0 10px 24px rgba(0,0,0,.3);min-width:190px;
+  padding:8px;box-shadow:0 10px 24px rgba(0,0,0,.3);min-width:220px;
 }
-.nearby-panel.show{display:flex;}
+.more-panel.show{display:flex;}
 .nearby-opt{
   text-align:right;background:transparent;border:none;padding:9px 10px;border-radius:8px;
   font-size:12px;color:var(--text-primary);cursor:pointer;font-family:inherit;
@@ -693,19 +695,33 @@ body.guest-mode h1{
 }
 .map-tool-hint a{pointer-events:auto;}
 .map-tool-hint.show{display:block;}
-.station-search-bar{
-  display:none;
-  align-items:center;gap:10px;
+.search-and-back-row{
+  display:none;align-items:center;gap:8px;
   width:min(1100px, 94vw);
   position:relative;z-index:6;
-  margin-top:calc(var(--header-h, 90px) + 18px + min(53vh, 570px) + var(--map-toolbar-h) + 2px);
-  margin-top:calc(var(--header-h, 90px) + 18px + min(53svh, 570px) + var(--map-toolbar-h) + 2px);
+  margin-top:calc(var(--header-h, 90px) + 8px + min(44vh, 480px) + var(--map-toolbar-h) + 10px);
+  margin-top:calc(var(--header-h, 90px) + 8px + min(44svh, 480px) + var(--map-toolbar-h) + 10px);
+}
+.search-and-back-row.show{display:flex;}
+body.guest-mode .search-and-back-row{width:min(1300px,96vw);}
+.back-btn{
+  pointer-events:auto;flex-shrink:0;
+  display:flex;align-items:center;gap:5px;
+  font-size:12px;font-weight:600;color:var(--text-secondary);
+  background:var(--bg-card);border:1px solid var(--border-strong);
+  height:55px;padding:0 16px;border-radius:20px;cursor:pointer;transition:.2s;
+}
+.back-btn:hover{border-color:var(--teal);color:var(--teal);}
+.station-search-bar{
+  display:flex;
+  align-items:center;gap:10px;
+  flex:1;min-width:0;height:55px;
+  position:relative;z-index:6;
   background:var(--bg-elev);border:1.5px solid rgba(31,174,140,0.35);
-  border-radius:20px;padding:12px 20px 12px 9px;
+  border-radius:20px;padding:0 20px 0 9px;
   box-shadow:0 10px 22px rgba(0,0,0,.24);
   transition:border-color .2s, box-shadow .2s;
 }
-.station-search-bar.show{display:flex;}
 .station-search-bar:focus-within{border-color:var(--teal);box-shadow:0 6px 18px rgba(31,174,140,.24);}
 .station-search-bar .ssb-icon{
   flex-shrink:0;width:30px;height:30px;border-radius:50%;
@@ -990,14 +1006,16 @@ footer{
 
   <!-- صف حالة الاتصال — جزء فعلي من الهيدر نفسه الآن، لا عنصر منفصل يحتاج تنسيق ارتفاع يدوي -->
   <div class="header-row-status" id="statusBar">
-    <div class="status-bar-item">
-      <span class="conn-dot" id="connDot"></span>
-      <span id="connLabel">جاري التحقق...</span>
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-    </div>
-    <div class="status-bar-item">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <span id="lastUpdateLabel">آخر تحديث: —</span>
+    <div class="conn-status-pill">
+      <div class="status-bar-item">
+        <span class="conn-dot" id="connDot"></span>
+        <span id="connLabel">جاري التحقق...</span>
+      </div>
+      <div class="status-bar-item">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span id="lastUpdateLabel">آخر تحديث: —</span>
+      </div>
+      <div class="status-bar-item" id="headerDateLine"></div>
     </div>
     <button class="status-refresh-btn" id="dataRefreshBtn" title="تحديث بيانات المحطات — لو لاحظت نتائج بحث غير محدّثة">
       <svg id="dataRefreshIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
@@ -1011,33 +1029,27 @@ footer{
     <canvas id="globe-canvas"></canvas>
 
     <div class="map-toolbar-bar">
-      <div class="map-toolbar-row1">
+      <div class="toolbar-scroll" id="toolbarScroll">
         <div class="map-mode-chip" id="mapModeChip" title="نوع الخريطة">
           <span class="mm-icon" id="mapModeChipIcon"></span>
           <span id="mapModeChipLabel">تلقائي</span>
           <span class="mm-auto-badge" id="mapModeAutoBadge">تلقائي</span>
           <svg class="mm-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
-        <div class="back-btn" id="backBtn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-          رجوع للبحث
-        </div>
-      </div>
-      <div class="map-toolbar-row2">
-        <div class="map-tools" id="mapTools">
-          <div class="map-tool-btn" id="measureToggleBtn" title="قياس المسافة">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M6 8v8M12 8v8M18 8v8"/></svg>
-          </div>
-          <div class="map-tool-btn" id="routeToggleBtn" title="رسم مسار متعدد النقاط">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8 7l8 10"/></svg>
-          </div>
-          <div class="map-tool-btn" id="nearbyToggleBtn" title="محطات قريبة / محطات المغذي">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
-          </div>
-          <div class="map-tool-btn" id="outageToggleBtn" title="محطات العطل (أكثر من محطة)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h8l-1 8 10-12h-8l1-8z"/></svg>
-          </div>
-        </div>
+        <div class="tb-div"></div>
+        <button class="toolbar-btn" id="nearbyToggleBtn" title="محطات قريبة (٢ كم)">
+          <span class="tb-icon">📍</span><span class="tb-label" id="nearbyBtnLabel">قريب</span>
+        </button>
+        <button class="toolbar-btn" id="feederToggleBtn" title="محطات المغذي">
+          <span class="tb-icon">⚡</span><span class="tb-label" id="feederBtnLabel">مغذي</span>
+        </button>
+        <div class="tb-div"></div>
+        <button class="toolbar-btn" id="numbersToggleBtn" title="إظهار/إخفاء أرقام المحطات">
+          <span class="tb-icon">🏷️</span><span class="tb-label">أرقام</span>
+        </button>
+        <button class="toolbar-btn" id="moreToggleBtn" title="أدوات إضافية">
+          <span class="tb-icon">⋯</span><span class="tb-label">المزيد</span>
+        </button>
       </div>
     </div>
 
@@ -1067,10 +1079,10 @@ footer{
         <svg class="mm-check" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </button>
     </div>
-    <div class="nearby-panel" id="nearbyPanel">
-      <button class="nearby-opt" data-mode="nearby">📍 محطات قريبة (٢ كم)</button>
-      <button class="nearby-opt" data-mode="coords">📐 إحداثيات فقط</button>
-      <button class="nearby-opt" data-mode="feeder">🔌 كامل محطات المغذي</button>
+    <div class="more-panel" id="morePanel">
+      <button class="nearby-opt" id="measureToggleBtn">📐 قياس المسافة</button>
+      <button class="nearby-opt" id="routeToggleBtn">🔗 رسم مسار متعدد النقاط</button>
+      <button class="nearby-opt" id="outageToggleBtn">⚠️ محطات العطل (أكثر من محطة)</button>
     </div>
     <div class="outage-panel" id="outagePanel">
       <div class="outage-panel-title">محطات العطل — أدخل الأرقام بالترتيب</div>
@@ -1114,11 +1126,17 @@ footer{
     </a>
   </div>
 
-  <div class="station-search-bar" id="stationSearchBar">
-    <span class="ssb-icon" id="stationSearchLensIcon">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-    </span>
-    <input id="stationSearchInput" type="text" placeholder="ابحث عن محطة أخرى..." inputmode="text">
+  <div class="search-and-back-row" id="searchAndBackRow">
+    <div class="back-btn" id="backBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      رجوع للبحث
+    </div>
+    <div class="station-search-bar" id="stationSearchBar">
+      <span class="ssb-icon" id="stationSearchLensIcon">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </span>
+      <input id="stationSearchInput" type="text" placeholder="ابحث عن محطة أخرى..." inputmode="text">
+    </div>
   </div>
   <div class="station-search-progress" id="stationSearchProgress">
     <div class="search-progress-track"><div class="search-progress-fill" id="stationSearchProgressFill"></div></div>
@@ -1295,6 +1313,8 @@ function refreshPanelUpdateLabels(){
 setInterval(()=>{ refreshLastUpdateLabel(); refreshPanelUpdateLabels(); }, 30 * 1000);
 
 async function checkConnection(){
+  connDot.className = 'conn-dot checking';
+  connLabel.textContent = 'جاري الاتصال...';
   try{
     // فحص مخصص وخفيف جداً (بلا أي قراءة شيت) — لا نستخدم getStats هنا
     // Dedicated ultra-light ping (zero sheet reads) — deliberately not getStats
@@ -1318,6 +1338,13 @@ async function checkConnection(){
     // لا نحدّث lastSuccessfulCheckAt هنا عمداً — يبقى يعرض آخر نجاح فعلي، لا وقت الفحص الفاشل
   }
 }
+/* عرض التاريخ الميلادي بشارة الحالة أعلى الصفحة — يتحدّث تلقائيًا إذا بقي الموقع مفتوحًا عبر منتصف الليل / Displays the Gregorian date in the top status pill — auto-updates if the site stays open past midnight */
+function renderHeaderDate(){
+  const el = document.getElementById('headerDateLine');
+  if(el) el.textContent = new Date().toLocaleDateString('ar-SA', {day:'numeric', month:'long', year:'numeric'});
+}
+renderHeaderDate();
+setInterval(renderHeaderDate, 60 * 60 * 1000);
 setTimeout(checkConnection, 1500); // تأخير بسيط كي لا يتزاحم مع طلبات تحميل الصفحة الأولى
 setInterval(checkConnection, CONN_CHECK_INTERVAL_MS);
 
@@ -1729,8 +1756,8 @@ const searchLensIcon = document.getElementById('searchLensIcon');
 const heroContent = document.getElementById('heroContent');
 const mapContainer = document.getElementById('map-container');
 const backBtn = document.getElementById('backBtn');
+const searchAndBackRow = document.getElementById('searchAndBackRow');
 const stationTable = document.getElementById('stationTable');
-const mapTools = document.getElementById('mapTools');
 const zoomControls = document.getElementById('zoomControls');
 const mapToolHint = document.getElementById('mapToolHint');
 const mapModeChip = document.getElementById('mapModeChip');
@@ -1742,11 +1769,14 @@ const stationSearchHint = document.getElementById('stationSearchHint');
 const measureToggleBtn = document.getElementById('measureToggleBtn');
 const routeToggleBtn = document.getElementById('routeToggleBtn');
 const nearbyToggleBtn = document.getElementById('nearbyToggleBtn');
+const feederToggleBtn = document.getElementById('feederToggleBtn');
+const numbersToggleBtn = document.getElementById('numbersToggleBtn');
+const moreToggleBtn = document.getElementById('moreToggleBtn');
 const outageToggleBtn = document.getElementById('outageToggleBtn');
 const outagePanel = document.getElementById('outagePanel');
 document.getElementById('zoomInBtn').addEventListener('click', ()=>{ if(leafletMap) leafletMap.zoomIn(); });
 document.getElementById('zoomOutBtn').addEventListener('click', ()=>{ if(leafletMap) leafletMap.zoomOut(); });
-const nearbyPanel = document.getElementById('nearbyPanel');
+const morePanel = document.getElementById('morePanel');
 
 document.getElementById('searchLensIcon').addEventListener('click', (e)=>{
   if(searchLens.classList.contains('open') && searchInput.value.trim()){
@@ -2039,7 +2069,7 @@ function setMapMode(mode){
 function closeAllMapDropdowns(){
   mapModePanel.classList.remove('show');
   mapModeChip.classList.remove('open');
-  nearbyPanel.classList.remove('show');
+  morePanel.classList.remove('show');
   outagePanel.classList.remove('show');
 }
 function closeMapModePanel(){
@@ -2101,6 +2131,7 @@ function resetMeasure(){
 }
 measureToggleBtn.addEventListener('click', ()=>{
   if(!leafletMap) return;
+  morePanel.classList.remove('show');
   measureActive = !measureActive;
   if(routeActive){ routeActive=false; }
   resetMeasure(); resetRoute(); clearOutageMarkers();
@@ -2142,6 +2173,7 @@ function resetRoute(){
 }
 routeToggleBtn.addEventListener('click', ()=>{
   if(!leafletMap) return;
+  morePanel.classList.remove('show');
   routeActive = !routeActive;
   if(measureActive){ measureActive=false; }
   resetMeasure(); resetRoute(); clearOutageMarkers();
@@ -2219,15 +2251,9 @@ function handleRouteClick(latlng){
 const teal = ()=> document.body.getAttribute('data-theme')==='dark' ? '#4DD6B5':'#1FAE8C';
 
 /* ============================================================
- *  أداة المحطات القريبة — ثلاث أوضاع:
- *  1) nearby  → محطات ضمن 2 كم من موقع المحطة الحالية المفتوحة
- *  2) coords  → نفس محطات nearby لكن عرض مصغّر (إحداثيات فقط، بدون تفاصيل)
- *  3) feeder  → كل محطات المغذي نفسه بغض النظر عن المسافة
- *
- *  ⚠️ عقد الباك إند المطلوب (غير موجود بعد بـ Apps Script حسب علمي):
- *  action: 'getNearbyStations'   payload: {lat, lng, radiusKm}   → {success, stations:[{id,name,lat,lng,type,feeder,region}]}
- *  action: 'getFeederStations'   payload: {feeder}               → {success, stations:[...]}
- *  لو الأكشن غير موجود، الباك إند يرجّع خطأ عادي ونتعامل معه أدناه بدون كسر الموقع.
+ *  أداة المحطات القريبة والمغذي — تفعيل مباشر بضغطة واحدة (النموذج د)
+ *  الضغط على زر مفعّل يرجّع الوضع لمحطتي تلقائيًا (بدون زر ثالث منفصل)
+ *  الضغط على الزر الآخر أثناء تفعيل أحدهما يبدّل تلقائيًا (لا يعمل الاثنان معًا)
  * ============================================================ */
 let nearbyMarkers = [];
 function clearNearbyMarkers(){
@@ -2241,18 +2267,42 @@ function smartZoomForCount(count){
   return 17;
 }
 
-nearbyToggleBtn.addEventListener('click', (e)=>{
-  e.stopPropagation();
-  const willOpen = !nearbyPanel.classList.contains('show');
-  closeAllMapDropdowns();
-  if(willOpen) nearbyPanel.classList.add('show');
-});
-document.addEventListener('click', (e)=>{
-  if(!nearbyToggleBtn.contains(e.target) && !nearbyPanel.contains(e.target)) nearbyPanel.classList.remove('show');
-});
+/* توست تعليمي يظهر ثانيتين فقط أول مرة يُفعَّل كل وضع — بعدها الزر الأخضر ونصه المتغيّر كافيان وحدهما (النموذج د من نماذج التغذية الراجعة) */
+/* Instructional toast shown for 2 seconds only the first time each mode activates — afterward the green button and its changed label are enough on their own */
+let nearbyToastShown = false, feederToastShown = false;
+function showMapToast(text){
+  let toast = document.getElementById('mapToast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'mapToast';
+    toast.className = 'map-toast';
+    document.getElementById('globeStage').appendChild(toast);
+  }
+  toast.textContent = text;
+  toast.classList.add('show');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(()=> toast.classList.remove('show'), 2000);
+}
 
-/* شارة دبوس بأسلوب قوقل ماب: بطاقة + ذيل مثلث، لونها حسب المسافة من المحطة المحددة */
-function nearbyPinIcon(id, color, tier, isTransformer){
+/* تحديث شكل الأزرار (أخضر + نص الحالة) حسب الوضع الحالي فعليًا / Updates button appearance (green + status label) to match the actual current state */
+function updateNearbyButtonStates(){
+  nearbyToggleBtn.classList.toggle('active', nearbyModeActive === 'nearby');
+  document.getElementById('nearbyBtnLabel').textContent = nearbyModeActive === 'nearby' ? '3كم' : 'قريب';
+  feederToggleBtn.classList.toggle('active', nearbyModeActive === 'feeder');
+  document.getElementById('feederBtnLabel').textContent = (nearbyModeActive === 'feeder' && currentStation && currentStation.feeder) ? currentStation.feeder : 'مغذي';
+  numbersToggleBtn.classList.toggle('active', showStationNumbers);
+}
+
+/* شارة دبوس بأسلوب قوقل ماب: بطاقة + ذيل مثلث (عند تفعيل الأرقام)، أو نقطة مصغّرة بدون نص (عند إخفائها) */
+function nearbyPinIcon(id, color, tier, isTransformer, showNumbers){
+  if(!showNumbers){
+    const size = tier===0 ? 15 : tier===1 ? 12 : 10;
+    return L.divIcon({
+      className:'',
+      html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>`,
+      iconSize:[size,size], iconAnchor:[size/2,size/2]
+    });
+  }
   const scale = tier===0 ? 1 : tier===1 ? 0.92 : 0.82;
   const opacity = tier===0 ? 1 : tier===1 ? 0.92 : 0.72;
   const w = Math.round(48*scale), h = Math.round(22*scale);
@@ -2272,7 +2322,8 @@ function distanceTier(km){
 }
 
 let nearbyFullData = [];
-let nearbyModeActive = null; // 'nearby' | 'coords' | 'feeder' | null
+let nearbyModeActive = null; // 'nearby' | 'feeder' | null
+let showStationNumbers = true; // حالة زر "🏷️ أرقام" — تُبدَّل يدويًا، تشمل نتائج قريب والمغذي معًا
 
 function renderNearbyMarkers(){
   if(!nearbyModeActive || !leafletMap) return;
@@ -2291,17 +2342,23 @@ function renderNearbyMarkers(){
 
   toShow.forEach(s=>{
     const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=driving`;
-    const { tier, color } = nearbyModeActive === 'coords' ? {tier:0, color:'#C8A24E'} : distanceTier(s._dist);
+    const { tier, color } = distanceTier(s._dist);
     const isTransformer = s.type === 'تحويل';
 
-    const marker = L.marker([s.lat, s.lng], { icon: nearbyPinIcon(s.id, color, tier, isTransformer) });
+    window._nearbyStationLookup = window._nearbyStationLookup || {};
+    window._nearbyStationLookup[s.id] = s;
+
+    const marker = L.marker([s.lat, s.lng], { icon: nearbyPinIcon(s.id, color, tier, isTransformer, showStationNumbers) });
     marker.bindPopup(`
-      <div style="font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl;min-width:160px;font-size:13px">
+      <div style="font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl;min-width:170px;font-size:13px">
         <b>${s.name || s.id}</b><br>
         رقم: ${s.id}<br>
         ${s.feeder ? 'المغذي: ' + s.feeder + '<br>' : ''}
         المسافة من محطتك: <b>${s._dist.toFixed(2)} كم</b>
-        <a href="${gmapsUrl}" target="_blank" rel="noopener" style="display:block;text-align:center;background:${teal()};color:#fff;padding:7px;border-radius:6px;text-decoration:none;font-size:12px;margin-top:8px;font-weight:600">الانتقال إليها بقوقل ماب</a>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button onclick="window.editNearbyStation('${s.id}')" style="flex:1;background:var(--bg-elev,#101D2E);color:#fff;border:1px solid rgba(255,255,255,.2);padding:7px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">تعديل</button>
+          <a href="${gmapsUrl}" target="_blank" rel="noopener" style="flex:1;text-align:center;background:${teal()};color:#fff;padding:7px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">قوقل ماب</a>
+        </div>
       </div>`);
     marker.bindTooltip(`${s.id} — ${s._dist.toFixed(2)} كم`, {direction:'top', offset:[0,-16]});
     marker.addTo(leafletMap);
@@ -2309,47 +2366,69 @@ function renderNearbyMarkers(){
   });
 
   const zoomHint = zoom <= 13 ? ' — قرّب الخريطة لعرض المحطات المجاورة' : (zoom <= 15 ? ' — أقرب 10 محطات' : ' — كل المحطات بالشاشة الحالية');
-  const label = nearbyModeActive==='feeder' ? `⚡ المغذي "${currentStation.feeder}" — عدد ${nearbyFullData.length} محطة مرتبطة` : (nearbyModeActive==='coords' ? `📐 محطات قريبة (إحداثيات) — ${nearbyFullData.length} محطة` : `📍 محطات قريبة (٢ كم) — ${nearbyFullData.length} محطة`);
+  const label = nearbyModeActive==='feeder' ? `⚡ المغذي "${currentStation.feeder}" — عدد ${nearbyFullData.length} محطة مرتبطة` : `📍 محطات قريبة (٢ كم) — ${nearbyFullData.length} محطة`;
   mapToolHint.textContent = `${label}${zoomHint}`;
 }
 
-document.querySelectorAll('.nearby-opt').forEach(btn=>{
-  btn.addEventListener('click', async ()=>{
-    nearbyPanel.classList.remove('show');
-    if(!currentStation || !leafletMap) return;
-    const mode = btn.dataset.mode;
-    clearNearbyMarkers(); clearOutageMarkers();
-    nearbyFullData = [];
-    nearbyModeActive = mode;
-    mapToolHint.classList.add('show');
-    mapToolHint.textContent = 'جاري التحميل...';
+/* تفعيل/إلغاء/تبديل وضع قريب أو المغذي — ضغطة واحدة تكفي لكل شيء / Activate/deactivate/switch nearby or feeder mode — a single tap does it all */
+async function activateNearbyMode(mode){
+  if(!currentStation || !leafletMap) return;
 
-    try{
-      let res;
-      if(mode === 'feeder'){
-        if(!currentStation.feeder){ mapToolHint.textContent = 'لا يوجد مغذي مسجّل لهذه المحطة'; nearbyModeActive = null; return; }
-        res = await callBackend('getFeederStations', { feeder: currentStation.feeder });
-      } else {
-        res = await callBackend('getNearbyStations', { lat: currentStation.lat, lng: currentStation.lng, radiusKm: 2 });
+  if(nearbyModeActive === mode){ // نفس الزر المفعّل — رجوع لمحطتي
+    nearbyModeActive = null;
+    clearNearbyMarkers();
+    mapToolHint.classList.remove('show');
+    updateNearbyButtonStates();
+    return;
+  }
+
+  clearNearbyMarkers(); clearOutageMarkers();
+  nearbyFullData = [];
+  nearbyModeActive = mode;
+  updateNearbyButtonStates();
+  mapToolHint.classList.add('show');
+  mapToolHint.textContent = 'جاري التحميل...';
+
+  try{
+    let res;
+    if(mode === 'feeder'){
+      if(!currentStation.feeder){
+        mapToolHint.textContent = 'لا يوجد مغذي مسجّل لهذه المحطة';
+        nearbyModeActive = null; updateNearbyButtonStates();
+        return;
       }
-      if(!res.success || !res.stations) throw new Error(res.error || 'الميزة غير متاحة من الخادم بعد');
-
-      nearbyFullData = res.stations
-        .filter(s => String(s.id) !== String(currentStation.id))
-        .map(s => ({...s, _dist: haversineKm(currentStation.lat, currentStation.lng, s.lat, s.lng)}));
-
-      const bounds = [[currentStation.lat, currentStation.lng], ...nearbyFullData.map(s=>[s.lat,s.lng])];
-      if(bounds.length > 1) leafletMap.setView([currentStation.lat, currentStation.lng], smartZoomForCount(nearbyFullData.length));
-
-      renderNearbyMarkers();
-      if(!leafletMap._nearbyHandlerBound){
-        leafletMap.on('zoomend moveend', renderNearbyMarkers);
-        leafletMap._nearbyHandlerBound = true;
-      }
-    }catch(err){
-      mapToolHint.textContent = 'تعذّر جلب المحطات — الميزة تحتاج تفعيل بالباك إند';
+      res = await callBackend('getFeederStations', { feeder: currentStation.feeder });
+    } else {
+      res = await callBackend('getNearbyStations', { lat: currentStation.lat, lng: currentStation.lng, radiusKm: 2 });
     }
-  });
+    if(!res.success || !res.stations) throw new Error(res.error || 'الميزة غير متاحة من الخادم بعد');
+
+    nearbyFullData = res.stations
+      .filter(s => String(s.id) !== String(currentStation.id))
+      .map(s => ({...s, _dist: haversineKm(currentStation.lat, currentStation.lng, s.lat, s.lng)}));
+
+    const bounds = [[currentStation.lat, currentStation.lng], ...nearbyFullData.map(s=>[s.lat,s.lng])];
+    if(bounds.length > 1) leafletMap.setView([currentStation.lat, currentStation.lng], smartZoomForCount(nearbyFullData.length));
+
+    renderNearbyMarkers();
+    if(!leafletMap._nearbyHandlerBound){
+      leafletMap.on('zoomend moveend', renderNearbyMarkers);
+      leafletMap._nearbyHandlerBound = true;
+    }
+    if(mode === 'nearby' && !nearbyToastShown){ showMapToast(`تم عرض ${nearbyFullData.length} محطة قريبة`); nearbyToastShown = true; }
+    if(mode === 'feeder' && !feederToastShown){ showMapToast(`تم عرض ${nearbyFullData.length} محطة بالمغذي`); feederToastShown = true; }
+  }catch(err){
+    mapToolHint.textContent = 'تعذّر جلب المحطات — الميزة تحتاج تفعيل بالباك إند';
+    nearbyModeActive = null;
+    updateNearbyButtonStates();
+  }
+}
+nearbyToggleBtn.addEventListener('click', ()=> activateNearbyMode('nearby'));
+feederToggleBtn.addEventListener('click', ()=> activateNearbyMode('feeder'));
+numbersToggleBtn.addEventListener('click', ()=>{
+  showStationNumbers = !showStationNumbers;
+  updateNearbyButtonStates();
+  if(nearbyModeActive) renderNearbyMarkers();
 });
 
 /* ============================================================
@@ -2379,8 +2458,15 @@ function outageLetterFor(i){
   return s;
 }
 
+moreToggleBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const willOpen = !morePanel.classList.contains('show');
+  closeAllMapDropdowns();
+  if(willOpen) morePanel.classList.add('show');
+});
 outageToggleBtn.addEventListener('click', (e)=>{
   e.stopPropagation();
+  morePanel.classList.remove('show');
   const willOpen = !outagePanel.classList.contains('show');
   closeAllMapDropdowns();
   if(willOpen) outagePanel.classList.add('show');
@@ -2706,9 +2792,8 @@ function startMorphExpand(s){
       mapContainer.classList.add('active');
       stageEl.classList.add('map-active');
       heroSection.classList.add('map-active');
-      backBtn.classList.add('show');
+      searchAndBackRow.classList.add('show');
       mapModeChip.classList.add('show');
-      mapTools.classList.add('show');
       zoomControls.classList.add('show');
       cardsSection.classList.add('hidden');
       setTimeout(()=> renderStationOnMap(s), 200);
@@ -2747,7 +2832,7 @@ function renderStationOnMap(s){
       </div>` : ''}
     </div>`;
   stationTable.classList.add('show');
-  stationSearchBar.classList.add('show');
+  searchAndBackRow.classList.add('show');
   document.getElementById('openEditBtn').addEventListener('click', openEditForm);
 }
 
@@ -2755,6 +2840,14 @@ function renderStationOnMap(s){
  *  نموذج تعديل المحطة (مغذي/منطقة/موقع) — يفتح فوق الجدول
  * ============================================================ */
 let editPreviewMap = null, editPreviewMarker = null;
+
+/* الانتقال المباشر لتعديل محطة من نتائج "قريبة/المغذي" — بدون حاجة لبحث منفصل عنها / Direct jump to editing a station from "nearby/feeder" results — no separate search needed */
+window.editNearbyStation = function(id){
+  const s = window._nearbyStationLookup && window._nearbyStationLookup[id];
+  if(!s) return;
+  goToStation(s);
+  setTimeout(openEditForm, 200); // بعد استقرار عرض بطاقة المحطة على الخريطة
+};
 
 function openEditForm(){
   if(!hasValidSession()){
@@ -2929,19 +3022,17 @@ backBtn.addEventListener('click', ()=>{
   stageEl.classList.remove('map-active');
   heroSection.classList.remove('map-active');
   document.getElementById('heroContent').classList.remove('hidden');
-  backBtn.classList.remove('show');
+  searchAndBackRow.classList.remove('show');
   mapModeChip.classList.remove('show');
   closeMapModePanel();
-  mapTools.classList.remove('show');
   zoomControls.classList.remove('show');
   mapToolHint.classList.remove('show');
   cardsSection.classList.remove('hidden');
   measureActive = false; routeActive = false;
-  resetMeasure(); resetRoute(); clearNearbyMarkers(); nearbyModeActive = null; nearbyPanel.classList.remove('show');
+  resetMeasure(); resetRoute(); clearNearbyMarkers(); nearbyModeActive = null; morePanel.classList.remove('show'); updateNearbyButtonStates();
   clearOutageMarkers(); outagePanel.classList.remove('show'); document.getElementById('outageInput').value=''; document.getElementById('outageError').textContent='';
   setActiveTool(null);
   stationTable.classList.remove('show');
-  stationSearchBar.classList.remove('show');
   stationSearchInput.value = '';
   stationSearchHint.textContent = '';
   setSearchProgress(false, 'stationSearch');
