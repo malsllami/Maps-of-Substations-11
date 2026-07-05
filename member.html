@@ -13,19 +13,20 @@
 body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;padding-bottom:24px;transition:background .3s,color .3s;}
 /* ===== هيدر موحّد مطابق لبقية الصفحات (الرئيسية ولوحة المدير) ===== */
 header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--border);display:flex;flex-direction:column;}
-.header-row-main{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;}
-.brand{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;}
-.brand-mark{height:32px;width:auto;flex-shrink:0;display:block;object-fit:contain;transition:transform .2s;}
+.header-row-main{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 28px;}
+@media (max-width:600px){.header-row-main{padding:12px 14px;}}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;min-width:0;flex-shrink:1;overflow:hidden;}
+.brand-mark{height:38px;width:auto;flex-shrink:0;display:block;object-fit:contain;transition:transform .2s;}
 .brand:hover .brand-mark{transform:scale(1.06);}
-.brand-text{font-size:15px;font-weight:700;letter-spacing:.3px;white-space:nowrap;transition:color .2s;}
+.brand-text{font-size:14.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s;}
 .brand:hover .brand-text{color:var(--teal);}
-.brand-sub{font-size:11px;color:var(--text-secondary);}
+.brand-sub{font-size:11px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .header-actions{display:flex;align-items:center;gap:8px;}
 .mobile-user-menu{position:relative;}
 .mobile-menu-trigger{
-  display:flex;align-items:center;gap:5px;
-  background:var(--bg-card);border:1px solid var(--border-strong);border-radius:20px;
-  padding:8px 14px;font-size:12.5px;font-weight:500;color:var(--text-primary);
+  display:flex;align-items:center;gap:6px;
+  background:var(--bg-card);border:1px solid var(--border-strong);border-radius:22px;
+  padding:9px 16px;font-size:13px;font-weight:600;color:var(--text-primary);
   cursor:pointer;font-family:inherit;
 }
 .mobile-menu-trigger:hover{border-color:var(--teal);}
@@ -34,18 +35,30 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
 .mobile-menu-panel{
   position:absolute;top:calc(100% + 8px);left:0;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:14px;
-  min-width:190px;box-shadow:0 10px 28px rgba(0,0,0,.35);
-  padding:8px;display:none;z-index:60;
+  min-width:215px;box-shadow:0 10px 28px rgba(0,0,0,.35);
+  padding:6px;display:none;z-index:60;
 }
 .mobile-user-menu.open .mobile-menu-panel{display:block;}
-.mobile-menu-row{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;font-size:12.5px;color:var(--text-primary);}
-.mobile-menu-link{display:block;padding:10px 10px;font-size:12.5px;color:var(--text-primary);text-decoration:none;border-radius:8px;}
-.mobile-menu-link:hover{background:var(--bg-elev);}
-.mobile-menu-logout{
-  width:100%;text-align:right;padding:10px 10px;font-size:12.5px;color:#E0654F;
-  background:transparent;border:none;border-top:1px solid var(--border);margin-top:4px;
-  cursor:pointer;font-family:inherit;
+.mobile-menu-row{display:flex;align-items:center;gap:10px;padding:10px 10px;font-size:12.5px;color:var(--text-primary);border-bottom:1px solid var(--border);margin-bottom:4px;}
+.mobile-menu-link{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 10px;font-size:12.5px;color:var(--text-primary);
+  text-decoration:none;border-radius:9px;border:1px solid transparent;transition:.15s;
+  margin-bottom:2px;
 }
+.mobile-menu-link:hover{background:var(--bg-elev);}
+.mobile-menu-link.current-page{
+  background:rgba(31,174,140,0.12);border-color:rgba(31,174,140,0.4);
+  color:var(--teal-light);font-weight:700;
+}
+.menu-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mobile-menu-logout{
+  display:flex;align-items:center;gap:10px;width:100%;
+  text-align:right;padding:10px 10px;font-size:12.5px;color:#E0654F;
+  background:transparent;border:none;border-top:1px solid var(--border);margin-top:4px;
+  cursor:pointer;font-family:inherit;border-radius:8px;transition:.15s;
+}
+.mobile-menu-logout:hover{background:rgba(224,101,79,0.1);}
 .theme-switch{
   width:42px;height:23px;border-radius:12px;position:relative;flex-shrink:0;
   background:var(--border-strong);border:none;cursor:pointer;transition:background .2s;padding:0;
@@ -53,33 +66,83 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
 .theme-switch.on{background:var(--teal);}
 .theme-switch-knob{position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
 .theme-switch.on .theme-switch-knob{transform:translateX(19px);}
-/* شريط حالة الاتصال + آخر تحديث — جزء بنيوي فعلي من الهيدر، لا عنصر شقيق منفصل / Connection status bar — structural part of header, not a separate sibling */
-.header-row-status{
-  display:flex;align-items:center;justify-content:space-between;
-  background:var(--bg-elev);border-top:1px solid var(--border);
-  padding:6px 28px;font-size:11px;color:var(--text-secondary);
+/* شريط حالة الاتصال — إطار واحد كامل العرض، جزء بنيوي فعلي من الهيدر / Connection status — one full-width frame, structural part of header */
+.header-row-status{padding:0 28px 12px;font-size:11px;color:var(--text-secondary);}
+.conn-status-pill{
+  display:flex;align-items:center;gap:14px;width:100%;
+  border:1px solid var(--border-strong);border-radius:14px;
+  padding:9px 16px;background:var(--bg-card);color:var(--text-primary);
 }
 .status-bar-item{display:flex;align-items:center;gap:6px;}
 .conn-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#8FA3B8;transition:background .3s;}
+.conn-dot.checking{background:#C8A24E;box-shadow:0 0 6px rgba(200,162,78,.6);}
 .conn-dot.online{background:#2ECC71;box-shadow:0 0 6px rgba(46,204,113,.6);}
 .conn-dot.offline{background:#E0654F;box-shadow:0 0 6px rgba(224,101,79,.6);}
 @media(max-width:600px){
-  .header-row-main{padding:12px 14px;}
-  .brand-sub{display:none;}
-  .header-row-status{padding:6px 12px;font-size:10px;}
+  .header-row-status{padding:0 12px 10px;}
+  .conn-status-pill{padding:8px 12px;font-size:10.5px;gap:10px;flex-wrap:wrap;}
 }
 .wrap{max-width:480px;margin:0 auto;padding:24px 24px 0;}
-.card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
-.avatar{width:56px;height:56px;border-radius:50%;background:conic-gradient(from 200deg,var(--blue-deep),var(--blue-mid),var(--teal),var(--teal-light),var(--blue-deep));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:20px;margin-bottom:14px;}
-h2{font-size:17px;font-weight:700;margin-bottom:4px;}
-.role-badge{display:inline-block;font-size:11px;color:var(--teal);background:rgba(31,174,140,0.1);padding:3px 10px;border-radius:10px;margin-top:6px;}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;}
+.avatar{
+  width:58px;height:58px;border-radius:50%;flex-shrink:0;
+  background:rgba(31,174,140,0.14);color:var(--teal);
+  display:flex;align-items:center;justify-content:center;
+}
+.role-badge{display:inline-block;font-size:11.5px;color:var(--text-secondary);margin-top:2px;}
+.profile-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;}
+.profile-name-block{text-align:right;}
+.profile-name-block h2{font-size:17px;font-weight:700;margin-bottom:2px;}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:14px;border-top:1px solid var(--border);}
+.meta-item{text-align:center;}
+.meta-item .meta-label{display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:var(--text-secondary);margin-bottom:5px;}
+.meta-item .meta-value{font-size:12.5px;font-weight:600;}
+.meta-item .meta-sub{font-size:10.5px;color:var(--text-secondary);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+
+/* ===== بطاقة المساهمات — شارات ملوّنة مطابقة للتصميم المرجعي ===== */
+/* ===== Contribution card — colored badges matching the reference design ===== */
+.card-title{display:flex;align-items:center;justify-content:space-between;font-size:13.5px;font-weight:700;margin-bottom:14px;}
+.contrib-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.contrib-box{text-align:center;padding:14px 6px;border-radius:12px;border:1px solid;}
+.contrib-box .contrib-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;}
+.contrib-box .contrib-num{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;}
+.contrib-box .contrib-label{font-size:10.5px;color:var(--text-secondary);margin-top:3px;}
+.contrib-total{background:rgba(31,174,140,0.08);border-color:rgba(31,174,140,0.3);}
+.contrib-total .contrib-icon{background:rgba(31,174,140,0.18);color:var(--teal);}
+.contrib-total .contrib-num{color:var(--teal);}
+.contrib-add{background:rgba(74,134,232,0.08);border-color:rgba(74,134,232,0.3);}
+.contrib-add .contrib-icon{background:rgba(74,134,232,0.2);color:#4A86E8;}
+.contrib-add .contrib-num{color:#4A86E8;}
+.contrib-edit{background:rgba(200,162,78,0.1);border-color:rgba(200,162,78,0.35);}
+.contrib-edit .contrib-icon{background:rgba(200,162,78,0.22);color:#C8A24E;}
+.contrib-edit .contrib-num{color:#C8A24E;}
+
+/* ===== سجل النشاط ===== */
+/* ===== Activity log ===== */
+.view-all-link{font-size:12px;color:var(--teal-light);text-decoration:none;display:flex;align-items:center;gap:3px;cursor:pointer;}
+.activity-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--border);}
+.activity-row:first-of-type{border-top:none;}
+.activity-dot{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.activity-dot.add{background:rgba(46,204,113,0.16);}
+.activity-dot.edit{background:rgba(200,162,78,0.16);}
+.activity-info{flex:1;min-width:0;}
+.activity-station{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.activity-type{font-size:11px;color:var(--text-secondary);}
+.activity-time{font-size:10.5px;color:var(--text-secondary);white-space:nowrap;}
+.activity-empty{text-align:center;padding:20px;color:var(--text-secondary);font-size:12px;}
+
+/* ===== بيانات الحساب ===== */
+/* ===== Account info ===== */
+.info-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--border);}
+.info-row:first-of-type{border-top:none;}
+.info-row-label{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-secondary);}
+.info-row-value{font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;direction:ltr;}
+[dir="ltr"].info-row-value-ar{font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl;}
 .field{margin-bottom:14px;}
 .field label{display:block;font-size:12px;color:var(--text-secondary);margin-bottom:6px;}
 .input-base{width:100%;height:44px;background:var(--bg);border:1px solid var(--border-strong);border-radius:10px;color:var(--text-primary);font-family:inherit;font-size:14px;padding:0 14px;outline:none;}
 .input-base:disabled{opacity:.55;}
 .input-base:focus{border-color:var(--teal);}
-.meta-row{display:flex;justify-content:space-between;font-size:12.5px;padding:8px 0;border-top:1px solid var(--border);color:var(--text-secondary);}
-.meta-row span:last-child{color:var(--text-primary);font-family:'JetBrains Mono',monospace;}
 .error-banner{background:var(--danger-bg);color:var(--danger);font-size:12.5px;padding:10px 12px;border-radius:8px;margin-bottom:14px;display:none;}
 .error-banner.show{display:block;}
 .success-banner{background:rgba(31,174,140,0.12);color:var(--teal);font-size:12.5px;padding:10px 12px;border-radius:8px;margin-bottom:14px;display:none;}
@@ -119,73 +182,142 @@ h2{font-size:17px;font-weight:700;margin-bottom:4px;}
         </button>
         <div class="mobile-menu-panel" id="mobileMenuPanel">
           <div class="mobile-menu-row">
-            <span>الوضع الداكن</span>
+            <span class="menu-icon" style="color:#8B6DD6">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v1M12 20v1M4.2 4.2l.7.7M18.4 18.4l.7.7M3 12h1M20 12h1M4.2 19.8l.7-.7M18.4 5.6l.7-.7"/><circle cx="12" cy="12" r="4"/></svg>
+            </span>
+            <span style="flex:1">الوضع الداكن</span>
             <button class="theme-switch" id="themeSwitchMobile" aria-label="تبديل الوضع الداكن"><span class="theme-switch-knob"></span></button>
           </div>
-          <a href="admin.html" class="mobile-menu-link" id="mobileAdminLink" style="display:none">لوحة المدير</a>
-          <a href="index.html" class="mobile-menu-link">الصفحة الرئيسية</a>
-          <button class="mobile-menu-logout" id="mobileLogoutBtn">تسجيل الخروج</button>
+          <a href="index.html" class="mobile-menu-link">
+            <span class="menu-icon" style="color:#2ECC71"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg></span>
+            الصفحة الرئيسية
+          </a>
+          <a href="member.html" class="mobile-menu-link current-page">
+            <span class="menu-icon" style="color:#4A86E8"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            حسابي
+          </a>
+          <a href="shifts.html" class="mobile-menu-link">
+            <span class="menu-icon" style="color:#A479E2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            تقويم دوام الورديات
+          </a>
+          <a href="admin.html" class="mobile-menu-link" id="mobileAdminLink" style="display:none">
+            <span class="menu-icon" style="color:#F0B429"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z"/><polyline points="9 12 11 14 15 10"/></svg></span>
+            لوحة المدير
+          </a>
+          <button class="mobile-menu-logout" id="mobileLogoutBtn">
+            <span class="menu-icon" style="color:#E0654F"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+            تسجيل الخروج
+          </button>
         </div>
       </div>
     </div>
   </div>
-  <!-- شريط حالة الاتصال + آخر تحديث — جزء بنيوي فعلي من الهيدر / Connection status — structural part of header -->
   <div class="header-row-status" id="statusBar">
-    <div class="status-bar-item">
-      <span class="conn-dot" id="connDot"></span>
-      <span id="connLabel">جاري التحقق...</span>
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-    </div>
-    <div class="status-bar-item">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <span id="lastUpdateLabel">آخر تحديث: —</span>
+    <div class="conn-status-pill">
+      <div class="status-bar-item">
+        <span class="conn-dot" id="connDot"></span>
+        <span id="connLabel">جاري التحقق...</span>
+      </div>
+      <div class="status-bar-item">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span id="lastUpdateLabel">آخر تحديث: —</span>
+      </div>
+      <div class="status-bar-item" id="headerDateLine"></div>
     </div>
   </div>
 </header>
 
 <div class="wrap">
+  <!-- ===== ١) الملف الشخصي ===== -->
   <div class="card" id="profileCard">
-    <div class="avatar" id="avatarInitial">-</div>
-    <h2 id="profileName">...</h2>
-    <div style="font-size:12.5px;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;direction:ltr;text-align:right" id="profilePhone">-</div>
-    <span class="role-badge" id="memberTypeBadge"></span>
-    <div class="meta-row">
-      <span>آخر دخول ناجح</span>
-      <span id="lastLoginVal">—</span>
+    <div class="profile-head">
+      <div class="profile-name-block">
+        <h2 id="profileName">...</h2>
+        <span class="role-badge" id="memberTypeBadge">—</span>
+      </div>
+      <div class="avatar">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div>
+    <div class="meta-grid">
+      <div class="meta-item">
+        <div class="meta-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          آخر عملية
+        </div>
+        <div class="meta-value" id="lastActionVal">—</div>
+        <div class="meta-sub" id="lastActionTime"></div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          آخر دخول
+        </div>
+        <div class="meta-value" id="lastLoginVal">—</div>
+        <div class="meta-sub" id="lastLoginTime"></div>
+      </div>
     </div>
   </div>
 
+  <!-- ===== ٢) مساهمتك ===== -->
   <div class="card" id="statsCard" style="display:none">
-    <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text-secondary)">مساهماتك في قاعدة البيانات</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-      <div style="text-align:center;padding:10px 6px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--teal)" id="statTotal">0</div>
-        <div style="font-size:10px;color:var(--text-secondary);margin-top:3px">إجمالي</div>
+    <div class="card-title">
+      <span>مساهمتك في قاعدة البيانات</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+    </div>
+    <div class="contrib-grid">
+      <div class="contrib-box contrib-total">
+        <div class="contrib-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+        <div class="contrib-num" id="statTotal">0</div>
+        <div class="contrib-label">إجمالي العمليات</div>
       </div>
-      <div style="text-align:center;padding:10px 6px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--blue-mid)" id="statAdditions">0</div>
-        <div style="font-size:10px;color:var(--text-secondary);margin-top:3px">إضافات</div>
+      <div class="contrib-box contrib-add">
+        <div class="contrib-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+        <div class="contrib-num" id="statAdditions">0</div>
+        <div class="contrib-label">إضافات</div>
       </div>
-      <div style="text-align:center;padding:10px 6px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:#C8A24E" id="statEdits">0</div>
-        <div style="font-size:10px;color:var(--text-secondary);margin-top:3px">تعديلات</div>
+      <div class="contrib-box contrib-edit">
+        <div class="contrib-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+        <div class="contrib-num" id="statEdits">0</div>
+        <div class="contrib-label">تعديلات</div>
       </div>
     </div>
   </div>
 
+  <!-- ===== ٣) سجل نشاطي ===== -->
+  <div class="card" id="activityCard" style="display:none">
+    <div class="card-title">
+      <span>سجل نشاطي</span>
+      <span class="view-all-link" id="viewAllActivityBtn">عرض الكل
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </span>
+    </div>
+    <div id="activityList"></div>
+  </div>
+
+  <!-- ===== ٤) بيانات الحساب ===== -->
   <div class="card">
+    <div class="card-title"><span>بيانات الحساب</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
     <div id="errorBanner" class="error-banner"></div>
     <div id="successBanner" class="success-banner">تم حفظ التعديلات بنجاح</div>
 
-    <div class="field">
-      <label>الاسم الكامل</label>
-      <input type="text" class="input-base" id="nameInput" disabled>
+    <div class="info-row">
+      <div class="info-row-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        الاسم الكامل
+      </div>
+      <div class="info-row-value info-row-value-ar" dir="rtl" id="nameDisplay">—</div>
     </div>
-    <div class="field">
-      <label>رقم الجوال</label>
-      <input type="text" class="input-base" id="phoneInput" disabled dir="ltr">
+    <div class="info-row">
+      <div class="info-row-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        رقم الجوال
+      </div>
+      <div class="info-row-value" id="phoneDisplay">—</div>
     </div>
-    <div class="field">
+    <div class="field" style="margin-top:6px">
       <label>الإيميل (اختياري)</label>
       <input type="email" class="input-base" id="emailInput" dir="ltr">
     </div>
@@ -272,6 +404,8 @@ function refreshLastUpdateLabel(){
 }
 setInterval(refreshLastUpdateLabel, 30 * 1000);
 async function checkConnection(){
+  connDot.className = 'conn-dot checking';
+  connLabel.textContent = 'جاري الاتصال...';
   try{
     const res = await Promise.race([
       pingBackend(),
@@ -288,6 +422,12 @@ async function checkConnection(){
     connLabel.textContent = 'بدون اتصال';
   }
 }
+function renderHeaderDate(){
+  const el = document.getElementById('headerDateLine');
+  if(el) el.textContent = new Date().toLocaleDateString('ar-SA-u-ca-gregory', {day:'numeric', month:'long', year:'numeric'});
+}
+renderHeaderDate();
+setInterval(renderHeaderDate, 60 * 60 * 1000);
 setTimeout(checkConnection, 1500);
 setInterval(checkConnection, 60 * 1000);
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') checkConnection(); });
@@ -295,25 +435,91 @@ document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState=
 function showError(msg){ const el=document.getElementById('errorBanner'); el.textContent=msg; el.classList.add('show'); document.getElementById('successBanner').classList.remove('show'); }
 function hideMsgs(){ document.getElementById('errorBanner').classList.remove('show'); document.getElementById('successBanner').classList.remove('show'); }
 
+/* تنسيق ميلادي وهجري معًا حسب معيار المشروع — بدون مكتبة خارجية / Gregorian + Hijri formatting per project standard — no external library */
+const hijriFmt_ = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn', {day:'numeric', month:'long', year:'numeric'});
+function formatDateTimeBilingual_(d){
+  const greg = d.toLocaleDateString('ar-SA-u-ca-gregory', {day:'numeric', month:'short', year:'numeric'});
+  const time = d.toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
+  return { line1: greg + ' — ' + hijriFmt_.format(d), line2: time };
+}
+function relativeTimeAr_(d){
+  const diffMin = Math.round((Date.now() - d.getTime()) / 60000);
+  if(diffMin < 1) return 'الآن';
+  if(diffMin < 60) return `قبل ${diffMin} دقيقة`;
+  const diffHr = Math.round(diffMin/60);
+  if(diffHr < 24) return `قبل ${diffHr} ساعة`;
+  const diffDay = Math.round(diffHr/24);
+  if(diffDay === 1) return 'أمس';
+  if(diffDay < 7) return `قبل ${diffDay} أيام`;
+  return formatDateTimeBilingual_(d).line1;
+}
+
+function renderActivityRow_(entry){
+  const isAdd = entry.type === 'إضافة';
+  const d = new Date(entry.time);
+  return `<div class="activity-row">
+    <div class="activity-dot ${isAdd ? 'add' : 'edit'}">${isAdd ? '🟢' : '🟡'}</div>
+    <div class="activity-info">
+      <div class="activity-station">${escapeHtml_(String(entry.stationId))}</div>
+      <div class="activity-type">${entry.type} محطة</div>
+    </div>
+    <div class="activity-time">${relativeTimeAr_(d)}</div>
+  </div>`;
+}
+function escapeHtml_(str){
+  return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+let allActivity = [];
 async function loadProfile(){
   const res = await callBackend('getMemberProfile', {phone});
   if(!res.success){ showError(res.error || 'تعذّر تحميل البيانات'); return; }
   document.getElementById('profileName').textContent = res.name;
-  document.getElementById('profilePhone').textContent = res.phone;
-  document.getElementById('avatarInitial').textContent = res.name.trim()[0] || '؟';
   document.getElementById('memberTypeBadge').textContent = res.memberType || 'عضو';
-  document.getElementById('nameInput').value = res.name;
-  document.getElementById('phoneInput').value = res.phone;
+  document.getElementById('nameDisplay').textContent = res.name;
+  document.getElementById('phoneDisplay').textContent = res.phone;
   document.getElementById('emailInput').value = res.email || '';
-  document.getElementById('lastLoginVal').textContent = res.lastLogin ? new Date(res.lastLogin).toLocaleString('ar-SA') : 'أول دخول';
+
+  if(res.lastLogin){
+    const dt = formatDateTimeBilingual_(new Date(res.lastLogin));
+    document.getElementById('lastLoginVal').textContent = dt.line2;
+    document.getElementById('lastLoginTime').textContent = dt.line1;
+  } else {
+    document.getElementById('lastLoginVal').textContent = 'أول دخول';
+  }
+
+  if(res.lastAction){
+    document.getElementById('lastActionVal').textContent = `${res.lastAction.type} محطة ${res.lastAction.stationId}`;
+    document.getElementById('lastActionTime').textContent = relativeTimeAr_(new Date(res.lastAction.time));
+  } else {
+    document.getElementById('lastActionVal').textContent = 'لا يوجد بعد';
+  }
+
   if(res.stats){
     document.getElementById('statTotal').textContent = res.stats.total;
     document.getElementById('statAdditions').textContent = res.stats.additions;
     document.getElementById('statEdits').textContent = res.stats.edits;
     document.getElementById('statsCard').style.display = 'block';
   }
+
+  allActivity = res.recentActivity || [];
+  const activityCard = document.getElementById('activityCard');
+  const activityList = document.getElementById('activityList');
+  if(allActivity.length){
+    activityCard.style.display = 'block';
+    activityList.innerHTML = allActivity.slice(0,4).map(renderActivityRow_).join('');
+  }
 }
 loadProfile();
+
+document.getElementById('viewAllActivityBtn').addEventListener('click', ()=>{
+  const activityList = document.getElementById('activityList');
+  const btn = document.getElementById('viewAllActivityBtn');
+  const expanded = activityList.dataset.expanded === 'true';
+  activityList.innerHTML = (expanded ? allActivity.slice(0,4) : allActivity).map(renderActivityRow_).join('');
+  activityList.dataset.expanded = String(!expanded);
+  btn.firstChild.textContent = expanded ? 'عرض الكل ' : 'إخفاء ';
+});
 
 const saveBtn = document.getElementById('saveBtn');
 const saveLabel = document.getElementById('saveLabel');
@@ -331,13 +537,11 @@ saveBtn.addEventListener('click', async ()=>{
   const tick = setInterval(()=>{ p=Math.min(p+Math.random()*15,92); saveFill.style.width=p+'%'; savePct.textContent=Math.round(p)+'%'; },120);
 
   try{
-    const res = await callBackend('updateMemberProfile', {phone, name: document.getElementById('nameInput').value.trim(), email: document.getElementById('emailInput').value.trim()});
+    const res = await callBackend('updateMemberProfile', {phone, name: session.name, email: document.getElementById('emailInput').value.trim()});
     clearInterval(tick);
     saveFill.style.width='100%'; savePct.textContent='100%';
     if(!res.success) throw new Error(res.error || 'فشل الحفظ');
     document.getElementById('successBanner').classList.add('show');
-    session.name = document.getElementById('nameInput').value.trim();
-    localStorage.setItem('sec-session', JSON.stringify(session));
   }catch(err){
     saveBtn.classList.add('error');
     showError(err.message);
@@ -351,4 +555,3 @@ saveBtn.addEventListener('click', async ()=>{
 </script>
 </body>
 </html>
-
