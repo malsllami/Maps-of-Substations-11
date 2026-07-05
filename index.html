@@ -57,18 +57,18 @@ header{
   background:var(--bg);border-bottom:1px solid var(--border);
 }
 .header-row-main{
-  display:flex;align-items:center;justify-content:space-between;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:14px 32px 8px;
 }
-.logo{display:flex;align-items:center;gap:10px;min-width:0;}
+.logo{display:flex;align-items:center;gap:9px;min-width:0;flex-shrink:1;overflow:hidden;}
 .logo-mark{transition:transform .2s;}
 .logo:hover .logo-mark{transform:scale(1.06);}
 .logo:hover .logo-text{color:var(--teal);}
 .logo-mark{
-  height:42px;width:auto;flex-shrink:0;display:block;object-fit:contain;
+  height:38px;width:auto;flex-shrink:0;display:block;object-fit:contain;
 }
-.logo-text{font-size:16.5px;font-weight:700;letter-spacing:.3px;white-space:nowrap;transition:color .2s;}
-.logo-sub{font-size:11.5px;color:var(--text-secondary);margin-top:2px;white-space:nowrap;}
+.logo-text{font-size:14.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s;}
+.logo-sub{font-size:11px;color:var(--text-secondary);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 /* صف حالة الاتصال — شريط ممتد على كامل عرض الهيدر بإطار واحد واضح، لا شارة صغيرة وسطية / Connection status row — a single bar spanning the header's full width with one clear frame, not a small centered chip */
 .header-row-status{
   padding:0 32px 12px;
@@ -80,10 +80,11 @@ header{
   font-size:11.5px;color:var(--text-primary);
 }
 .status-bar-item{display:flex;align-items:center;gap:6px;}
+.conn-refresh-group{display:flex;align-items:center;gap:8px;margin-right:auto;}
 .conn-pill-div{width:1px;height:14px;background:var(--border-strong);}
 .status-refresh-btn{
   display:flex;align-items:center;justify-content:center;
-  width:24px;height:24px;flex-shrink:0;margin-right:auto;
+  width:20px;height:20px;flex-shrink:0;
   background:transparent;border:none;border-radius:50%;
   color:var(--text-secondary);cursor:pointer;transition:.2s;
 }
@@ -1050,10 +1051,12 @@ footer{
         <span id="lastUpdateLabel">آخر تحديث: —</span>
       </div>
       <div class="status-bar-item" id="headerDateLine"></div>
-      <div class="conn-pill-div"></div>
-      <button class="status-refresh-btn" id="dataRefreshBtn" title="تحديث بيانات المحطات — لو لاحظت نتائج بحث غير محدّثة">
-        <svg id="dataRefreshIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-      </button>
+      <div class="conn-refresh-group">
+        <div class="conn-pill-div"></div>
+        <button class="status-refresh-btn" id="dataRefreshBtn" title="تحديث بيانات المحطات — لو لاحظت نتائج بحث غير محدّثة">
+          <svg id="dataRefreshIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 </header>
@@ -3122,4 +3125,3 @@ document.getElementById('homeMenuLink').addEventListener('click', (e)=>{
 </script>
 </body>
 </html>
-
