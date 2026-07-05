@@ -81,13 +81,14 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
 .loading-overlay{display:flex;align-items:center;justify-content:center;height:240px;color:var(--text-secondary);font-size:13px;gap:8px;}
 .spinner{width:18px;height:18px;border:2px solid var(--border-strong);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.live-dot{width:8px;height:8px;border-radius:50%;background:#2ECC71;display:inline-block;animation:pulse-dot 1.4s ease-in-out infinite;}
-@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-.refresh-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:12px;color:var(--text-secondary);}
-#lastRefresh{font-family:'JetBrains Mono',monospace;}
-.refresh-btn{background:transparent;border:none;cursor:pointer;color:var(--teal);font-size:12px;display:flex;align-items:center;gap:4px;font-family:inherit;padding:4px 8px;border-radius:6px;border:1px solid var(--border);}
-.refresh-btn:hover{background:var(--bg-elev);}
 .err-msg{text-align:center;color:#E0654F;font-size:13px;padding:40px;background:var(--bg-card);border-radius:8px;}
+.status-refresh-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:20px;height:20px;flex-shrink:0;margin-right:auto;
+  background:transparent;border:none;border-radius:50%;
+  color:var(--text-secondary);cursor:pointer;transition:.2s;
+}
+.status-refresh-btn:hover{background:rgba(31,174,140,0.14);color:var(--teal);}
 
 /* ===== غرفة العمليات — Phase 2 (الواجهة) ===== */
 /* ===== Operations room — Phase 2 (frontend) ===== */
@@ -281,6 +282,9 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
         <span id="lastUpdateLabel">آخر تحديث: —</span>
       </div>
       <div class="status-bar-item" id="headerDateLine"></div>
+      <button class="status-refresh-btn" id="dataRefreshBtn" title="تحديث لوحة العمليات الآن">
+        <svg id="dataRefreshIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      </button>
     </div>
   </div>
 </header>
@@ -288,15 +292,6 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
 <div class="content">
   <div class="page-title">لوحة العمليات</div>
   <div class="page-sub" id="greetLine">مرحبًا...</div>
-
-  <div class="refresh-row">
-    <span class="live-dot"></span>
-    <span>آخر تحديث: <span id="lastRefresh">—</span></span>
-    <button class="refresh-btn" id="refreshBtn">
-      <svg id="refreshIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-      تحديث
-    </button>
-  </div>
 
   <!-- شريط التنبيهات — يظهر فقط عند وجود تنبيهات فعلية، لا عنصر وهمي دائم الظهور -->
   <div class="alert-strip" id="alertStrip" style="display:none"></div>
@@ -862,7 +857,7 @@ async function loadRegionActivity(){
 async function loadDashboard(){
   if(fetching) return;
   fetching = true;
-  document.getElementById('refreshIcon').style.animation = 'spin .7s linear infinite';
+  document.getElementById('dataRefreshIcon').style.animation = 'spin .7s linear infinite';
   presentLoaded = false; changesLoaded = false; chartsLoaded = false; peakLoaded = false; regionsLoaded = false;
 
   try{
@@ -870,12 +865,13 @@ async function loadDashboard(){
     const data = await res.json();
     if(!data.success){ throw new Error(data.error || 'خطأ غير معروف'); }
     renderOpsMain(data);
-    document.getElementById('lastRefresh').textContent = new Date().toLocaleTimeString('ar-SA');
+    lastSuccessfulCheckAt = new Date();
+    refreshLastUpdateLabel();
   }catch(err){
     document.getElementById('opsMain').innerHTML = `<div class="err-msg">تعذّر تحميل البيانات: ${err.message}</div>`;
   }finally{
     fetching = false;
-    document.getElementById('refreshIcon').style.animation = '';
+    document.getElementById('dataRefreshIcon').style.animation = '';
   }
 }
 
@@ -883,7 +879,7 @@ async function loadDashboard(){
 let lastFetch = 0;
 const STALE = 3 * 60 * 1000;
 loadDashboard();
-document.getElementById('refreshBtn').addEventListener('click', async ()=>{
+document.getElementById('dataRefreshBtn').addEventListener('click', async ()=>{
   lastFetch = 0;
   try{ await fetch(API_URL, {method:'POST', body: JSON.stringify({action:'clearSearchCache', phone: session.phone})}); }catch(e){}
   loadDashboard();
