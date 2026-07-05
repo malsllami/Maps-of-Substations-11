@@ -58,11 +58,9 @@ header{
 }
 .header-row-main{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:14px 32px 8px;
+  padding:16px 28px;
 }
-@media (max-width:600px){
-  .header-row-main{padding:12px 14px 6px;}
-}
+@media (max-width:600px){.header-row-main{padding:12px 14px;}}
 .logo{display:flex;align-items:center;gap:9px;min-width:0;flex-shrink:1;overflow:hidden;}
 .logo-mark{transition:transform .2s;}
 .logo:hover .logo-mark{transform:scale(1.06);}
@@ -981,15 +979,8 @@ footer{
 }
 @media (max-width:600px){
   .search-lens.open{width:88vw;}
-  .header-row-main{padding:12px 14px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;}
-  .logo{grid-column:2;justify-self:center;}
-  .header-actions{grid-column:3;justify-self:end;gap:6px;}
-  .logo-sub{display:none;}
-  .logo-text{font-size:11px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .logo-mark{height:26px;}
   .login-btn{padding:7px 12px;font-size:12px;}
   .theme-toggle{width:34px;height:34px;}
-  .hero{padding:92px 6px 90px;}
   .station-table{width:99vw;}
   .eyebrow{font-size:10px;padding:5px 12px;}
   h1{font-size:clamp(22px,6vw,32px);}
