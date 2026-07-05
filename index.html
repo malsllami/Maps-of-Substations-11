@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -1379,9 +1378,9 @@ async function initStationsLocalSearch(){
   try{
     const versionRes = await callBackend('getDataVersion');
     if(versionRes.success && versionRes.version !== cachedVersion){
-      await refreshStationsLocalCache_();
+      await refreshStationsLocalCache_(showLoadProgress_);
     } else if(!isStationsLoaded){
-      await refreshStationsLocalCache_();
+      await refreshStationsLocalCache_(showLoadProgress_);
     }
   }catch(e){
     // تعذّر فحص الإصدار (لا اتصال مثلاً) — نكتفي بالنسخة المحلية الموجودة إن وُجدت
@@ -1390,16 +1389,47 @@ async function initStationsLocalSearch(){
     }
   }
 }
+/* مؤشر تقدم بصري بسيط أثناء تحميل الدفعات، يُعرض بشارة الحالة الموجودة أصلًا بالهيدر بدل عنصر جديد / Simple visual progress shown in the existing header status badge instead of a new element */
+function showLoadProgress_(loaded, total){
+  const el = document.getElementById('lastUpdateLabel');
+  if(el) el.textContent = total ? `جاري تحميل بيانات المحطات: ${loaded}/${total}` : `جاري تحميل بيانات المحطات: ${loaded}`;
+}
 
-/* إعادة تحميل الفهرس الكامل من الخادم وتحديث الكاش المحلي — تُستدعى تلقائيًا عند تغيّر الإصدار، أو يدويًا من زر التحديث */
-/* Reloads the full index from the server and refreshes the local cache — called automatically when the version changes, or manually via the refresh button */
-async function refreshStationsLocalCache_(){
-  const res = await callBackend('getAllStations');
-  if(!res.success || !res.stations) return false;
-  allStationsLocal = res.stations;
+/* إعادة تحميل الفهرس الكامل من الخادم على دفعات فعلية (بدل استجابة ضخمة واحدة قد تفشل أو تتقطّع)، مع تحديث الكاش المحلي فقط بعد التأكد من اكتمال كل الدفعات بنجاح */
+/* Reloads the full index from the server in real batches (instead of one giant response that could fail or truncate), updating the local cache only after every batch is confirmed complete */
+async function refreshStationsLocalCache_(onProgress){
+  let offset = 0;
+  let collected = [];
+  let expectedTotal = null;
+  let version = null;
+
+  while(true){
+    const res = await callBackend('getAllStations', { offset });
+    if(!res.success || !Array.isArray(res.stations)){
+      // فشل بالمنتصف — نتجاهل هذي المحاولة بالكامل ولا نلمس الفهرس المحلي الشغّال إطلاقًا
+      // Mid-way failure — we discard this whole attempt and never touch the working local index
+      console.warn('فشل تحميل دفعة من المحطات، تم إلغاء التحديث بأمان');
+      return false;
+    }
+    collected = collected.concat(res.stations);
+    expectedTotal = res.totalCount;
+    version = res.version;
+    if(typeof onProgress === 'function') onProgress(collected.length, expectedTotal);
+    if(!res.nextOffset) break;
+    offset = res.nextOffset;
+  }
+
+  // تحقّق أخير: العدد المُجمَّع يطابق العدد المتوقّع فعليًا قبل الاستبدال — حماية إضافية من أي بيانات ناقصة صامتة
+  // Final check: the collected count actually matches the expected total before replacing — extra protection against silent incomplete data
+  if(expectedTotal !== null && collected.length !== expectedTotal){
+    console.warn('عدد المحطات المُحمَّلة لا يطابق العدد المتوقع، تم إلغاء التحديث بأمان');
+    return false;
+  }
+
+  allStationsLocal = collected;
   isStationsLoaded = true;
   saveStationsToLocalCache_(allStationsLocal);
-  localStorage.setItem(STATIONS_VERSION_KEY, res.version);
+  localStorage.setItem(STATIONS_VERSION_KEY, version);
   return true;
 }
 
@@ -1508,7 +1538,7 @@ document.getElementById('dataRefreshBtn').addEventListener('click', async ()=>{
   btn.disabled = true;
   try{
     await callBackend('clearSearchCache', { phone: session.phone });
-    await refreshStationsLocalCache_(); // تحديث فهرس البحث المحلي فعليًا — هذا هو مصدر البحث الأساسي الآن
+    await refreshStationsLocalCache_(showLoadProgress_); // تحديث فهرس البحث المحلي فعليًا — هذا هو مصدر البحث الأساسي الآن
   }catch(e){}
   btn.classList.remove('spinning');
   btn.disabled = false;
