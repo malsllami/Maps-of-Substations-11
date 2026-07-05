@@ -186,12 +186,12 @@ header{
 .hero{
   position:relative;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;
-  padding:calc(var(--header-h, 90px) + 44px) 20px 4px;
+  padding:calc(var(--header-h, 130px) + 44px) 20px 4px;
   min-height:calc(var(--globe-size) + 288px);
 }
 @media (max-width:767px){
   .hero{
-    padding:calc(var(--header-h, 90px) + 28px) 20px 3px;
+    padding:calc(var(--header-h, 130px) + 28px) 20px 3px;
     min-height:calc(var(--globe-size) + 240px);
   }
 }
@@ -221,7 +221,7 @@ body.guest-mode{
   body.guest-mode{ --globe-size: clamp(410px, min(104vw, 72vh), 580px); }
 }
 .globe-stage{
-  position:absolute;top:calc(var(--header-h, 90px) + 78px);left:50%;transform:translateX(-50%);
+  position:absolute;top:calc(var(--header-h, 130px) + 78px);left:50%;transform:translateX(-50%);
   z-index:1;
   width:var(--globe-size);
   aspect-ratio:1;
@@ -230,7 +230,7 @@ body.guest-mode{
   transition:width .5s cubic-bezier(.4,0,.2,1), height .5s cubic-bezier(.4,0,.2,1);
 }
 .globe-stage.map-active{
-  top:calc(var(--header-h, 90px) + 8px);
+  top:calc(var(--header-h, 130px) + 8px);
   width:min(1400px, 96vw);
   aspect-ratio:auto;
   height:calc(min(44vh, 480px) + var(--map-toolbar-h));
@@ -240,7 +240,7 @@ body.guest-mode{
 }
 @media (max-width:767px){
   .globe-stage{
-    top:calc(var(--header-h, 90px) + 52px);
+    top:calc(var(--header-h, 130px) + 52px);
   }
 }
 [data-theme="dark"] .globe-stage::before{
@@ -260,8 +260,8 @@ body.guest-mode{
   flex:1 1 auto;min-height:0;border-radius:0 0 16px 16px;overflow:hidden;
 }
 .hero.map-active{
-  min-height:calc(var(--header-h, 90px) + 8px + min(44vh, 480px) + var(--map-toolbar-h) + 40px);
-  min-height:calc(var(--header-h, 90px) + 8px + min(44svh, 480px) + var(--map-toolbar-h) + 40px);
+  min-height:calc(var(--header-h, 130px) + 8px + min(44vh, 480px) + var(--map-toolbar-h) + 40px);
+  min-height:calc(var(--header-h, 130px) + 8px + min(44svh, 480px) + var(--map-toolbar-h) + 40px);
 }
 .hero-content{
   position:relative;z-index:5;width:100%;
@@ -731,11 +731,11 @@ body.guest-mode h1{
 .below-map-area{
   display:none;flex-direction:column;align-items:center;gap:8px;
   width:100%;
-  margin-top:calc(var(--header-h, 90px) + 8px + min(44vh, 480px) + var(--map-toolbar-h) + 10px);
+  margin-top:calc(var(--header-h, 130px) + 8px + min(44vh, 480px) + var(--map-toolbar-h) + 10px);
 }
 .hero.map-active .below-map-area{display:flex;}
 @supports (height: 100svh){
-  .below-map-area{margin-top:calc(var(--header-h, 90px) + 8px + min(44svh, 480px) + var(--map-toolbar-h) + 10px);}
+  .below-map-area{margin-top:calc(var(--header-h, 130px) + 8px + min(44svh, 480px) + var(--map-toolbar-h) + 10px);}
 }
 .map-tool-hint{
   width:min(1100px, 94vw);position:relative;z-index:6;
@@ -3315,4 +3315,3 @@ document.getElementById('homeMenuLink').addEventListener('click', (e)=>{
 </script>
 </body>
 </html>
-
