@@ -80,13 +80,14 @@ header{
   padding:6px 14px;background:var(--bg-card);
 }
 .status-bar-item{display:flex;align-items:center;gap:6px;}
+.conn-pill-div{width:1px;height:14px;background:var(--border-strong);}
 .status-refresh-btn{
-  display:flex;align-items:center;gap:5px;
-  background:transparent;border:1px solid var(--border-strong);border-radius:20px;
-  padding:4px 10px;font-size:10.5px;color:var(--text-secondary);cursor:pointer;
-  font-family:inherit;transition:.2s;
+  display:flex;align-items:center;justify-content:center;
+  width:22px;height:22px;flex-shrink:0;
+  background:transparent;border:none;border-radius:50%;
+  color:var(--text-secondary);cursor:pointer;transition:.2s;
 }
-.status-refresh-btn:hover{border-color:var(--teal);color:var(--teal);}
+.status-refresh-btn:hover{background:rgba(31,174,140,0.14);color:var(--teal);}
 .status-refresh-btn.spinning #dataRefreshIcon{animation:spin .7s linear infinite;}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .conn-dot{
@@ -704,14 +705,6 @@ body.guest-mode h1{
 }
 .search-and-back-row.show{display:flex;}
 body.guest-mode .search-and-back-row{width:min(1300px,96vw);}
-.back-btn{
-  pointer-events:auto;flex-shrink:0;
-  display:flex;align-items:center;gap:5px;
-  font-size:12px;font-weight:600;color:var(--text-secondary);
-  background:var(--bg-card);border:1px solid var(--border-strong);
-  height:55px;padding:0 16px;border-radius:20px;cursor:pointer;transition:.2s;
-}
-.back-btn:hover{border-color:var(--teal);color:var(--teal);}
 .station-search-bar{
   display:flex;
   align-items:center;gap:10px;
@@ -724,7 +717,7 @@ body.guest-mode .search-and-back-row{width:min(1300px,96vw);}
 }
 .station-search-bar:focus-within{border-color:var(--teal);box-shadow:0 6px 18px rgba(31,174,140,.24);}
 .station-search-bar .ssb-icon{
-  flex-shrink:0;width:30px;height:30px;border-radius:50%;
+  flex-shrink:0;width:38px;height:38px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   background:rgba(31,174,140,0.14);color:var(--teal);
   box-shadow:0 2px 6px rgba(31,174,140,.2);
@@ -734,10 +727,10 @@ body.guest-mode .search-and-back-row{width:min(1300px,96vw);}
 .station-search-bar:focus-within .ssb-icon{background:var(--teal);color:#fff;}
 .station-search-bar input{
   flex:1;min-width:0;background:transparent;border:none;outline:none;
-  color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-size:13.5px;
+  color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;
   direction:ltr;text-align:right;
 }
-.station-search-bar input::placeholder{color:var(--text-secondary);font-family:'IBM Plex Sans Arabic',sans-serif;}
+.station-search-bar input::placeholder{color:var(--text-secondary);font-family:'IBM Plex Sans Arabic',sans-serif;font-weight:400;}
 body.guest-mode .station-search-bar{width:min(1300px,96vw);}
 .station-search-progress{
   display:none;flex-direction:column;gap:6px;
@@ -1011,7 +1004,7 @@ footer{
           <a href="admin.html" class="mobile-menu-link" id="mobileAdminLink" style="display:none">لوحة المدير</a>
           <a href="member.html" class="mobile-menu-link">حسابي</a>
           <a href="shifts.html" class="mobile-menu-link">تقويم دوام الورديات</a>
-          <a href="index.html" class="mobile-menu-link">الصفحة الرئيسية</a>
+          <a href="index.html" class="mobile-menu-link" id="homeMenuLink">الصفحة الرئيسية</a>
           <button class="mobile-menu-logout" id="mobileLogoutBtn" style="display:none">تسجيل الخروج</button>
         </div>
       </div>
@@ -1030,11 +1023,11 @@ footer{
         <span id="lastUpdateLabel">آخر تحديث: —</span>
       </div>
       <div class="status-bar-item" id="headerDateLine"></div>
+      <div class="conn-pill-div"></div>
+      <button class="status-refresh-btn" id="dataRefreshBtn" title="تحديث بيانات المحطات — لو لاحظت نتائج بحث غير محدّثة">
+        <svg id="dataRefreshIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      </button>
     </div>
-    <button class="status-refresh-btn" id="dataRefreshBtn" title="تحديث بيانات المحطات — لو لاحظت نتائج بحث غير محدّثة">
-      <svg id="dataRefreshIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-      تحديث البيانات
-    </button>
   </div>
 </header>
 
@@ -1141,13 +1134,9 @@ footer{
   </div>
 
   <div class="search-and-back-row" id="searchAndBackRow">
-    <div class="back-btn" id="backBtn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-      رجوع للبحث
-    </div>
     <div class="station-search-bar" id="stationSearchBar">
       <span class="ssb-icon" id="stationSearchLensIcon">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
       </span>
       <input id="stationSearchInput" type="text" placeholder="ابحث عن محطة أخرى..." inputmode="text">
     </div>
@@ -1768,7 +1757,6 @@ const searchHint = document.getElementById('searchHint');
 const searchLensIcon = document.getElementById('searchLensIcon');
 const heroContent = document.getElementById('heroContent');
 const mapContainer = document.getElementById('map-container');
-const backBtn = document.getElementById('backBtn');
 const searchAndBackRow = document.getElementById('searchAndBackRow');
 const stationTable = document.getElementById('stationTable');
 const zoomControls = document.getElementById('zoomControls');
@@ -1887,7 +1875,7 @@ function renderNotFoundCard(container, rawQuery, onRetry){
 /* الانتقال لإضافة المحطة المبحوث عنها — يرجع للصفحة الرئيسية أولًا إذا كانت الخريطة مفتوحة / Returns home first if the map is open, then opens the form */
 function goAddStationFromNotFound(idValue){
   const wasMapActive = mapContainer.classList.contains('active');
-  if(wasMapActive) backBtn.click();
+  if(wasMapActive) goBackToSearch();
   openAddStationPanel(idValue);
   setTimeout(()=>{
     const input = document.getElementById('newStationId');
@@ -2688,16 +2676,16 @@ document.getElementById('newStationPasteApply').addEventListener('click', ()=>{
 
 /* ===== قفل التنقل أثناء عمليات الحفظ الحرجة (إضافة/تعديل) — يمنع تكرار المحطات بسبب الاستعجال ===== */
 function lockNavigationDuringSave(){
-  backBtn.style.pointerEvents = 'none';
-  backBtn.style.opacity = '0.4';
+  document.getElementById('homeMenuLink').style.pointerEvents = 'none';
+  document.getElementById('homeMenuLink').style.opacity = '0.4';
   searchInput.disabled = true;
   searchLensIcon.style.pointerEvents = 'none';
   searchLensIcon.style.opacity = '0.4';
   window.onbeforeunload = ()=> 'عملية الحفظ لسه ما خلصت';
 }
 function unlockNavigationAfterSave(){
-  backBtn.style.pointerEvents = '';
-  backBtn.style.opacity = '';
+  document.getElementById('homeMenuLink').style.pointerEvents = '';
+  document.getElementById('homeMenuLink').style.opacity = '';
   searchInput.disabled = false;
   searchLensIcon.style.pointerEvents = '';
   searchLensIcon.style.opacity = '';
@@ -3046,7 +3034,8 @@ function openEditForm(){
   });
 }
 
-backBtn.addEventListener('click', ()=>{
+/* الرجوع للبحث — كانت زرًا مستقلاً بجانب صندوق البحث، أصبحت الآن دالة موحّدة يستدعيها رابط "الصفحة الرئيسية" بالقائمة المنسدلة فقط / Back-to-search — used to be its own button beside the search box, now a unified function called only by the "Home" dropdown-menu link */
+function goBackToSearch(){
   mapContainer.classList.remove('active');
   stageEl.classList.remove('map-active');
   heroSection.classList.remove('map-active');
@@ -3071,6 +3060,13 @@ backBtn.addEventListener('click', ()=>{
   wireMat.opacity = document.body.getAttribute('data-theme')==='dark' ? 0.18 : 0.32;
   ringMat.opacity = document.body.getAttribute('data-theme')==='dark' ? 0.10 : 0.20;
   rotSpeed = 0.0016;
+}
+document.getElementById('homeMenuLink').addEventListener('click', (e)=>{
+  if(mapContainer.classList.contains('active')){
+    e.preventDefault(); // نحن أصلًا بنفس الصفحة وبحالة عرض محطة — رجوع فوري بدون أي إعادة تحميل
+    goBackToSearch();
+  }
+  // غير ذلك: نترك الرابط يعمل بشكل طبيعي (فائدة عند الدخول من صفحة أخرى كلوحة المدير أو العضو)
 });
 </script>
 </body>
