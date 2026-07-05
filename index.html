@@ -60,6 +60,9 @@ header{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:14px 32px 8px;
 }
+@media (max-width:600px){
+  .header-row-main{padding:12px 14px 6px;}
+}
 .logo{display:flex;align-items:center;gap:9px;min-width:0;flex-shrink:1;overflow:hidden;}
 .logo-mark{transition:transform .2s;}
 .logo:hover .logo-mark{transform:scale(1.06);}
@@ -100,7 +103,7 @@ header{
 .conn-dot.online{background:#2ECC71;box-shadow:0 0 6px rgba(46,204,113,.6);}
 .conn-dot.offline{background:#E0654F;box-shadow:0 0 6px rgba(224,101,79,.6);}
 @media (max-width:600px){
-  .header-row-status{padding:0 16px 10px;}
+  .header-row-status{padding:0 14px 10px;}
   .conn-status-pill{padding:8px 12px;font-size:10.5px;gap:10px;flex-wrap:wrap;}
 }
 .header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
@@ -175,12 +178,12 @@ header{
 .hero{
   position:relative;
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;
-  padding:calc(var(--header-h, 90px) + 10px) 20px 4px;
+  padding:calc(var(--header-h, 90px) + 34px) 20px 4px;
   min-height:calc(var(--globe-size) + 288px);
 }
 @media (max-width:767px){
   .hero{
-    padding:calc(var(--header-h, 90px) + 8px) 20px 3px;
+    padding:calc(var(--header-h, 90px) + 28px) 20px 3px;
     min-height:calc(var(--globe-size) + 240px);
   }
 }
