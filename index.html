@@ -1921,6 +1921,7 @@ function syncRendererToStage(){
   if(leafletMap) leafletMap.invalidateSize();
   syncHeaderHeight();
   alignHeroBelowGlobe();
+  alignBelowMapArea();
 }
 new ResizeObserver(syncRendererToStage).observe(stageEl);
 window.addEventListener('resize', syncRendererToStage);
@@ -1943,6 +1944,21 @@ function syncHeaderHeight(){
 window.addEventListener('load', syncHeaderHeight);
 window.addEventListener('resize', syncHeaderHeight);
 setTimeout(syncHeaderHeight, 300); // إعادة قياس بعد استقرار الخطوط والشعار / Re-measure after fonts and logo settle
+
+/* ============================================================
+ *  محاذاة كل ما يظهر أسفل الخريطة عبر قياس حقيقي لنهاية الخريطة الفعلية — لا حساب CSS تقديري
+ *  الخريطة نفسها position:absolute (لا تُسهم بارتفاع بالتخطيط الطبيعي)، فالقياس اليدوي هو الطريقة الموثوقة الوحيدة
+ *  Aligns everything below the map via real measurement of the map's actual bottom edge — no estimated CSS math
+ *  The map itself is position:absolute (contributes no height to normal flow), so manual measurement is the only reliable way
+ * ============================================================ */
+function alignBelowMapArea(){
+  const stage = document.getElementById('globeStage');
+  const area = document.getElementById('belowMapArea');
+  if(!stage || !area || !stage.classList.contains('map-active')) return;
+  const bottom = stage.offsetTop + stage.offsetHeight;
+  area.style.marginTop = (bottom + 10) + 'px';
+}
+window.addEventListener('resize', alignBelowMapArea);
 syncHeaderHeight();
 
 function alignHeroBelowGlobe(){
@@ -2628,7 +2644,7 @@ async function activateNearbyMode(mode){
       .map(s => ({...s, _dist: haversineKm(currentStation.lat, currentStation.lng, s.lat, s.lng)}));
 
     const bounds = [[currentStation.lat, currentStation.lng], ...nearbyFullData.map(s=>[s.lat,s.lng])];
-    if(bounds.length > 1) leafletMap.fitBounds(bounds, { padding:[36,36], maxZoom:17 });
+    if(bounds.length > 1) leafletMap.setView([currentStation.lat, currentStation.lng], 17); // تكبير ثابت على المحطة نفسها — المستخدم يحرّك الخريطة بنفسه لاستكشاف الباقي
 
     renderNearbyMarkers();
     if(!leafletMap._nearbyHandlerBound){
@@ -3022,7 +3038,7 @@ function startMorphExpand(s){
       mapModeChip.classList.add('show');
       zoomControls.classList.add('show');
       cardsSection.classList.add('hidden');
-      setTimeout(()=> renderStationOnMap(s), 200);
+      setTimeout(()=>{ renderStationOnMap(s); alignBelowMapArea(); }, 200);
     }
   }, 16);
 }
