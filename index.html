@@ -2004,6 +2004,16 @@ async function searchStationSmart(query){
   return await callBackend('searchStation', { query });
 }
 
+/* تحديث فوري للفهرس المحلي عند نجاح إضافة أو تعديل — بدون انتظار دورة فحص الإصدار التالية، حتى يرى المستخدم نفسه نتيجة عمله فورًا ببحثه القادم */
+/* Instant local-index update on a successful add/edit — no need to wait for the next version-check cycle, so the user immediately sees their own change on their next search */
+function upsertStationInLocalCache_(station){
+  if(!isStationsLoaded) return; // الفهرس لسه ما تحمّل، ما فيه شي نحدّثه محليًا
+  const idx = allStationsLocal.findIndex(s => String(s.id).toUpperCase() === String(station.id).toUpperCase() && s.type === station.type);
+  if(idx === -1) allStationsLocal.push(station);
+  else allStationsLocal[idx] = station;
+  saveStationsToLocalCache_(allStationsLocal);
+}
+
 let isSearching = false;
 function setSearchProgress(active, prefix){
   prefix = prefix || 'search';
@@ -2928,6 +2938,12 @@ document.getElementById('addStationSubmitBtn').addEventListener('click', async f
 
     progressFill.style.width = '100%';
     progressLabel.textContent = '100%';
+    upsertStationInLocalCache_({
+      id: stationId, type: newStationType,
+      feeder: newStationType === 'توزيع' ? document.getElementById('newStationFeeder').value.trim() : '',
+      region: newStationType === 'توزيع' ? region : '',
+      lat, lng
+    });
     setTimeout(()=>{
       progressTrack.style.display = 'none';
       progressLabel.style.display = 'none';
@@ -3200,6 +3216,12 @@ function openEditForm(){
       if(!res.success) throw new Error(res.error || 'فشل الحفظ');
       progressFill.style.width = '100%';
       progressLabel.textContent = '100%';
+      upsertStationInLocalCache_({
+        id: s.id, type: s.type,
+        feeder: isDistribution ? document.getElementById('editFeeder').value.trim() : '',
+        region: isDistribution ? document.getElementById('editRegion').value.trim() : '',
+        lat, lng
+      });
 
       document.getElementById('editStationBody').innerHTML = `
         <div class="sb-inner" style="text-align:center;">
