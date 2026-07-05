@@ -1743,10 +1743,10 @@ setInterval(function(){
 
     // ===== تعبئة القائمة المنسدلة الخاصة بالجوال بنفس بيانات الجلسة =====
     document.getElementById('mobileMenuName').textContent = session.name.split(' ')[0];
-    document.getElementById('mobileLogoutBtn').style.display = 'block';
+    document.getElementById('mobileLogoutBtn').style.display = 'flex';
     document.getElementById('mobileLogoutBtn').addEventListener('click', doLogout);
     if(session.role === 'admin'){
-      document.getElementById('mobileAdminLink').style.display = 'block';
+      document.getElementById('mobileAdminLink').style.display = 'flex';
     }
   }catch(e){}
 })();
