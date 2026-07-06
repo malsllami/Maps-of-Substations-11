@@ -228,12 +228,11 @@ body.guest-mode{
   transition:width .5s cubic-bezier(.4,0,.2,1), height .5s cubic-bezier(.4,0,.2,1);
 }
 .globe-stage.map-active{
-  top:calc(var(--header-h, 130px) + 8px);
+  top:calc(var(--header-h, 130px) + 90px);
   width:min(1400px, 96vw);
   aspect-ratio:auto;
-  height:calc(min(68vh, 720px) + var(--map-toolbar-h));
-  height:calc(min(68svh, 720px) + var(--map-toolbar-h));
-  min-height:calc(280px + var(--map-toolbar-h));
+  height:auto;
+  min-height:280px;
   display:flex;flex-direction:column;
 }
 @media (max-width:767px){
@@ -254,13 +253,20 @@ body.guest-mode{
 }
 #map-container.active{opacity:1;pointer-events:auto;}
 .globe-stage.map-active #map-container{
-  position:relative;inset:auto;width:100%;height:auto;
-  flex:1 1 auto;min-height:0;border-radius:0 0 16px 16px;overflow:hidden;
+  position:relative;inset:auto;width:100%;
+  height:min(64vh, 680px);flex-shrink:0;
+  border-radius:0 0 16px 16px;overflow:hidden;
 }
 .hero.map-active{
-  min-height:calc(var(--header-h, 130px) + 8px + min(68vh, 720px) + var(--map-toolbar-h) + 40px);
-  min-height:calc(var(--header-h, 130px) + 8px + min(68svh, 720px) + var(--map-toolbar-h) + 40px);
+  min-height:calc(var(--header-h, 130px) + 90px + min(68vh, 720px) + 100px);
 }
+/* منطقة المحتوى العلوي — البحث وبطاقة المحطة، بتدفق طبيعي فوق الخريطة مباشرة، لا قياس تخميني لازم لها لأنها ليست position:absolute / Top content area — search and station card, in normal flow directly above the map, no guesswork needed since it isn't position:absolute */
+.top-content-area{
+  display:none;position:relative;z-index:5;
+  width:min(1100px, 94vw);margin:0 auto;
+}
+body.guest-mode .top-content-area{width:min(1300px,96vw);}
+.hero.map-active .top-content-area{display:block;}
 .hero-content{
   position:relative;z-index:5;width:100%;
   display:flex;flex-direction:column;align-items:center;
@@ -642,10 +648,10 @@ body.guest-mode h1{
 }
 
 .outage-panel{
-  display:none;flex-direction:column;gap:8px;
-  width:min(1100px, 94vw);position:relative;z-index:6;
-  background:var(--bg-card);border:1px solid var(--border-strong);border-radius:16px;
-  padding:16px;box-shadow:0 10px 24px rgba(0,0,0,.2);
+  display:none;flex-direction:column;gap:8px;flex-shrink:0;
+  width:100%;position:relative;z-index:6;
+  background:var(--bg-card);border-bottom:1px solid var(--border-strong);
+  padding:14px 16px;
 }
 .outage-panel.show{display:flex;}
 .outage-panel-title{font-size:11.5px;font-weight:600;color:var(--text-secondary);}
@@ -710,20 +716,11 @@ body.guest-mode h1{
 }
 /* الحاوية الموحّدة لكل ما يظهر أسفل الخريطة — الإزاحة الصحيحة الوحيدة، بدل تكرارها بكل عنصر على حدة (وهذا كان سبب مشكلة التغطية سابقًا) */
 /* The single unified wrapper for everything below the map — the one correct offset, instead of repeating it per element (this was the root cause of the earlier overlap bug) */
-.below-map-area{
-  display:none;flex-direction:column;align-items:center;gap:8px;
-  width:100%;
-  margin-top:calc(var(--header-h, 130px) + 8px + min(68vh, 720px) + var(--map-toolbar-h) + 10px);
-}
-.hero.map-active .below-map-area{display:flex;}
-@supports (height: 100svh){
-  .below-map-area{margin-top:calc(var(--header-h, 130px) + 8px + min(68svh, 720px) + var(--map-toolbar-h) + 10px);}
-}
 .map-tool-hint{
-  width:min(1100px, 94vw);position:relative;z-index:6;
-  background:var(--bg-card);border:1px solid var(--border-strong);
-  padding:10px 16px;border-radius:16px;font-size:12px;color:var(--text-secondary);
-  display:none;text-align:center;line-height:1.6;
+  width:100%;position:relative;z-index:6;
+  background:var(--bg-card);border-bottom:1px solid var(--border-strong);
+  padding:10px 16px;font-size:12px;color:var(--text-secondary);
+  display:none;text-align:center;line-height:1.6;flex-shrink:0;
 }
 .map-tool-hint a{pointer-events:auto;}
 .map-tool-hint.show{display:block;}
@@ -742,8 +739,10 @@ body.guest-mode .search-and-back-row{width:min(1300px,96vw);}
   background:var(--bg-elev);border:1.5px solid rgba(31,174,140,0.35);
   border-radius:20px;padding:0 20px 0 9px;
   box-shadow:0 10px 22px rgba(0,0,0,.24);
-  transition:border-color .2s, box-shadow .2s;
+  transition:border-color .2s, box-shadow .2s, height .2s ease;
 }
+/* بعد ظهور نتيجة بحث — تقليص الارتفاع فقط (البحث يبقى جاهزًا لتغيير رقم المحطة مباشرة) / After a search result appears — height shrinks only (the box stays ready to type a different station number right away) */
+.station-search-bar.compact{height:40px;}
 .station-search-bar:focus-within{border-color:var(--teal);box-shadow:0 6px 18px rgba(31,174,140,.24);}
 .station-search-bar .ssb-icon{
   flex-shrink:0;width:38px;height:38px;border-radius:50%;
@@ -1075,6 +1074,24 @@ footer{
 </header>
 
 <section class="hero" id="heroSection">
+  <!-- منطقة المحتوى العلوي — البحث وبطاقة المحطة، تظهر فوق الخريطة مباشرة أسفل الهيدر مباشرة / Top content area — search and station card, shown directly above the map, right below the header -->
+  <div class="top-content-area" id="topContentArea">
+    <div class="search-and-back-row" id="searchAndBackRow">
+      <div class="station-search-bar" id="stationSearchBar">
+        <span class="ssb-icon" id="stationSearchLensIcon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input id="stationSearchInput" type="text" placeholder="ابحث عن محطة أخرى..." inputmode="text">
+      </div>
+    </div>
+    <div class="station-search-progress" id="stationSearchProgress">
+      <div class="search-progress-track"><div class="search-progress-fill" id="stationSearchProgressFill"></div></div>
+      <div class="search-progress-label"><span>جاري البحث عن المحطة...</span><span id="stationSearchProgressPct">0%</span></div>
+    </div>
+    <div class="station-search-hint" id="stationSearchHint"></div>
+    <div class="station-table" id="stationTable"></div>
+  </div>
+
   <div class="globe-stage" id="globeStage">
     <canvas id="globe-canvas"></canvas>
 
@@ -1133,6 +1150,13 @@ footer{
       <button class="nearby-opt" id="measureToggleBtn">📐 قياس المسافة</button>
       <button class="nearby-opt" id="routeToggleBtn">🔗 رسم مسار متعدد النقاط</button>
     </div>
+    <div class="map-tool-hint" id="mapToolHint"></div>
+    <div class="outage-panel" id="outagePanel">
+      <div class="outage-panel-title">محطات العطل — أدخل الأرقام بالترتيب</div>
+      <textarea id="outageInput" placeholder="مثال: 39070-93080-ABN110&#10;افصل بينها بفاصلة أو / أو - أو سطر جديد"></textarea>
+      <div id="outageError" class="outage-error"></div>
+      <button class="outage-submit-btn" id="outageSubmitBtn">عرض على الخريطة</button>
+    </div>
 
     <div id="map-container"></div>
 
@@ -1144,32 +1168,6 @@ footer{
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </div>
     </div>
-  </div>
-
-  <!-- حاوية موحّدة لكل ما يظهر أسفل الخريطة — الإزاحة الصحيحة محسوبة هنا مرة واحدة فقط، بدل كل عنصر يحسبها بمفرده -->
-  <!-- Unified wrapper for everything below the map — the correct offset is computed here once, instead of each element computing it on its own -->
-  <div class="below-map-area" id="belowMapArea">
-    <div class="map-tool-hint" id="mapToolHint"></div>
-    <div class="outage-panel" id="outagePanel">
-      <div class="outage-panel-title">محطات العطل — أدخل الأرقام بالترتيب</div>
-      <textarea id="outageInput" placeholder="مثال: 39070-93080-ABN110&#10;افصل بينها بفاصلة أو / أو - أو سطر جديد"></textarea>
-      <div id="outageError" class="outage-error"></div>
-      <button class="outage-submit-btn" id="outageSubmitBtn">عرض على الخريطة</button>
-    </div>
-    <div class="search-and-back-row" id="searchAndBackRow">
-      <div class="station-search-bar" id="stationSearchBar">
-        <span class="ssb-icon" id="stationSearchLensIcon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        </span>
-        <input id="stationSearchInput" type="text" placeholder="ابحث عن محطة أخرى..." inputmode="text">
-      </div>
-    </div>
-    <div class="station-search-progress" id="stationSearchProgress">
-      <div class="search-progress-track"><div class="search-progress-fill" id="stationSearchProgressFill"></div></div>
-      <div class="search-progress-label"><span>جاري البحث عن المحطة...</span><span id="stationSearchProgressPct">0%</span></div>
-    </div>
-    <div class="station-search-hint" id="stationSearchHint"></div>
-    <div class="station-table" id="stationTable"></div>
   </div>
 
   <div class="hero-content" id="heroContent">
@@ -1898,7 +1896,7 @@ function syncRendererToStage(){
   if(leafletMap) leafletMap.invalidateSize();
   syncHeaderHeight();
   alignHeroBelowGlobe();
-  alignBelowMapArea();
+  layoutMapActive();
 }
 new ResizeObserver(syncRendererToStage).observe(stageEl);
 window.addEventListener('resize', syncRendererToStage);
@@ -1928,14 +1926,44 @@ setTimeout(syncHeaderHeight, 300); // إعادة قياس بعد استقرار 
  *  Aligns everything below the map via real measurement of the map's actual bottom edge — no estimated CSS math
  *  The map itself is position:absolute (contributes no height to normal flow), so manual measurement is the only reliable way
  * ============================================================ */
-function alignBelowMapArea(){
+/* ============================================================
+ *  تخطيط وضع الخريطة النشطة — قياس فعلي بالكامل، لا حساب CSS تخميني
+ *  الخريطة تحتفظ بارتفاع ثابت دائمًا؛ فتح أي لوحة (نهاري/المزيد/قريب/مغذي/أعطال) يزيد ارتفاع الإطار الكلي ويدفع الخريطة لأسفل ضمنه، ولا يقلّص حجمها أبدًا
+ *  Map-active layout — fully measured, no guessed CSS math
+ *  The map always keeps a fixed height; opening any panel (day/more/nearby/feeder/outage) grows the total frame and shifts the map down within it, never shrinking it
+ * ============================================================ */
+function layoutMapActive(){
   const stage = document.getElementById('globeStage');
-  const area = document.getElementById('belowMapArea');
-  if(!stage || !area || !stage.classList.contains('map-active')) return;
-  const bottom = stage.offsetTop + stage.offsetHeight;
-  area.style.marginTop = (bottom + 10) + 'px';
+  if(!stage || !stage.classList.contains('map-active')) return;
+  const topArea = document.getElementById('topContentArea');
+  const header = document.querySelector('header');
+  const headerH = header ? header.getBoundingClientRect().height : 130;
+  const topAreaH = topArea ? topArea.offsetHeight : 0;
+  const stageTop = headerH + 44 + topAreaH + 14; // ٤٤ تطابق حشو .hero العلوي، و١٤ فراغ فاصل بسيط
+  stage.style.top = stageTop + 'px';
+
+  const toolbarEl = document.querySelector('.map-toolbar-bar');
+  const toolbarH = toolbarEl ? toolbarEl.offsetHeight : 45;
+  const availableH = window.innerHeight - stageTop - toolbarH - 16; // هامش أمان أسفل الشاشة
+  const mapContainer = document.getElementById('map-container');
+  if(mapContainer) mapContainer.style.height = Math.max(320, availableH) + 'px';
+  if(leafletMap) leafletMap.invalidateSize();
+
+  // ضبط الحد الأدنى لارتفاع قسم الهيرو ليطابق الامتداد الفعلي الكامل (بعد أي لوحة مفتوحة تكبّر الإطار) — يمنع تراكب أي محتوى تالٍ بالصفحة
+  // Sets the hero section's min-height to match the stage's real full extent (after any open panel enlarges the frame) — prevents overlap with any following page content
+  requestAnimationFrame(()=>{
+    const heroEl = document.getElementById('heroSection');
+    if(heroEl) heroEl.style.minHeight = (stageTop + stage.offsetHeight + 40) + 'px';
+  });
 }
-window.addEventListener('resize', alignBelowMapArea);
+window.addEventListener('resize', layoutMapActive);
+/* مراقبة تلقائية لكل لوحات الشريط (نهاري/المزيد/قريب-مغذي/الأعطال) — أي تغيّر بظهورها يعيد حساب التخطيط فورًا، بدل الاعتماد على استدعاء يدوي متفرّق بكل معالج ضغط */
+/* Automatic observer on all toolbar panels — any visibility change immediately triggers a re-layout, instead of relying on scattered manual calls in every click handler */
+['mapModePanel','morePanel','mapToolHint','outagePanel'].forEach(function(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  new MutationObserver(layoutMapActive).observe(el, {attributes:true, attributeFilter:['class']});
+});
 syncHeaderHeight();
 
 function alignHeroBelowGlobe(){
@@ -2563,14 +2591,21 @@ function renderNearbyMarkers(){
 
     const marker = L.marker([s.lat, s.lng], { icon: nearbyPinIcon(s.id, color, tier, isTransformer) });
     marker.bindPopup(`
-      <div style="font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl;min-width:170px;font-size:13px">
-        <b>${s.name || s.id}</b><br>
-        رقم: ${s.id}<br>
-        ${s.feeder ? 'المغذي: ' + s.feeder + '<br>' : ''}
-        المسافة من محطتك: <b>${s._dist.toFixed(2)} كم</b>
-        <div style="display:flex;gap:6px;margin-top:8px">
-          <button onclick="window.editNearbyStation('${s.id}')" style="flex:1;background:var(--bg-elev,#101D2E);color:#fff;border:1px solid rgba(255,255,255,.2);padding:7px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">تعديل</button>
-          <a href="${gmapsUrl}" target="_blank" rel="noopener" style="flex:1;text-align:center;background:${teal()};color:#fff;padding:7px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">قوقل ماب</a>
+      <div class="sb-inner" style="padding:0;min-width:190px">
+        <div class="sb-title-row" style="margin-bottom:8px">
+          <div class="sb-title-icon" style="width:28px;height:28px;font-size:13px">${isTransformer ? '⚡' : '🏭'}</div>
+          <div>
+            <div class="st-name" style="font-size:14px">${s.id}</div>
+            <div class="sb-type-badge">محطة ${s.type} — ${s._dist.toFixed(2)} كم</div>
+          </div>
+        </div>
+        <div class="sb-meta" style="margin-bottom:10px;gap:4px">
+          ${s.region ? `<div class="meta-line" style="font-size:11.5px">📍 <b>${s.region}</b></div>` : ''}
+          ${s.feeder ? `<div class="meta-line" style="font-size:11.5px">🔌 <b style="font-family:'JetBrains Mono',monospace;direction:ltr">${s.feeder}</b></div>` : ''}
+        </div>
+        <div class="st-actions">
+          <a href="${gmapsUrl}" target="_blank" rel="noopener" class="st-btn primary">قوقل ماب 🧭</a>
+          <button onclick="window.editNearbyStation('${s.id}')" class="st-btn">تعديل ✏️</button>
         </div>
       </div>`);
     marker.bindTooltip(`${s.id} — ${s._dist.toFixed(2)} كم`, {direction:'top', offset:[0,-16]});
@@ -2993,6 +3028,7 @@ function goToStation(s){
     /* الخريطة مفتوحة أصلًا (بحث من داخل صفحة المحطة) — قفز مباشر بدون إعادة تشغيل حركة الكرة الأرضية */
     /* Map already open (searching from within the station page) — jump directly, skip the globe morph replay */
     renderStationOnMap(s);
+    setTimeout(layoutMapActive, 50);
     return;
   }
   rotSpeed = 0;
@@ -3015,7 +3051,7 @@ function startMorphExpand(s){
       mapModeChip.classList.add('show');
       zoomControls.classList.add('show');
       cardsSection.classList.add('hidden');
-      setTimeout(()=>{ renderStationOnMap(s); alignBelowMapArea(); }, 200);
+      setTimeout(()=>{ renderStationOnMap(s); layoutMapActive(); }, 200);
     }
   }, 16);
 }
@@ -3053,6 +3089,7 @@ function renderStationOnMap(s){
     </div>`;
   stationTable.classList.add('show');
   searchAndBackRow.classList.add('show');
+  document.getElementById('stationSearchBar').classList.add('compact');
   document.getElementById('openEditBtn').addEventListener('click', openEditForm);
 }
 
@@ -3260,6 +3297,10 @@ function goBackToSearch(){
   mapContainer.classList.remove('active');
   stageEl.classList.remove('map-active');
   heroSection.classList.remove('map-active');
+  // إعادة تعيين كل الأنماط المضمّنة اللي ضبطتها layoutMapActive — بدونها يبقى الوضع الخامل متأثرًا بحسابات وضع الخريطة القديمة
+  // Reset every inline style layoutMapActive set — without this, idle mode would stay affected by the old map-mode calculations
+  stageEl.style.top = ''; heroSection.style.minHeight = '';
+  const mc = document.getElementById('map-container'); if(mc) mc.style.height = '';
   document.getElementById('heroContent').classList.remove('hidden');
   searchAndBackRow.classList.remove('show');
   mapModeChip.classList.remove('show');
@@ -3272,6 +3313,7 @@ function goBackToSearch(){
   clearOutageMarkers(); outagePanel.classList.remove('show'); document.getElementById('outageInput').value=''; document.getElementById('outageError').textContent='';
   setActiveTool(null);
   stationTable.classList.remove('show');
+  document.getElementById('stationSearchBar').classList.remove('compact');
   stationSearchInput.value = '';
   stationSearchHint.textContent = '';
   setSearchProgress(false, 'stationSearch');
