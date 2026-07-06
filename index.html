@@ -187,6 +187,7 @@ header{
   padding:calc(var(--header-h, 130px) + 44px) 20px 4px;
   min-height:calc(var(--globe-size) + 288px);
 }
+.hero.map-active{padding-top:calc(var(--header-h, 130px) + 14px);}
 @media (max-width:767px){
   .hero{
     padding:calc(var(--header-h, 130px) + 28px) 20px 3px;
@@ -229,7 +230,7 @@ body.guest-mode{
 }
 .globe-stage.map-active{
   top:calc(var(--header-h, 130px) + 90px);
-  width:min(1400px, 96vw);
+  width:min(1600px, 98vw);
   aspect-ratio:auto;
   height:auto;
   min-height:280px;
@@ -726,11 +727,10 @@ body.guest-mode h1{
 .map-tool-hint.show{display:block;}
 .search-and-back-row{
   display:none;align-items:center;gap:8px;
-  width:min(1100px, 94vw);
+  width:100%;
   position:relative;z-index:6;
 }
 .search-and-back-row.show{display:flex;}
-body.guest-mode .search-and-back-row{width:min(1300px,96vw);}
 .station-search-bar{
   display:flex;
   align-items:center;gap:10px;
@@ -759,10 +759,9 @@ body.guest-mode .search-and-back-row{width:min(1300px,96vw);}
   direction:ltr;text-align:right;
 }
 .station-search-bar input::placeholder{color:var(--text-secondary);font-family:'IBM Plex Sans Arabic',sans-serif;font-weight:400;}
-body.guest-mode .station-search-bar{width:min(1300px,96vw);}
 .station-search-progress{
   display:none;flex-direction:column;gap:6px;
-  width:min(1100px, 94vw);margin-top:8px;
+  width:100%;margin-top:8px;
 }
 .station-search-progress.show{display:flex;}
 /* ===== مؤشر آخر تحديث لبيانات المحطة من قاعدة البيانات — دائم، وليس أداة تشخيص مؤقتة ===== */
@@ -773,16 +772,14 @@ body.guest-mode .station-search-bar{width:min(1300px,96vw);}
   margin-top:10px;padding-top:10px;border-top:1px solid var(--border);
 }
 .db-freshness-note svg{flex-shrink:0;color:var(--teal);}
-body.guest-mode .station-search-progress{width:min(1300px,96vw);}
 .station-search-hint{
-  width:min(1100px, 94vw);font-size:12px;color:var(--text-secondary);
+  width:100%;font-size:12px;color:var(--text-secondary);
   min-height:16px;padding:6px 4px 0;
 }
 .station-search-hint.err{color:#E0654F;}
-body.guest-mode .station-search-hint{width:min(1300px,96vw);}
 .station-table{
   position:relative;z-index:6;
-  width:min(1100px, 94vw);
+  width:100%;
   margin-top:4px;
   background:var(--bg-card);border:1px solid var(--border-strong);
   border-radius:16px;
@@ -791,7 +788,6 @@ body.guest-mode .station-search-hint{width:min(1300px,96vw);}
   max-height:none;overflow:visible;
   box-shadow:0 10px 24px rgba(0,0,0,.22);
 }
-body.guest-mode .station-table{width:min(1300px,96vw);}
 .station-table.show{display:block;}
 .sb-inner{padding:16px 20px;}
 .sb-title-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
@@ -1939,7 +1935,7 @@ function layoutMapActive(){
   const header = document.querySelector('header');
   const headerH = header ? header.getBoundingClientRect().height : 130;
   const topAreaH = topArea ? topArea.offsetHeight : 0;
-  const stageTop = headerH + 44 + topAreaH + 14; // ٤٤ تطابق حشو .hero العلوي، و١٤ فراغ فاصل بسيط
+  const stageTop = headerH + 14 + topAreaH + 10; // ١٤ تطابق حشو .hero.map-active العلوي المخفَّف، و١٠ فراغ فاصل بسيط
   stage.style.top = stageTop + 'px';
 
   const toolbarEl = document.querySelector('.map-toolbar-bar');
@@ -1957,6 +1953,10 @@ function layoutMapActive(){
   });
 }
 window.addEventListener('resize', layoutMapActive);
+/* مراقبة فعلية لحجم منطقة المحتوى العلوي — أي تغيّر حقيقي بارتفاعها (ظهور نتيجة، بطاقة محطة، إلخ) يعيد حساب موضع الخريطة فورًا، بدل انتظار مهلة زمنية تخمينية قد لا تطابق التوقيت الفعلي */
+/* Real size observation of the top content area — any actual height change (result appears, station card, etc.) immediately recomputes the map's position, instead of waiting on a guessed timing window that might not match reality */
+const _topAreaEl = document.getElementById('topContentArea');
+if(_topAreaEl) new ResizeObserver(layoutMapActive).observe(_topAreaEl);
 /* مراقبة تلقائية لكل لوحات الشريط (نهاري/المزيد/قريب-مغذي/الأعطال) — أي تغيّر بظهورها يعيد حساب التخطيط فورًا، بدل الاعتماد على استدعاء يدوي متفرّق بكل معالج ضغط */
 /* Automatic observer on all toolbar panels — any visibility change immediately triggers a re-layout, instead of relying on scattered manual calls in every click handler */
 let _layoutDebounceTimer = null;
