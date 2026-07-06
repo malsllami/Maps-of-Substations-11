@@ -247,6 +247,8 @@ body.guest-mode{
   background:radial-gradient(circle at center, rgba(77,214,181,0.16) 0%, rgba(46,125,209,0.07) 38%, transparent 68%);
 }
 #globe-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;}
+.globe-stage.map-active #globe-canvas{display:none;}
+.globe-stage.map-active::before{display:none;}
 #map-container{
   position:absolute;inset:0;width:100%;height:100%;z-index:2;
   opacity:0;pointer-events:none;
@@ -789,18 +791,20 @@ body.guest-mode h1{
   box-shadow:0 10px 24px rgba(0,0,0,.22);
 }
 .station-table.show{display:block;}
-.sb-inner{padding:16px 20px;}
-.sb-title-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.sb-title-icon{
-  width:34px;height:34px;border-radius:10px;flex-shrink:0;
-  background:rgba(31,174,140,0.14);color:var(--teal);
-  display:flex;align-items:center;justify-content:center;font-size:16px;
+.sb-inner{padding:12px 18px;}
+.sb-data-row{
+  display:flex;align-items:center;gap:0;
+  border:1px solid var(--border-strong);border-radius:10px;
+  overflow:hidden;margin-bottom:10px;
 }
-.st-name{font-weight:800;font-size:17px;font-family:'JetBrains Mono',monospace;direction:ltr;display:inline-block;}
-.sb-type-badge{font-size:11px;color:var(--text-secondary);font-weight:600;margin-top:1px;}
-.sb-meta{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--text-secondary);margin-bottom:14px;}
-.sb-meta .meta-line{display:flex;align-items:center;gap:6px;}
-.sb-meta .meta-line b{color:var(--text-primary);font-weight:700;font-family:inherit;direction:rtl;}
+.sb-data-cell{
+  flex:1;min-width:0;text-align:center;padding:8px 6px;
+  border-inline-start:1px solid var(--border-strong);
+}
+.sb-data-cell:first-child{border-inline-start:none;}
+.sb-data-cell .cell-label{font-size:9.5px;color:var(--text-secondary);margin-bottom:2px;}
+.sb-data-cell .cell-value{font-size:13px;font-weight:800;font-family:'JetBrains Mono',monospace;direction:ltr;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-data-cell .cell-value.ar{font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl;}
 .station-table table{width:100%;border-collapse:collapse;font-size:11px;}
 .station-table td{padding:3px 0;color:var(--text-secondary);}
 .station-table td.v{color:var(--text-primary);font-weight:500;text-align:left;font-family:'JetBrains Mono',monospace;direction:ltr;}
@@ -2600,17 +2604,20 @@ function renderNearbyMarkers(){
 
     const marker = L.marker([s.lat, s.lng], { icon: nearbyPinIcon(s.id, color, tier, isTransformer) });
     marker.bindPopup(`
-      <div class="sb-inner" style="padding:0;min-width:190px">
-        <div class="sb-title-row" style="margin-bottom:8px">
-          <div class="sb-title-icon" style="width:28px;height:28px;font-size:13px">${isTransformer ? '⚡' : '🏭'}</div>
-          <div>
-            <div class="st-name" style="font-size:14px">${s.id}</div>
-            <div class="sb-type-badge">محطة ${s.type} — ${s._dist.toFixed(2)} كم</div>
+      <div class="sb-inner" style="padding:0;min-width:220px">
+        <div class="sb-data-row" style="margin-bottom:8px">
+          <div class="sb-data-cell">
+            <div class="cell-label">${isTransformer ? '⚡' : '🏭'} رقم المحطة</div>
+            <div class="cell-value" style="font-size:12px">${s.id}</div>
           </div>
-        </div>
-        <div class="sb-meta" style="margin-bottom:10px;gap:4px">
-          ${s.region ? `<div class="meta-line" style="font-size:11.5px">📍 <b>${s.region}</b></div>` : ''}
-          ${s.feeder ? `<div class="meta-line" style="font-size:11.5px">🔌 <b style="font-family:'JetBrains Mono',monospace;direction:ltr">${s.feeder}</b></div>` : ''}
+          ${s.feeder ? `<div class="sb-data-cell">
+            <div class="cell-label">🔌 المغذي</div>
+            <div class="cell-value" style="font-size:12px">${s.feeder}</div>
+          </div>` : ''}
+          <div class="sb-data-cell">
+            <div class="cell-label">📏 المسافة</div>
+            <div class="cell-value" style="font-size:12px">${s._dist.toFixed(2)} كم</div>
+          </div>
         </div>
         <div class="st-actions">
           <a href="${gmapsUrl}" target="_blank" rel="noopener" class="st-btn primary">قوقل ماب 🧭</a>
@@ -3076,16 +3083,19 @@ function renderStationOnMap(s){
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=driving`;
   stationTable.innerHTML = `
     <div class="sb-inner">
-      <div class="sb-title-row">
-        <div class="sb-title-icon">${s.type === 'تحويل' ? '⚡' : '🏭'}</div>
-        <div>
-          <div class="st-name">${s.id}</div>
-          <div class="sb-type-badge">محطة ${s.type}</div>
+      <div class="sb-data-row">
+        <div class="sb-data-cell">
+          <div class="cell-label">${s.type === 'تحويل' ? '⚡ رقم المحطة' : '🏭 رقم المحطة'}</div>
+          <div class="cell-value">${s.id}</div>
         </div>
-      </div>
-      <div class="sb-meta">
-        ${s.region ? `<div class="meta-line">📍 <b>${s.region}</b></div>` : ''}
-        ${s.feeder ? `<div class="meta-line">🔌 <b style="font-family:'JetBrains Mono',monospace;direction:ltr">${s.feeder}</b></div>` : ''}
+        ${s.feeder ? `<div class="sb-data-cell">
+          <div class="cell-label">🔌 المغذي</div>
+          <div class="cell-value">${s.feeder}</div>
+        </div>` : ''}
+        ${s.region ? `<div class="sb-data-cell">
+          <div class="cell-label">📍 المنطقة</div>
+          <div class="cell-value ar">${s.region}</div>
+        </div>` : ''}
       </div>
       <div class="st-actions">
         <a class="st-btn primary" href="${mapsUrl}" target="_blank" rel="noopener">قوقل ماب 🧭</a>
