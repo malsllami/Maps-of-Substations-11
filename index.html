@@ -802,8 +802,8 @@ body.guest-mode .station-table{width:min(1300px,96vw);}
 }
 .st-name{font-weight:800;font-size:17px;font-family:'JetBrains Mono',monospace;direction:ltr;display:inline-block;}
 .sb-type-badge{font-size:11px;color:var(--text-secondary);font-weight:600;margin-top:1px;}
-.sb-meta{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--text-secondary);margin-bottom:14px;}
-.sb-meta .meta-line{display:flex;align-items:center;gap:7px;}
+.sb-meta{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--text-secondary);margin-bottom:14px;}
+.sb-meta .meta-line{display:flex;align-items:center;gap:6px;}
 .sb-meta .meta-line b{color:var(--text-primary);font-weight:700;font-family:inherit;direction:rtl;}
 .station-table table{width:100%;border-collapse:collapse;font-size:11px;}
 .station-table td{padding:3px 0;color:var(--text-secondary);}
@@ -1947,11 +1947,11 @@ function layoutMapActive(){
   const availableH = window.innerHeight - stageTop - toolbarH - 16; // هامش أمان أسفل الشاشة
   const mapContainer = document.getElementById('map-container');
   if(mapContainer) mapContainer.style.height = Math.max(320, availableH) + 'px';
-  if(leafletMap) leafletMap.invalidateSize();
 
-  // ضبط الحد الأدنى لارتفاع قسم الهيرو ليطابق الامتداد الفعلي الكامل (بعد أي لوحة مفتوحة تكبّر الإطار) — يمنع تراكب أي محتوى تالٍ بالصفحة
-  // Sets the hero section's min-height to match the stage's real full extent (after any open panel enlarges the frame) — prevents overlap with any following page content
+  // تأخير invalidateSize وضبط ارتفاع الهيرو لإطار رسم واحد — الاستدعاء الفوري المتزامن كان يحصل قبل اكتمال تخطيط المتصفح الفعلي لأبعاد اللوحة المفتوحة، فيربك خريطة Leaflet داخليًا (يفسّر تعطّل تبديل نوع الخريطة وأداة القياس معًا)
+  // Delay invalidateSize and the hero min-height adjustment by one animation frame — firing them synchronously happened before the browser's real layout of the open panel settled, confusing Leaflet internally (this explains both the tile-mode switch and the measure tool breaking together)
   requestAnimationFrame(()=>{
+    if(leafletMap) leafletMap.invalidateSize();
     const heroEl = document.getElementById('heroSection');
     if(heroEl) heroEl.style.minHeight = (stageTop + stage.offsetHeight + 40) + 'px';
   });
@@ -1959,10 +1959,15 @@ function layoutMapActive(){
 window.addEventListener('resize', layoutMapActive);
 /* مراقبة تلقائية لكل لوحات الشريط (نهاري/المزيد/قريب-مغذي/الأعطال) — أي تغيّر بظهورها يعيد حساب التخطيط فورًا، بدل الاعتماد على استدعاء يدوي متفرّق بكل معالج ضغط */
 /* Automatic observer on all toolbar panels — any visibility change immediately triggers a re-layout, instead of relying on scattered manual calls in every click handler */
+let _layoutDebounceTimer = null;
+function _debouncedLayoutMapActive(){
+  clearTimeout(_layoutDebounceTimer);
+  _layoutDebounceTimer = setTimeout(layoutMapActive, 30);
+}
 ['mapModePanel','morePanel','mapToolHint','outagePanel'].forEach(function(id){
   const el = document.getElementById(id);
   if(!el) return;
-  new MutationObserver(layoutMapActive).observe(el, {attributes:true, attributeFilter:['class']});
+  new MutationObserver(_debouncedLayoutMapActive).observe(el, {attributes:true, attributeFilter:['class']});
 });
 syncHeaderHeight();
 
