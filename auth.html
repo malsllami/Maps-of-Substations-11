@@ -42,11 +42,11 @@ body{
 .contact-admin-row{display:flex;gap:10px;margin-bottom:24px;}
 .contact-admin-btn{
   flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
-  height:42px;border-radius:10px;border:1px solid var(--border-strong);background:var(--bg);
-  color:var(--text-secondary);font-size:12.5px;font-weight:600;font-family:inherit;
+  height:44px;border-radius:11px;border:1.5px solid rgba(77,214,181,0.4);background:rgba(31,174,140,0.1);
+  color:var(--teal-light);font-size:12.5px;font-weight:700;font-family:inherit;
   text-decoration:none;cursor:pointer;transition:.2s;
 }
-.contact-admin-btn:hover{border-color:var(--teal);color:var(--teal-light);}
+.contact-admin-btn:hover{border-color:var(--teal);background:rgba(31,174,140,0.18);}
 
 .contact-modal-overlay{
   display:none;position:fixed;inset:0;z-index:300;
@@ -427,11 +427,16 @@ let adminContactInfo = { phone: '', email: '' };
 (async function loadAdminContact(){
   try{
     const res = await callBackend('getAdminContactInfo', {});
-    if(res.success){
+    console.log('[تشخيص التواصل] استجابة جلب بيانات المدير:', res);
+    if(res.success && res.phone){
       adminContactInfo = { phone: res.phone, email: res.email };
-      if(res.phone) document.getElementById('callAdminBtn').href = 'tel:+' + res.phone.replace(/^\+/, '');
+      document.getElementById('callAdminBtn').href = 'tel:+' + res.phone.replace(/^\+/, '');
+    } else {
+      console.warn('[تشخيص التواصل] بيانات المدير غير مكتملة بشيت الإعدادات أو الدالة غير موجودة بالنسخة المنشورة');
     }
-  }catch(e){ /* لا نعطّل باقي الصفحة بسبب فشل جلب بيانات التواصل فقط */ }
+  }catch(e){
+    console.error('[تشخيص التواصل] فشل الاتصال بالخادم لجلب بيانات المدير:', e);
+  }
 })();
 
 document.getElementById('messageAdminBtn').addEventListener('click', ()=>{
@@ -470,14 +475,22 @@ function buildContactMessage_(){
 
 document.getElementById('sendWhatsappBtn').addEventListener('click', ()=>{
   const text = buildContactMessage_();
-  if(!text || !adminContactInfo.phone) return;
+  if(!text) return;
+  if(!adminContactInfo.phone){
+    document.getElementById('contactModalError').textContent = 'تعذّر جلب رقم المدير من الخادم — تأكد من نشر آخر نسخة';
+    return;
+  }
   const waPhone = adminContactInfo.phone.replace(/^\+/, '').replace(/\D/g, '');
   window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(text)}`, '_blank');
 });
 
 document.getElementById('sendEmailBtn').addEventListener('click', ()=>{
   const text = buildContactMessage_();
-  if(!text || !adminContactInfo.email) return;
+  if(!text) return;
+  if(!adminContactInfo.email){
+    document.getElementById('contactModalError').textContent = 'تعذّر جلب إيميل المدير من الخادم — تأكد من نشر آخر نسخة';
+    return;
+  }
   const subject = 'رسالة من نظام إحداثيات محطات SEC';
   window.location.href = `mailto:${adminContactInfo.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
 });
