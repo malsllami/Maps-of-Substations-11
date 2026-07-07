@@ -440,6 +440,7 @@ async function loadAdminContact(){
 }
 
 document.getElementById('messageAdminBtn').addEventListener('click', ()=>{
+  console.log('[تشخيص التواصل] ضُغط زر مراسلة المدير');
   document.getElementById('contactModalOverlay').classList.add('show');
 });
 document.getElementById('contactModalCloseBtn').addEventListener('click', ()=>{
@@ -462,6 +463,7 @@ function buildContactMessage_(){
   const email = document.getElementById('contactEmail').value.trim();
   const shift = document.getElementById('contactShift').value;
   const message = document.getElementById('contactMessage').value.trim();
+  console.log('[تشخيص التواصل] قيم الحقول عند الإرسال:', {name, phone, email, shift, message});
   const errEl = document.getElementById('contactModalError');
   errEl.classList.remove('show');
   errEl.textContent = '';
@@ -475,7 +477,9 @@ function buildContactMessage_(){
 }
 
 document.getElementById('sendWhatsappBtn').addEventListener('click', ()=>{
+  console.log('[تشخيص التواصل] ضُغط زر واتساب');
   const text = buildContactMessage_();
+  console.log('[تشخيص التواصل] نص الرسالة الناتج (null يعني فشل تحقق):', text);
   if(!text) return;
   if(!adminContactInfo.phone){
     document.getElementById('contactModalError').textContent = 'تعذّر جلب رقم المدير من الخادم — تأكد من نشر آخر نسخة';
