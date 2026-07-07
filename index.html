@@ -52,7 +52,7 @@ body{
   background-position:center;
 }
 header{
-  position:fixed;top:0;right:0;left:0;z-index:50;
+  position:fixed;top:0;right:0;left:0;z-index:160;
   display:flex;flex-direction:column;
   background:var(--bg);border-bottom:1px solid var(--border);
 }
@@ -129,7 +129,7 @@ header{
   position:absolute;top:calc(100% + 8px);left:0;
   background:var(--bg-card);border:1px solid var(--border-strong);border-radius:14px;
   min-width:215px;box-shadow:0 10px 28px rgba(0,0,0,.35);
-  padding:6px;display:none;z-index:60;
+  padding:6px;display:none;z-index:200;
 }
 .mobile-user-menu.open .mobile-menu-panel{display:block;}
 .mobile-menu-row{display:flex;align-items:center;gap:10px;padding:10px 10px;font-size:12.5px;color:var(--text-primary);border-bottom:1px solid var(--border);margin-bottom:4px;}
@@ -1143,35 +1143,8 @@ footer{
       <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     </div>
     <h2>قبل ما نكمل رحلتك معنا...</h2>
-    <p>نحتاج نعرف وردية وقسم عملك عشان نقدر نخدمك بشكل أفضل، ونربطك تلقائيًا بتقويم وردياتك</p>
-    <div id="profileGateError" style="display:none;color:#E0654F;font-size:12.5px;margin-bottom:10px;"></div>
-    <div class="profile-gate-field">
-      <label>الوردية</label>
-      <select class="edit-input" id="profileGateShift">
-        <option value="">اختر الوردية</option>
-        <option value="أ">أ</option>
-        <option value="ب">ب</option>
-        <option value="ج">ج</option>
-        <option value="د">د</option>
-        <option value="دوام ثابت">دوام ثابت</option>
-      </select>
-    </div>
-    <div class="profile-gate-field">
-      <label>القسم</label>
-      <select class="edit-input" id="profileGateDepartment">
-        <option value="">اختر القسم</option>
-        <option value="التشغيل">التشغيل</option>
-        <option value="الصيانة">الصيانة</option>
-        <option value="اللحام">اللحام</option>
-        <option value="الفحص">الفحص</option>
-        <option value="الإنشاءات">الإنشاءات</option>
-        <option value="التخطيط">التخطيط</option>
-        <option value="السلامة">السلامة</option>
-        <option value="أخرى">أخرى</option>
-      </select>
-      <input type="text" class="edit-input" id="profileGateDepartmentOther" placeholder="اذكر القسم" style="display:none;margin-top:8px">
-    </div>
-    <button class="add-station-submit" id="profileGateSubmitBtn" style="width:100%">إكمال الملف الآن</button>
+    <p>نحتاج نعرف وردية وقسم عملك عشان نقدر نخدمك بشكل أفضل. اضغط الزر بالأسفل، افتح "حسابي" من القائمة، واستكمل بياناتك من هناك</p>
+    <button class="add-station-submit" id="profileGateOpenMenuBtn" style="width:100%">فتح القائمة والانتقال لحسابي</button>
   </div>
 </div>
 
@@ -2262,29 +2235,8 @@ async function checkProfileCompleteness_(){
     }
   }catch(e){ /* لا نحجب المستخدم بسبب فشل الفحص نفسه — أفضل نتيح الاستخدام من نحجبه بالخطأ */ }
 }
-document.getElementById('profileGateDepartment').addEventListener('change', function(){
-  document.getElementById('profileGateDepartmentOther').style.display = this.value === 'أخرى' ? 'block' : 'none';
-});
-document.getElementById('profileGateSubmitBtn').addEventListener('click', async ()=>{
-  const errEl = document.getElementById('profileGateError');
-  errEl.style.display = 'none';
-  const shift = document.getElementById('profileGateShift').value;
-  const deptSelect = document.getElementById('profileGateDepartment').value;
-  const department = deptSelect === 'أخرى' ? document.getElementById('profileGateDepartmentOther').value.trim() : deptSelect;
-  if(!shift){ errEl.textContent = 'الرجاء اختيار الوردية'; errEl.style.display = 'block'; return; }
-  if(!department){ errEl.textContent = 'الرجاء اختيار القسم'; errEl.style.display = 'block'; return; }
-
-  const session = JSON.parse(localStorage.getItem('sec-session') || '{}');
-  const btn = document.getElementById('profileGateSubmitBtn');
-  btn.disabled = true; btn.textContent = 'جاري الحفظ...';
-  try{
-    const res = await callBackend('updateMemberProfile', { phone: session.phone, name: session.name, email: session.email || '', shift, department });
-    if(!res.success) throw new Error(res.error || 'تعذّر الحفظ');
-    document.getElementById('profileGateOverlay').classList.remove('show');
-  }catch(err){
-    errEl.textContent = err.message; errEl.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'إكمال الملف الآن';
-  }
+document.getElementById('profileGateOpenMenuBtn').addEventListener('click', ()=>{
+  mobileUserMenu.classList.add('open');
 });
 
 /* بحث ذكي — يستخدم الفهرس المحلي فورًا إذا كان جاهزًا، وإلا يرجع تلقائيًا للخادم كخطة احتياطية آمنة (مثلاً أثناء التحميل الأول قبل اكتماله) */
