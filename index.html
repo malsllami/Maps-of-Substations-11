@@ -230,7 +230,7 @@ body.guest-mode{
 }
 .globe-stage.map-active{
   top:calc(var(--header-h, 130px) + 90px);
-  width:min(1600px, 98vw);
+  width:min(1600px, 96vw);
   aspect-ratio:auto;
   height:auto;
   min-height:280px;
@@ -266,7 +266,7 @@ body.guest-mode{
 /* منطقة المحتوى العلوي — البحث وبطاقة المحطة، بتدفق طبيعي فوق الخريطة مباشرة، لا قياس تخميني لازم لها لأنها ليست position:absolute / Top content area — search and station card, in normal flow directly above the map, no guesswork needed since it isn't position:absolute */
 .top-content-area{
   display:none;position:relative;z-index:5;
-  width:min(1100px, 94vw);margin:0 auto;
+  width:min(1100px, 96vw);margin:0 auto;
 }
 body.guest-mode .top-content-area{width:min(1300px,96vw);}
 .hero.map-active .top-content-area{display:block;}
@@ -1436,49 +1436,59 @@ async function syncIncrementalUpdates_(){
 
 /* إعادة تحميل الفهرس الكامل من الخادم على دفعات فعلية (بدل استجابة ضخمة واحدة قد تفشل أو تتقطّع)، مع تحديث الكاش المحلي فقط بعد التأكد من اكتمال كل الدفعات بنجاح */
 /* Reloads the full index from the server in real batches (instead of one giant response that could fail or truncate), updating the local cache only after every batch is confirmed complete */
+let _isRefreshingStationsCache = false;
 async function refreshStationsLocalCache_(onProgress){
-  let offset = 0;
-  let collected = [];
-  let expectedTotal = null;
-  let version = null;
-  let serverTime = new Date().toISOString();
-  const MAX_BATCHES = 30; // حماية إضافية صارمة: ٣٠ دفعة × ٥٠٠٠ = ١٥٠ ألف صف كحد أقصى مطلق — يمنع أي حلقة تكرار لا نهائية مهما كان سببها
-  let batchCount = 0;
-
-  while(true){
-    batchCount++;
-    if(batchCount > MAX_BATCHES){
-      console.warn('تجاوز الحد الأقصى الآمن لعدد الدفعات — تم إيقاف التحميل وإلغاؤه بأمان');
-      return false;
-    }
-    const res = await callBackend('getAllStations', { offset });
-    if(!res.success || !Array.isArray(res.stations)){
-      // فشل بالمنتصف — نتجاهل هذي المحاولة بالكامل ولا نلمس الفهرس المحلي الشغّال إطلاقًا
-      // Mid-way failure — we discard this whole attempt and never touch the working local index
-      console.warn('فشل تحميل دفعة من المحطات، تم إلغاء التحديث بأمان');
-      return false;
-    }
-    collected = collected.concat(res.stations);
-    expectedTotal = res.totalCount;
-    version = res.version;
-    if(typeof onProgress === 'function') onProgress(collected.length, expectedTotal);
-    if(!res.nextOffset) break;
-    offset = res.nextOffset;
-  }
-
-  // تحقّق أخير: العدد المُجمَّع يطابق العدد المتوقّع فعليًا قبل الاستبدال — حماية إضافية من أي بيانات ناقصة صامتة
-  // Final check: the collected count actually matches the expected total before replacing — extra protection against silent incomplete data
-  if(expectedTotal !== null && collected.length !== expectedTotal){
-    console.warn('عدد المحطات المُحمَّلة لا يطابق العدد المتوقع، تم إلغاء التحديث بأمان');
+  if(_isRefreshingStationsCache){
+    console.warn('تحميل الفهرس شغّال أصلًا — تم تجاهل طلب تحميل مكرّر لمنع مضاعفة البيانات');
     return false;
   }
+  _isRefreshingStationsCache = true;
+  try{
+    let offset = 0;
+    let collected = [];
+    let expectedTotal = null;
+    let version = null;
+    let serverTime = new Date().toISOString();
+    const MAX_BATCHES = 30; // حماية إضافية صارمة: ٣٠ دفعة × ٥٠٠٠ = ١٥٠ ألف صف كحد أقصى مطلق — يمنع أي حلقة تكرار لا نهائية مهما كان سببها
+    let batchCount = 0;
 
-  allStationsLocal = collected;
-  isStationsLoaded = true;
-  saveStationsToLocalCache_(allStationsLocal);
-  localStorage.setItem(STATIONS_VERSION_KEY, version);
-  localStorage.setItem(STATIONS_LAST_SYNC_KEY, serverTime); // نقطة انطلاق التحديث التزايدي القادم
-  return true;
+    while(true){
+      batchCount++;
+      if(batchCount > MAX_BATCHES){
+        console.warn('تجاوز الحد الأقصى الآمن لعدد الدفعات — تم إيقاف التحميل وإلغاؤه بأمان');
+        return false;
+      }
+      const res = await callBackend('getAllStations', { offset });
+      if(!res.success || !Array.isArray(res.stations)){
+        // فشل بالمنتصف — نتجاهل هذي المحاولة بالكامل ولا نلمس الفهرس المحلي الشغّال إطلاقًا
+        // Mid-way failure — we discard this whole attempt and never touch the working local index
+        console.warn('فشل تحميل دفعة من المحطات، تم إلغاء التحديث بأمان');
+        return false;
+      }
+      collected = collected.concat(res.stations);
+      expectedTotal = res.totalCount;
+      version = res.version;
+      if(typeof onProgress === 'function') onProgress(collected.length, expectedTotal);
+      if(!res.nextOffset) break;
+      offset = res.nextOffset;
+    }
+
+    // تحقّق أخير: العدد المُجمَّع يطابق العدد المتوقّع فعليًا قبل الاستبدال — حماية إضافية من أي بيانات ناقصة صامتة
+    // Final check: the collected count actually matches the expected total before replacing — extra protection against silent incomplete data
+    if(expectedTotal !== null && collected.length !== expectedTotal){
+      console.warn('عدد المحطات المُحمَّلة لا يطابق العدد المتوقع، تم إلغاء التحديث بأمان');
+      return false;
+    }
+
+    allStationsLocal = collected;
+    isStationsLoaded = true;
+    saveStationsToLocalCache_(allStationsLocal);
+    localStorage.setItem(STATIONS_VERSION_KEY, version);
+    localStorage.setItem(STATIONS_LAST_SYNC_KEY, serverTime); // نقطة انطلاق التحديث التزايدي القادم
+    return true;
+  } finally {
+    _isRefreshingStationsCache = false;
+  }
 }
 
 /* البحث المحلي الفوري — يطابق نفس شكل استجابة searchStation بالباك إند تمامًا، ليبقى الكود المستخدِم له بدون أي تغيير */
