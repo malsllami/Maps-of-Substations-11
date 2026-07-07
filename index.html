@@ -328,6 +328,24 @@ body.guest-mode h1{
   width:100%;
   pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:10px;
 }
+.homepage-outage-toggle{
+  pointer-events:auto;background:transparent;border:none;color:var(--text-secondary);
+  font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;padding:6px 10px;
+  transition:color .2s;
+}
+.homepage-outage-toggle:hover{color:var(--teal-light);}
+.homepage-outage-panel{
+  display:none;flex-direction:column;gap:10px;pointer-events:auto;
+  width:min(420px, 90vw);background:var(--bg-card);border:1px solid var(--border-strong);
+  border-radius:16px;padding:16px;box-shadow:0 10px 24px rgba(0,0,0,.25);
+}
+.homepage-outage-panel.show{display:flex;}
+.homepage-outage-panel textarea{
+  width:100%;min-height:70px;background:var(--bg);border:1px solid var(--border-strong);
+  border-radius:11px;color:var(--text-primary);font-size:14px;padding:10px 14px;
+  font-family:'JetBrains Mono',monospace;direction:ltr;text-align:right;resize:vertical;
+}
+.homepage-outage-panel textarea:focus{outline:none;border-color:var(--teal);}
 .search-lens{
   width:72px;height:72px;border-radius:50%;
   background:rgba(5,15,25,0.6);
@@ -597,6 +615,26 @@ body.guest-mode h1{
 
 /* ===== صفحة النموذج الكاملة الموحّدة — تُستخدم لكل من الإضافة والتعديل، بأنيميشن دخول أنيق بدل مجرد بطاقة مكبّرة ===== */
 /* ===== Unified full-page form — shared by both add and edit, with a smooth entrance animation instead of just a bigger card ===== */
+/* طبقة استكمال الملف الشخصي — تبدأ أسفل الهيدر مباشرة (بارتفاعه الفعلي المُقاس ديناميكيًا)، فيبقى الهيدر بأكمله ظاهرًا وقابلًا للتفاعل فوقها تمامًا / Profile-completion gate — starts right below the header (at its actual dynamically-measured height), so the header stays fully visible and interactive above it */
+.profile-gate-overlay{
+  display:none;position:fixed;top:var(--header-h, 130px);left:0;right:0;bottom:0;z-index:150;
+  background:rgba(6,10,16,0.72);backdrop-filter:blur(3px);
+  align-items:center;justify-content:center;padding:20px;overflow-y:auto;
+}
+.profile-gate-overlay.show{display:flex;}
+.profile-gate-card{
+  width:min(440px, 100%);background:var(--bg-card);border:1px solid var(--border-strong);
+  border-radius:20px;padding:32px 28px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+.profile-gate-icon{
+  width:56px;height:56px;border-radius:50%;background:rgba(31,174,140,0.14);color:var(--teal);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 18px;
+}
+.profile-gate-card h2{font-size:18px;font-weight:800;margin-bottom:8px;}
+.profile-gate-card p{font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:22px;}
+.profile-gate-field{text-align:right;margin-bottom:16px;}
+.profile-gate-field label{display:block;font-size:12.5px;font-weight:700;color:var(--text-primary);margin-bottom:6px;}
+.profile-gate-field select{cursor:pointer;}
 .fullpage-form-overlay{
   display:none;position:fixed;inset:0;z-index:200;
   background:var(--bg);overflow-y:auto;
@@ -1098,6 +1136,45 @@ footer{
   </div>
 </header>
 
+<!-- طبقة استكمال الملف الشخصي — تظهر فقط للأعضاء المسجّلين اللي ناقصة عندهم الوردية أو القسم، حتى تكتمل بياناتهم / Profile-completion gate — shown only to logged-in members missing shift or department, until their data is complete -->
+<div class="profile-gate-overlay" id="profileGateOverlay">
+  <div class="profile-gate-card">
+    <div class="profile-gate-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </div>
+    <h2>قبل ما نكمل رحلتك معنا...</h2>
+    <p>نحتاج نعرف وردية وقسم عملك عشان نقدر نخدمك بشكل أفضل، ونربطك تلقائيًا بتقويم وردياتك</p>
+    <div id="profileGateError" style="display:none;color:#E0654F;font-size:12.5px;margin-bottom:10px;"></div>
+    <div class="profile-gate-field">
+      <label>الوردية</label>
+      <select class="edit-input" id="profileGateShift">
+        <option value="">اختر الوردية</option>
+        <option value="أ">أ</option>
+        <option value="ب">ب</option>
+        <option value="ج">ج</option>
+        <option value="د">د</option>
+        <option value="دوام ثابت">دوام ثابت</option>
+      </select>
+    </div>
+    <div class="profile-gate-field">
+      <label>القسم</label>
+      <select class="edit-input" id="profileGateDepartment">
+        <option value="">اختر القسم</option>
+        <option value="التشغيل">التشغيل</option>
+        <option value="الصيانة">الصيانة</option>
+        <option value="اللحام">اللحام</option>
+        <option value="الفحص">الفحص</option>
+        <option value="الإنشاءات">الإنشاءات</option>
+        <option value="التخطيط">التخطيط</option>
+        <option value="السلامة">السلامة</option>
+        <option value="أخرى">أخرى</option>
+      </select>
+      <input type="text" class="edit-input" id="profileGateDepartmentOther" placeholder="اذكر القسم" style="display:none;margin-top:8px">
+    </div>
+    <button class="add-station-submit" id="profileGateSubmitBtn" style="width:100%">إكمال الملف الآن</button>
+  </div>
+</div>
+
 <section class="hero" id="heroSection">
   <!-- منطقة المحتوى العلوي — البحث وبطاقة المحطة، تظهر فوق الخريطة مباشرة أسفل الهيدر مباشرة / Top content area — search and station card, shown directly above the map, right below the header -->
   <div class="top-content-area" id="topContentArea">
@@ -1209,6 +1286,12 @@ footer{
       <div class="search-progress" id="searchProgress">
         <div class="search-progress-track"><div class="search-progress-fill" id="searchProgressFill"></div></div>
         <div class="search-progress-label"><span>جاري البحث عن المحطة...</span><span id="searchProgressPct">0%</span></div>
+      </div>
+      <button type="button" class="homepage-outage-toggle" id="homepageOutageToggle">⚠️ بحث عن حالة عطل (أكثر من محطة)</button>
+      <div class="homepage-outage-panel" id="homepageOutagePanel">
+        <textarea id="homepageOutageInput" placeholder="مثال: IC2-11995&#10;افصل بينها بفاصلة أو / أو - أو سطر جديد"></textarea>
+        <div id="homepageOutageError" class="outage-error"></div>
+        <button class="outage-submit-btn" id="homepageOutageSubmitBtn">عرض على الخريطة</button>
       </div>
     </div>
     <a href="auth.html" class="guest-login-cta globe-bottom-anchor">
@@ -2163,7 +2246,46 @@ if(!hasValidSession()){
   document.body.classList.add('guest-mode');
 } else {
   initStationsLocalSearch(); // تحميل فهرس البحث المحلي فقط للمستخدمين المسجّلين دخولهم فعليًا
+  checkProfileCompleteness_(); // فحص اكتمال الوردية والقسم — يفعّل طبقة الحجب فقط لو ناقصة فعليًا
 }
+
+/* فحص اكتمال بيانات الوردية والقسم للعضو الحالي — يظهر طبقة الحجب فقط لو أحدهما ناقص فعليًا، ويُخفيها فورًا بمجرد الاكتمال */
+/* Checks whether the current member's shift and department are complete — shows the gate only if either is genuinely missing, and hides it instantly once complete */
+async function checkProfileCompleteness_(){
+  try{
+    const session = JSON.parse(localStorage.getItem('sec-session') || '{}');
+    if(!session.phone) return;
+    const res = await callBackend('getMemberProfile', { phone: session.phone });
+    if(!res.success) return;
+    if(!res.shift || !res.department){
+      document.getElementById('profileGateOverlay').classList.add('show');
+    }
+  }catch(e){ /* لا نحجب المستخدم بسبب فشل الفحص نفسه — أفضل نتيح الاستخدام من نحجبه بالخطأ */ }
+}
+document.getElementById('profileGateDepartment').addEventListener('change', function(){
+  document.getElementById('profileGateDepartmentOther').style.display = this.value === 'أخرى' ? 'block' : 'none';
+});
+document.getElementById('profileGateSubmitBtn').addEventListener('click', async ()=>{
+  const errEl = document.getElementById('profileGateError');
+  errEl.style.display = 'none';
+  const shift = document.getElementById('profileGateShift').value;
+  const deptSelect = document.getElementById('profileGateDepartment').value;
+  const department = deptSelect === 'أخرى' ? document.getElementById('profileGateDepartmentOther').value.trim() : deptSelect;
+  if(!shift){ errEl.textContent = 'الرجاء اختيار الوردية'; errEl.style.display = 'block'; return; }
+  if(!department){ errEl.textContent = 'الرجاء اختيار القسم'; errEl.style.display = 'block'; return; }
+
+  const session = JSON.parse(localStorage.getItem('sec-session') || '{}');
+  const btn = document.getElementById('profileGateSubmitBtn');
+  btn.disabled = true; btn.textContent = 'جاري الحفظ...';
+  try{
+    const res = await callBackend('updateMemberProfile', { phone: session.phone, name: session.name, email: session.email || '', shift, department });
+    if(!res.success) throw new Error(res.error || 'تعذّر الحفظ');
+    document.getElementById('profileGateOverlay').classList.remove('show');
+  }catch(err){
+    errEl.textContent = err.message; errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'إكمال الملف الآن';
+  }
+});
 
 /* بحث ذكي — يستخدم الفهرس المحلي فورًا إذا كان جاهزًا، وإلا يرجع تلقائيًا للخادم كخطة احتياطية آمنة (مثلاً أثناء التحميل الأول قبل اكتماله) */
 /* Smart search — uses the local index instantly if ready, otherwise safely falls back to the server (e.g., during the first load before it finishes) */
@@ -2854,6 +2976,38 @@ document.addEventListener('click', (e)=>{
   if(!outageToggleBtn.contains(e.target) && !outagePanel.contains(e.target)) outagePanel.classList.remove('show');
 });
 
+/* رسم مسار محطات العطل على الخريطة — دالة مشتركة تُستخدم من نقطتي دخول: شريط أدوات الخريطة (محطة مفتوحة أصلاً) والصفحة الرئيسية (نقطة دخول جديدة) */
+/* Draws the outage-stations route on the map — shared function used from two entry points: the map toolbar (a station already open) and the homepage (new entry point) */
+function renderOutageRoute_(found, notFound){
+  outagePanel.classList.remove('show');
+  const bounds = [];
+  found.forEach((s, i)=>{
+    const letter = outageLetterFor(i);
+    const color = s.type === 'تحويل' ? '#8B6DD6' : teal();
+    const marker = L.marker([s.lat, s.lng], { icon: outageLetterIcon(letter, color) });
+    marker.bindPopup(`<div style="font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl;font-size:13px"><b>${letter}) ${s.name}</b><br>رقم: ${s.id}</div>`);
+    marker.addTo(leafletMap);
+    outageMarkers.push(marker);
+    bounds.push([s.lat, s.lng]);
+  });
+  if(bounds.length > 1){
+    outageLine = L.polyline(bounds, {color:'#C8A24E', weight:2, dashArray:'5,5'}).addTo(leafletMap);
+  }
+  leafletMap.fitBounds(bounds.length > 1 ? bounds : [bounds[0], bounds[0]], { padding:[44,44], maxZoom:17 });
+
+  const destination = found[found.length-1];
+  const middleStops = found.slice(0, -1);
+  const waypointsStr = middleStops.map(s => `${s.lat},${s.lng}`).join('|');
+  const gmapsUrl = found.length > 1
+    ? `https://www.google.com/maps/dir/?api=1&destination=${destination.lat},${destination.lng}&waypoints=${encodeURIComponent(waypointsStr)}&travelmode=driving`
+    : `https://www.google.com/maps?q=${destination.lat},${destination.lng}`;
+
+  const notFoundNote = notFound.length ? ` — تعذّر إيجاد: ${notFound.join('، ')}` : '';
+  const orderLabel = found.length > 1 ? `بالترتيب A→${outageLetterFor(found.length-1)}` : '';
+  mapToolHint.classList.add('show');
+  mapToolHint.innerHTML = `محطات العطل (${found.length}) ${orderLabel}${notFoundNote} <a href="${gmapsUrl}" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;background:rgba(31,174,140,0.16);color:var(--teal-light);border:1px solid rgba(77,214,181,0.5);padding:6px 14px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">الانتقال بالترتيب على قوقل ماب</a>`;
+}
+
 document.getElementById('outageSubmitBtn').addEventListener('click', async ()=>{
   if(!leafletMap) return;
   const raw = document.getElementById('outageInput').value;
@@ -2886,27 +3040,49 @@ document.getElementById('outageSubmitBtn').addEventListener('click', async ()=>{
     return;
   }
 
-  outagePanel.classList.remove('show');
-  const bounds = [];
-  found.forEach((s, i)=>{
-    const letter = outageLetterFor(i);
-    const color = s.type === 'تحويل' ? '#8B6DD6' : teal();
-    const marker = L.marker([s.lat, s.lng], { icon: outageLetterIcon(letter, color) });
-    marker.bindPopup(`<div style="font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl;font-size:13px"><b>${letter}) ${s.name}</b><br>رقم: ${s.id}</div>`);
-    marker.addTo(leafletMap);
-    outageMarkers.push(marker);
-    bounds.push([s.lat, s.lng]);
+  renderOutageRoute_(found, notFound);
+});
+
+/* ===== نقطة دخول جديدة: بحث عن أعطال متعددة مباشرة من الصفحة الرئيسية (قبل فتح أي محطة) ===== */
+/* ===== New entry point: multi-station outage search directly from the homepage (before opening any station) ===== */
+document.getElementById('homepageOutageToggle').addEventListener('click', ()=>{
+  document.getElementById('homepageOutagePanel').classList.toggle('show');
+});
+document.getElementById('homepageOutageSubmitBtn').addEventListener('click', async ()=>{
+  const raw = document.getElementById('homepageOutageInput').value;
+  const ids = raw.split(/[,\n،\-\/]+/).map(s=>s.trim()).filter(Boolean);
+  const errEl = document.getElementById('homepageOutageError');
+  errEl.textContent = '';
+
+  if(ids.length < 1){ errEl.textContent = 'أدخل رقم محطة واحدة على الأقل'; return; }
+  if(ids.length > 15){ errEl.textContent = 'الحد الأقصى 15 محطة بالمرة الواحدة'; return; }
+  if(!hasValidSession()){ errEl.textContent = 'سجّل دخول للاستخدام'; return; }
+
+  errEl.textContent = 'جاري البحث...';
+  const results = await Promise.all(ids.map(id => searchStationSmart(id)));
+  const found = [];
+  const notFound = [];
+  results.forEach((res, i)=>{
+    if(res.found){ found.push({ ...res, _inputId: ids[i] }); }
+    else { notFound.push(ids[i]); }
   });
-  outageLine = L.polyline(bounds, {color:'#C8A24E', weight:2, dashArray:'5,5'}).addTo(leafletMap);
-  leafletMap.fitBounds(bounds, { padding:[44,44], maxZoom:17 });
 
-  const destination = found[found.length-1];
-  const middleStops = found.slice(0, -1);
-  const waypointsStr = middleStops.map(s => `${s.lat},${s.lng}`).join('|');
-  const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination.lat},${destination.lng}&waypoints=${encodeURIComponent(waypointsStr)}&travelmode=driving`;
+  if(found.length < 1){
+    errEl.textContent = 'ما لقيت أي محطة صالحة بالأرقام المدخلة';
+    return;
+  }
+  errEl.textContent = '';
+  document.getElementById('homepageOutagePanel').classList.remove('show');
 
-  const notFoundNote = notFound.length ? ` — تعذّر إيجاد: ${notFound.join('، ')}` : '';
-  mapToolHint.innerHTML = `محطات العطل (${found.length}) بالترتيب A→${outageLetterFor(found.length-1)}${notFoundNote} <a href="${gmapsUrl}" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;background:rgba(31,174,140,0.16);color:var(--teal-light);border:1px solid rgba(77,214,181,0.5);padding:6px 14px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">الانتقال بالترتيب على قوقل ماب</a>`;
+  // ننتقل مباشرة لأول محطة موجودة (بنفس حركة الانتقال المعتادة)، ثم نرسم بقية النقاط فور اكتمال فتح الخريطة
+  // Jump straight to the first found station (using the normal transition), then draw the remaining points once the map finishes opening
+  goToStation(found[0]);
+  setTimeout(()=>{
+    if(found.length > 1 || notFound.length){
+      clearOutageMarkers();
+      renderOutageRoute_(found, notFound);
+    }
+  }, 650); // يطابق مدة حركة تكبير الخريطة المعتادة عند فتحها أول مرة
 });
 
 /* تنسيق وقت آخر تحديث لبيانات المحطة من قاعدة البيانات — ميلادي وهجري معًا حسب معيار المشروع، بدون أي مكتبة خارجية */
