@@ -1346,6 +1346,7 @@ function escapeHtml(str){
  * ============================================================ */
 const STATIONS_CACHE_KEY = 'sec-stations-cache-v1';
 const STATIONS_VERSION_KEY = 'sec-stations-version-v1';
+const STATIONS_LAST_SYNC_KEY = 'sec-stations-last-sync-v1'; // وقت آخر مزامنة ناجحة — أساس التحديث التزايدي
 let allStationsLocal = [];
 let isStationsLoaded = false;
 
@@ -1388,10 +1389,14 @@ async function initStationsLocalSearch(){
   // any other user's edit surfaces automatically on the next page load, with zero manual action
   try{
     const versionRes = await callBackend('getDataVersion');
-    if(versionRes.success && versionRes.version !== cachedVersion){
+    if(!isStationsLoaded){
+      // لا كاش محلي إطلاقًا — التحميل الكامل الوحيد الضروري فعليًا (أول زيارة فقط)
+      // No local cache at all — the one genuinely necessary full load (first visit only)
       await refreshStationsLocalCache_(showLoadProgress_);
-    } else if(!isStationsLoaded){
-      await refreshStationsLocalCache_(showLoadProgress_);
+    } else if(versionRes.success && versionRes.version !== cachedVersion){
+      // يوجد كاش محلي والإصدار تغيّر — مزامنة تزايدية (المحطات المتغيّرة فقط)، لا تحميل كامل إطلاقًا
+      // Local cache exists and the version changed — incremental sync (only the changed stations), never a full reload
+      await syncIncrementalUpdates_();
     }
   }catch(e){
     // تعذّر فحص الإصدار (لا اتصال مثلاً) — نكتفي بالنسخة المحلية الموجودة إن وُجدت
@@ -1406,6 +1411,29 @@ function showLoadProgress_(loaded, total){
   if(el) el.textContent = total ? `جاري تحميل بيانات المحطات: ${loaded}/${total}` : `جاري تحميل بيانات المحطات: ${loaded}`;
 }
 
+/* التحديث التزايدي — يجلب فقط المحطات اللي أُضيفت أو عُدِّلت منذ آخر مزامنة ناجحة، ويحدّثها بالفهرس المحلي (إضافة أو استبدال حسب الرقم) بدون لمس أي محطة أخرى. هذا يحل مشكلة إعادة التحميل الكامل المتكرر الثقيل، ويطابق فعليًا نفس آلية "أي محطة تُعدَّل تُحدَّث تلقائيًا بالمتصفح" */
+/* Incremental sync — fetches only stations added/edited since the last successful sync, and upserts them into the local index by id, without touching anything else. This solves the heavy repeated full-reload problem, matching exactly "any edited station auto-updates in the browser" */
+async function syncIncrementalUpdates_(){
+  try{
+    const lastSync = localStorage.getItem(STATIONS_LAST_SYNC_KEY);
+    const res = await callBackend('getUpdatedStationsSince', { since: lastSync || null });
+    if(!res.success || !Array.isArray(res.updated)) return false;
+
+    res.updated.forEach(function(st){
+      const idx = allStationsLocal.findIndex(s => String(s.id).toUpperCase() === String(st.id).toUpperCase() && s.type === st.type);
+      if(idx === -1) allStationsLocal.push(st);
+      else allStationsLocal[idx] = st;
+    });
+
+    saveStationsToLocalCache_(allStationsLocal);
+    localStorage.setItem(STATIONS_LAST_SYNC_KEY, res.serverTime);
+    localStorage.setItem(STATIONS_VERSION_KEY, res.version);
+    return true;
+  }catch(e){
+    return false; // فشل المزامنة التزايدية — نكتفي بالنسخة المحلية الحالية بأمان، بدون أي محاولة تحميل كامل بديلة
+  }
+}
+
 /* إعادة تحميل الفهرس الكامل من الخادم على دفعات فعلية (بدل استجابة ضخمة واحدة قد تفشل أو تتقطّع)، مع تحديث الكاش المحلي فقط بعد التأكد من اكتمال كل الدفعات بنجاح */
 /* Reloads the full index from the server in real batches (instead of one giant response that could fail or truncate), updating the local cache only after every batch is confirmed complete */
 async function refreshStationsLocalCache_(onProgress){
@@ -1413,8 +1441,16 @@ async function refreshStationsLocalCache_(onProgress){
   let collected = [];
   let expectedTotal = null;
   let version = null;
+  let serverTime = new Date().toISOString();
+  const MAX_BATCHES = 30; // حماية إضافية صارمة: ٣٠ دفعة × ٥٠٠٠ = ١٥٠ ألف صف كحد أقصى مطلق — يمنع أي حلقة تكرار لا نهائية مهما كان سببها
+  let batchCount = 0;
 
   while(true){
+    batchCount++;
+    if(batchCount > MAX_BATCHES){
+      console.warn('تجاوز الحد الأقصى الآمن لعدد الدفعات — تم إيقاف التحميل وإلغاؤه بأمان');
+      return false;
+    }
     const res = await callBackend('getAllStations', { offset });
     if(!res.success || !Array.isArray(res.stations)){
       // فشل بالمنتصف — نتجاهل هذي المحاولة بالكامل ولا نلمس الفهرس المحلي الشغّال إطلاقًا
@@ -1441,6 +1477,7 @@ async function refreshStationsLocalCache_(onProgress){
   isStationsLoaded = true;
   saveStationsToLocalCache_(allStationsLocal);
   localStorage.setItem(STATIONS_VERSION_KEY, version);
+  localStorage.setItem(STATIONS_LAST_SYNC_KEY, serverTime); // نقطة انطلاق التحديث التزايدي القادم
   return true;
 }
 
