@@ -664,7 +664,14 @@ async function callBackend(action, payload){
     method:'POST',
     body: JSON.stringify({ action, ...payload })
   });
-  const json = await res.json();
+  let json;
+  try{
+    json = await res.json();
+  }catch(parseErr){
+    // الخادم رجّع HTML بدل JSON — يحصل أحيانًا بسبب ازدحام مؤقت بجوجل نفسها، مو خطأ بكودنا
+    // Server returned HTML instead of JSON — sometimes happens due to a transient hiccup on Google's side, not our code
+    return { success:false, error: 'تعذّر الاتصال بالخادم مؤقتًا، حاول مرة أخرى بعد قليل' };
+  }
   if(json.error){
     return { success:false, error: json.error, ...json };
   }
