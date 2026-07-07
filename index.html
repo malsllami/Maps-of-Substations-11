@@ -844,8 +844,9 @@ body.guest-mode h1{
 .edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start;}
 .edit-map-wrap{position:relative;width:100%;height:280px;border-radius:12px;overflow:hidden;border:1.5px solid var(--border-strong);}
 #editPreviewMap{width:100%;height:100%;}
+#addPreviewMap{width:100%;height:100%;}
 .edit-map-sat-btn{
-  position:absolute;top:8px;left:8px;z-index:5;
+  position:absolute;top:8px;left:8px;z-index:650;
   width:34px;height:34px;border-radius:50%;
   background:var(--bg-card);border:1px solid var(--border-strong);
   display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;
@@ -1249,19 +1250,25 @@ footer{
               <input id="newStationRegion" class="edit-input" placeholder="مثال: القرينية">
             </div>
           </div>
-          <div>
-            <label class="form-field-label">الإحداثيات (خط العرض والطول)</label>
-            <div style="display:flex;gap:14px;">
-              <input id="newStationLat" class="edit-input" placeholder="مثال: 21.523456">
-              <input id="newStationLng" class="edit-input" placeholder="مثال: 39.187654">
+          <div class="edit-grid">
+            <div>
+              <label class="form-field-label">الإحداثيات (خط العرض والطول)</label>
+              <div style="display:flex;gap:14px;margin-bottom:14px;">
+                <input id="newStationLat" class="edit-input" placeholder="مثال: 21.523456">
+                <input id="newStationLng" class="edit-input" placeholder="مثال: 39.187654">
+              </div>
+              <button class="use-gps-btn" id="newStationGpsBtn" type="button">📍 استخدام موقعي الحالي</button>
+              <div class="paste-coord-row">
+                <span class="paste-coord-label">أو الصق الإحداثية مباشرة (بصيغة: خط العرض,خط الطول)</span>
+                <div style="display:flex;gap:10px;">
+                  <input id="newStationPasteCoord" class="edit-input" placeholder="مثال: 21.5234,39.1876" style="flex:1">
+                  <button type="button" class="paste-apply-btn" id="newStationPasteApply">تطبيق</button>
+                </div>
+              </div>
             </div>
-          </div>
-          <button class="use-gps-btn" id="newStationGpsBtn" type="button">📍 استخدام موقعي الحالي</button>
-          <div class="paste-coord-row">
-            <span class="paste-coord-label">أو الصق الإحداثية مباشرة (بصيغة: خط العرض,خط الطول)</span>
-            <div style="display:flex;gap:10px;">
-              <input id="newStationPasteCoord" class="edit-input" placeholder="مثال: 21.5234,39.1876" style="flex:1">
-              <button type="button" class="paste-apply-btn" id="newStationPasteApply">تطبيق</button>
+            <div class="edit-map-wrap">
+              <div id="addPreviewMap"></div>
+              <button type="button" class="edit-map-sat-btn" id="addMapSatBtn" title="تبديل القمر الصناعي">🛰️</button>
             </div>
           </div>
           <div>
@@ -2966,9 +2973,47 @@ let newStationType = 'توزيع';
 
 /* فتح صفحة إضافة محطة الكاملة، مع إمكانية تعبئة رقم المحطة مسبقًا (تُستخدم من الزر الرئيسي ومن بطاقة "غير موجودة") */
 /* Opens the full add-station page, optionally pre-filling the station id (used by the main button and the "not found" card) */
+let addPreviewMap = null, addPreviewMarker = null, addPreviewTileLayer = null, addPreviewIsSat = false;
+function initAddPreviewMap(){
+  if(addPreviewMap) return; // تُهيَّأ مرة واحدة فقط، تبقى جاهزة لأي إضافة لاحقة بنفس الجلسة
+  setTimeout(()=>{
+    addPreviewMap = L.map('addPreviewMap', {zoomControl:false, attributionControl:false, dragging:true}).setView([24.7, 46.7], 6);
+    addPreviewTileLayer = L.tileLayer(TILE_URL_LIGHT, {maxZoom:19}).addTo(addPreviewMap);
+    addPreviewMarker = L.marker([24.7, 46.7], {draggable:true, opacity:0}).addTo(addPreviewMap); // مخفي حتى تُحدَّد إحداثية فعلية
+    addPreviewMarker.on('dragend', ()=>{
+      const pos = addPreviewMarker.getLatLng();
+      document.getElementById('newStationLat').value = pos.lat.toFixed(6);
+      document.getElementById('newStationLng').value = pos.lng.toFixed(6);
+    });
+    setTimeout(()=>addPreviewMap.invalidateSize(), 100);
+
+    document.getElementById('newStationLat').addEventListener('input', syncAddPreviewFromInputs);
+    document.getElementById('newStationLng').addEventListener('input', syncAddPreviewFromInputs);
+
+    document.getElementById('addMapSatBtn').addEventListener('click', (btnEvent)=>{
+      addPreviewIsSat = !addPreviewIsSat;
+      btnEvent.currentTarget.classList.toggle('active', addPreviewIsSat);
+      addPreviewMap.removeLayer(addPreviewTileLayer);
+      addPreviewTileLayer = L.tileLayer(addPreviewIsSat ? SATELLITE_URL : TILE_URL_LIGHT, {maxZoom:19}).addTo(addPreviewMap);
+    });
+  }, 50);
+}
+/* تحديث موضع الدبوس فور تغيّر قيمة الإحداثية (كتابة يدوية أو GPS أو لصق) — يظهر الدبوس أول مرة ويقرّب الخريطة تلقائيًا */
+/* Updates the pin's position the instant a coordinate value changes (manual typing, GPS, or paste) — reveals the pin the first time and auto-zooms in */
+function syncAddPreviewFromInputs(){
+  const lat = parseFloat(document.getElementById('newStationLat').value);
+  const lng = parseFloat(document.getElementById('newStationLng').value);
+  if(!isNaN(lat) && !isNaN(lng) && addPreviewMap){
+    addPreviewMarker.setLatLng([lat,lng]);
+    addPreviewMarker.setOpacity(1);
+    addPreviewMap.setView([lat,lng], 17);
+  }
+}
+
 function openAddStationPanel(prefillId){
   document.getElementById('recentPanel').classList.remove('show');
   addStationOverlay.classList.add('show');
+  initAddPreviewMap();
   if(prefillId !== undefined && prefillId !== null){
     document.getElementById('newStationId').value = prefillId;
   }
@@ -3006,6 +3051,7 @@ document.getElementById('newStationGpsBtn').addEventListener('click', ()=>{
     pos=>{
       document.getElementById('newStationLat').value = pos.coords.latitude.toFixed(6);
       document.getElementById('newStationLng').value = pos.coords.longitude.toFixed(6);
+      syncAddPreviewFromInputs();
       errEl.textContent = '';
     },
     ()=>{ errEl.textContent = 'تعذّر تحديد الموقع، تأكد من صلاحية الوصول للموقع'; }
@@ -3018,6 +3064,7 @@ document.getElementById('newStationPasteApply').addEventListener('click', ()=>{
   if(!parsed){ errEl.textContent = 'صيغة غير صحيحة، المطلوب: خط العرض,خط الطول'; return; }
   document.getElementById('newStationLat').value = parsed.lat.toFixed(6);
   document.getElementById('newStationLng').value = parsed.lng.toFixed(6);
+  syncAddPreviewFromInputs();
   errEl.textContent = '';
 });
 
@@ -3123,6 +3170,7 @@ document.getElementById('addStationDoneBtn').addEventListener('click', ()=>{
   document.getElementById('newStationPasteCoord').value = '';
   document.getElementById('newStationReason').value = '';
   document.getElementById('addStationError').textContent = '';
+  if(addPreviewMarker){ addPreviewMarker.setOpacity(0); addPreviewMap.setView([24.7, 46.7], 6); }
 });
 
 let currentStation = null;
