@@ -884,6 +884,7 @@ async function loadRegionActivity(){
 async function loadDashboard(){
   if(fetching) return;
   fetching = true;
+  lastFetch = Date.now(); // كان مفقودًا بالكامل — بدونه، فحص "مضى وقت كافٍ" يفشل دائمًا ويُعيد التحميل عند كل رجوع للتبويب مهما كان قريبًا
   document.getElementById('dataRefreshIcon').style.animation = 'spin .7s linear infinite';
   presentLoaded = false; changesLoaded = false; chartsLoaded = false; peakLoaded = false; regionsLoaded = false;
 
