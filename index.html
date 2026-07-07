@@ -3177,6 +3177,8 @@ window.editNearbyStation = function(id){
 
 function openEditForm(){
   try{
+  const introOv = document.getElementById('introOverlay');
+  if(introOv) introOv.style.display = 'none'; // إجراء احترازي قاطع — يمنع أي تداخل محتمل بغض النظر عن حالة تلاشي الشاشة الافتتاحية
   console.log('[تشخيص التعديل] الدالة بدأت — hasValidSession=' + hasValidSession() + ' — currentStation=', currentStation);
   if(!hasValidSession()){
     const msg = 'سجّل دخول للتعديل — <a href="auth.html" style="color:var(--teal);font-weight:500;text-decoration:underline">تسجيل الدخول</a>';
@@ -3238,7 +3240,15 @@ function openEditForm(){
       </div>
     </div>`;
   document.getElementById('editStationOverlay').classList.add('show');
-  console.log('[تشخيص التعديل] تم الوصول لسطر الإظهار — classList الآن:', document.getElementById('editStationOverlay').className);
+  {
+    const ov = document.getElementById('editStationOverlay');
+    const cs = getComputedStyle(ov);
+    const rect = ov.getBoundingClientRect();
+    console.log('[تشخيص التعديل] القيمة الفعلية المحسوبة — display:' + cs.display + ' | opacity:' + cs.opacity + ' | zIndex:' + cs.zIndex + ' | الأبعاد:', rect);
+    // فحص أي عنصر آخر قد يغطي منتصف الشاشة بنفس لحظة الإظهار — يكشف أي طبقة متعارضة خفية
+    const topEl = document.elementFromPoint(window.innerWidth/2, window.innerHeight/2);
+    console.log('[تشخيص التعديل] العنصر الفعلي بمنتصف الشاشة الآن:', topEl, topEl ? topEl.id || topEl.className : '');
+  }
 
   let editPreviewTileLayer = null, editPreviewIsSat = false;
   setTimeout(()=>{
