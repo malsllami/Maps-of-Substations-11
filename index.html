@@ -187,7 +187,6 @@ header{
   padding:calc(var(--header-h, 130px) + 44px) 20px 4px;
   min-height:calc(var(--globe-size) + 288px);
 }
-.hero.map-active{padding-top:calc(var(--header-h, 130px) + 14px);}
 @media (max-width:767px){
   .hero{
     padding:calc(var(--header-h, 130px) + 28px) 20px 3px;
@@ -261,6 +260,7 @@ body.guest-mode{
   border-radius:0 0 16px 16px;overflow:hidden;
 }
 .hero.map-active{
+  padding-top:calc(var(--header-h, 130px) + 14px);
   min-height:calc(var(--header-h, 130px) + 90px + min(68vh, 720px) + 100px);
 }
 /* منطقة المحتوى العلوي — البحث وبطاقة المحطة، بتدفق طبيعي فوق الخريطة مباشرة، لا قياس تخميني لازم لها لأنها ليست position:absolute / Top content area — search and station card, in normal flow directly above the map, no guesswork needed since it isn't position:absolute */
@@ -383,7 +383,6 @@ body.guest-mode h1{
 [data-theme="light"] .search-hint{color:var(--text-primary);text-shadow:none;}
 .search-hint.err{color:#FF8A75;text-shadow:0 1px 4px rgba(0,0,0,0.6);}
 [data-theme="light"] .search-hint.err{color:#C8412C;text-shadow:none;}
-.search-hint.ok{color:var(--teal-light);}
 
 /* ===== بطاقة "المحطة غير موجودة" — تظهر داخل مكان تلميح البحث نفسه (الرئيسي أو داخل صفحة المحطة) ===== */
 .not-found-card{
@@ -1570,7 +1569,7 @@ const connDot = document.getElementById('connDot');
 const connLabel = document.getElementById('connLabel');
 const statusBar = document.getElementById('statusBar');
 const lastUpdateLabel = document.getElementById('lastUpdateLabel');
-const CONN_CHECK_INTERVAL_MS = 60 * 1000; // فحص كل دقيقة / check every minute
+const CONN_CHECK_INTERVAL_MS = 3 * 60 * 1000; // فحص كل 3 دقائق بدل كل دقيقة — يقلّل حمل الطلبات 3 أضعاف دون التأثير على دقّة مؤشر الاتصال عمليًا
 const CONN_CHECK_TIMEOUT_MS = 15 * 1000; // مهلة أطول تراعي بطء إقلاع Apps Script الباردة / generous timeout for Apps Script cold starts
 let lastSuccessfulCheckAt = null;
 
@@ -1637,7 +1636,7 @@ function renderHeaderDate(){
 renderHeaderDate();
 setInterval(renderHeaderDate, 60 * 60 * 1000);
 setTimeout(checkConnection, 1500); // تأخير بسيط كي لا يتزاحم مع طلبات تحميل الصفحة الأولى
-setInterval(checkConnection, CONN_CHECK_INTERVAL_MS);
+setInterval(()=>{ if(document.visibilityState === 'visible') checkConnection(); }, CONN_CHECK_INTERVAL_MS);
 
 /* زر تحديث البيانات اليدوي — شبكة أمان اختيارية، يمسح الكاش المؤقت فورًا عند الحاجة فقط / Manual data-refresh button — optional safety net, clears the cache instantly only when needed */
 document.getElementById('dataRefreshBtn').addEventListener('click', async ()=>{
@@ -2735,6 +2734,20 @@ function renderNearbyMarkers(){
 }
 
 /* تفعيل/إلغاء/تبديل وضع قريب أو المغذي — ضغطة واحدة تكفي لكل شيء / Activate/deactivate/switch nearby or feeder mode — a single tap does it all */
+/* حساب محطات قريبة/المغذي محليًا بالكامل من الفهرس المحمَّل بالذاكرة — بدون أي اتصال بالخادم، فورية تمامًا مثل البحث المباشر */
+/* Computes nearby/feeder stations entirely from the in-memory loaded index — zero network calls, instant just like the direct search */
+function computeNearbyLocal_(mode){
+  if(mode === 'feeder'){
+    return allStationsLocal
+      .filter(s => String(s.feeder || '').trim() === String(currentStation.feeder).trim())
+      .map(s => ({ id:s.id, type:s.type, name:(s.type==='توزيع'?'محطة توزيع ':'محطة تحويل ')+s.id+(s.region?' — '+s.region:''), lat:s.lat, lng:s.lng, region:s.region, feeder:s.feeder }));
+  }
+  const radiusKm = 2;
+  return allStationsLocal
+    .filter(s => !isNaN(s.lat) && !isNaN(s.lng) && haversineKm(currentStation.lat, currentStation.lng, s.lat, s.lng) <= radiusKm)
+    .map(s => ({ id:s.id, type:s.type, name:(s.type==='توزيع'?'محطة توزيع ':'محطة تحويل ')+s.id+(s.region?' — '+s.region:''), lat:s.lat, lng:s.lng, region:s.region, feeder:s.feeder }));
+}
+
 async function activateNearbyMode(mode){
   if(!currentStation || !leafletMap) return;
 
@@ -2754,20 +2767,28 @@ async function activateNearbyMode(mode){
   mapToolHint.textContent = 'جاري التحميل...';
 
   try{
-    let res;
-    if(mode === 'feeder'){
-      if(!currentStation.feeder){
-        mapToolHint.textContent = 'لا يوجد مغذي مسجّل لهذه المحطة';
-        nearbyModeActive = null; updateNearbyButtonStates();
-        return;
-      }
-      res = await callBackend('getFeederStations', { feeder: currentStation.feeder });
-    } else {
-      res = await callBackend('getNearbyStations', { lat: currentStation.lat, lng: currentStation.lng, radiusKm: 2 });
+    let stationsResult;
+    if(mode === 'feeder' && !currentStation.feeder){
+      mapToolHint.textContent = 'لا يوجد مغذي مسجّل لهذه المحطة';
+      nearbyModeActive = null; updateNearbyButtonStates();
+      return;
     }
-    if(!res.success || !res.stations) throw new Error(res.error || 'الميزة غير متاحة من الخادم بعد');
 
-    nearbyFullData = res.stations
+    if(isStationsLoaded){
+      // المسار السريع — حساب فوري من الفهرس المحمَّل بالذاكرة، صفر اتصال بالشبكة
+      // Fast path — instant computation from the in-memory index, zero network calls
+      stationsResult = computeNearbyLocal_(mode);
+    } else {
+      // رجوع احتياطي آمن للخادم فقط لو الفهرس المحلي لم يكتمل تحميله بعد (نادر، أول لحظات الجلسة)
+      // Safe server fallback only if the local index hasn't finished loading yet (rare, first moments of a session)
+      const res = mode === 'feeder'
+        ? await callBackend('getFeederStations', { feeder: currentStation.feeder })
+        : await callBackend('getNearbyStations', { lat: currentStation.lat, lng: currentStation.lng, radiusKm: 2 });
+      if(!res.success || !res.stations) throw new Error(res.error || 'الميزة غير متاحة من الخادم بعد');
+      stationsResult = res.stations;
+    }
+
+    nearbyFullData = stationsResult
       .filter(s => String(s.id) !== String(currentStation.id))
       .map(s => ({...s, _dist: haversineKm(currentStation.lat, currentStation.lng, s.lat, s.lng)}));
 
