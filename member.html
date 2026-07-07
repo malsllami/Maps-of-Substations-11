@@ -429,7 +429,7 @@ function renderHeaderDate(){
 renderHeaderDate();
 setInterval(renderHeaderDate, 60 * 60 * 1000);
 setTimeout(checkConnection, 1500);
-setInterval(checkConnection, 60 * 1000);
+setInterval(()=>{ if(document.visibilityState === 'visible') checkConnection(); }, 3 * 60 * 1000);
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') checkConnection(); });
 
 function showError(msg){ const el=document.getElementById('errorBanner'); el.textContent=msg; el.classList.add('show'); document.getElementById('successBanner').classList.remove('show'); }
