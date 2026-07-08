@@ -346,7 +346,13 @@ document.getElementById('nextMonthBtn').addEventListener('click', ()=>{
 });
 /* ===== حالة تسجيل الدخول بالهيدر — نفس آلية الصفحة الرئيسية (جلسة متجددة 12 ساعة) ===== */
 /* Header login state — same mechanism as the homepage (12h renewing session) */
-const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
+/* ===== حالة تسجيل الدخول بالهيدر — جلسة دائمة عمليًا (لا تنتهي بمرور الوقت) ===== */
+/* Header login state — effectively permanent session (never expires with time) */
+/* إصلاح حسب طلب محمد: البصمة تُسجَّل مرة واحدة وتبقى محفوظة دائمًا على نفس الجهاز،
+ * ولا تنتهي الجلسة إلا بتسجيل خروج يدوي أو مسح بيانات المتصفح (localStorage) —
+ * بصمة WebAuthn نفسها مسجّلة بجهة الخادم بشكل دائم أصلاً، فهذا لا يُضعف الأمان،
+ * فقط يوقف تكرار طلب البصمة على نفس الجهاز الموثوق بالفعل */
+const SESSION_MAX_AGE_MS = 10 * 365 * 24 * 60 * 60 * 1000; // 10 سنوات — عمليًا بلا انتهاء
 const API_URL = 'https://script.google.com/macros/s/AKfycbyxZUSLZNa6UlZLINsfAEe8CmQPoNGJbpnNtUDxP019TfL8uLh_5fuP0e5HE6daP8dh1w/exec';
 async function callBackend(action, payload){
   const res = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action, ...payload }) });
