@@ -1755,8 +1755,10 @@ document.querySelectorAll('.stat-card').forEach(card=>{
 const themeToggle = document.getElementById('themeToggle');
 const headerActions = document.getElementById('headerActions');
 const mobileUserMenu = document.getElementById('mobileUserMenu');
-const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
-function forceLogoutExpiredSession_(){
+/* إصلاح حسب طلب محمد: جلسة دائمة عمليًا — البصمة تُسجَّل مرة واحدة وتبقى محفوظة
+ * على نفس الجهاز حتى تسجيل خروج يدوي أو مسح بيانات المتصفح، بصمة WebAuthn نفسها
+ * مسجّلة بجهة الخادم بشكل دائم أصلاً فهذا لا يُضعف الأمان */
+const SESSION_MAX_AGE_MS = 10 * 365 * 24 * 60 * 60 * 1000; // 10 سنوات — عمليًا بلا انتهاء
   localStorage.removeItem('sec-session');
   localStorage.removeItem('sec-phone');
   if(location.pathname.indexOf('auth.html') === -1) location.href = 'auth.html';
