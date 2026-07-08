@@ -3,974 +3,445 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول | محطات التوزيع</title>
+<title>تقويم دوام الورديات | محطات التوزيع</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --blue-deep:#1B4D8C; --blue-mid:#2E7DD1; --teal:#1FAE8C; --teal-light:#4DD6B5;
-}
-[data-theme="dark"]{
-  --bg:#0A1420; --bg-elev:#101D2E; --bg-card:#0D1826;
-  --text-primary:#EAF1F7; --text-secondary:#8FA3B8;
-  --border:rgba(255,255,255,0.08); --border-strong:rgba(255,255,255,0.16);
-  --danger:#E0654F; --danger-bg:rgba(224,101,79,0.1);
-}
-[data-theme="light"]{
-  --bg:#F4F8FB; --bg-elev:#FFFFFF; --bg-card:#FFFFFF;
-  --text-primary:#102035; --text-secondary:#52647A;
-  --border:rgba(16,32,53,0.10); --border-strong:rgba(16,32,53,0.20);
-  --danger:#C8412C; --danger-bg:rgba(200,65,44,0.08);
-}
+:root{--blue-deep:#1B4D8C;--blue-mid:#2E7DD1;--teal:#1FAE8C;--teal-light:#4DD6B5;}
+[data-theme="dark"]{--bg:#060B14;--bg-elev:#101D2E;--bg-card:#0D1826;--text-primary:#EAF1F7;--text-secondary:#8FA3B8;--border:rgba(255,255,255,0.08);--border-strong:rgba(255,255,255,0.16);
+  --morning:#38BDF8;--morning-bg:rgba(56,189,248,0.16);--evening:#C0784A;--evening-bg:rgba(192,120,74,0.18);--rest:#2ECC71;--rest-bg:rgba(46,204,113,0.14);}
+[data-theme="light"]{--bg:#EAF1F6;--bg-elev:#F4F8FB;--bg-card:#FFFFFF;--text-primary:#102035;--text-secondary:#52647A;--border:rgba(16,32,53,0.10);--border-strong:rgba(16,32,53,0.20);
+  --morning:#0EA5E9;--morning-bg:rgba(14,165,233,0.12);--evening:#A9632F;--evening-bg:rgba(169,99,47,0.13);--rest:#16A34A;--rest-bg:rgba(22,163,74,0.12);}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{
-  font-family:'IBM Plex Sans Arabic',sans-serif;
-  background:var(--bg); color:var(--text-primary);
-  min-height:100vh; display:flex; align-items:center; justify-content:center;
-  padding:24px; transition:background .3s,color .3s;
-}
-.auth-card{
-  width:100%; max-width:400px;
-  background:var(--bg-card); border:1px solid var(--border);
-  border-radius:16px; padding:32px 28px;
-}
-.brand{display:flex; align-items:center; gap:10px; margin-bottom:28px;cursor:pointer;}
-.brand-mark{height:32px;width:auto;flex-shrink:0;display:block;object-fit:contain;transition:transform .2s;}
-.brand-text{font-size:15px;font-weight:700;letter-spacing:.3px;white-space:nowrap;transition:color .2s;}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;padding-bottom:60px;transition:background .3s,color .3s;}
+header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--border);display:flex;flex-direction:column;}
+.header-row-main{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 28px;}
+@media (max-width:600px){.header-row-main{padding:12px 14px;}}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;color:inherit;min-width:0;flex-shrink:1;overflow:hidden;}
+.brand-mark{height:38px;width:auto;object-fit:contain;transition:transform .2s;flex-shrink:0;}
 .brand:hover .brand-mark{transform:scale(1.06);}
 .brand:hover .brand-text{color:var(--teal);}
+.brand-text{font-size:14.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s;}
+.brand-sub{font-size:11px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.header-actions{display:flex;align-items:center;gap:8px;}
+.login-link{
+  text-decoration:none;font-size:13px;font-weight:600;color:var(--teal-light);
+  background:rgba(31,174,140,0.14);border:1px solid rgba(77,214,181,0.45);
+  padding:9px 18px;border-radius:22px;transition:.2s;
+}
+.login-link:hover{background:rgba(31,174,140,0.24);}
+.mobile-user-menu{display:block;position:relative;}
+.mobile-menu-trigger{
+  display:flex;align-items:center;gap:6px;
+  background:var(--bg-card);border:1px solid var(--border-strong);border-radius:22px;
+  padding:9px 16px;font-size:13px;font-weight:600;color:var(--text-primary);
+  cursor:pointer;font-family:inherit;
+}
+.mobile-menu-trigger:hover{border-color:var(--teal);}
+.mobile-menu-trigger svg{transition:transform .2s;flex-shrink:0;}
+.mobile-user-menu.open .mobile-menu-trigger svg{transform:rotate(180deg);}
+.mobile-menu-panel{
+  position:absolute;top:calc(100% + 8px);left:0;
+  background:var(--bg-card);border:1px solid var(--border-strong);border-radius:14px;
+  min-width:215px;box-shadow:0 10px 28px rgba(0,0,0,.35);
+  padding:6px;display:none;z-index:60;
+}
+.mobile-user-menu.open .mobile-menu-panel{display:block;}
+.mobile-menu-row{display:flex;align-items:center;gap:10px;padding:10px 10px;font-size:12.5px;color:var(--text-primary);border-bottom:1px solid var(--border);margin-bottom:4px;}
+.mobile-menu-link{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 10px;font-size:12.5px;color:var(--text-primary);
+  text-decoration:none;border-radius:9px;border:1px solid transparent;transition:.15s;
+  margin-bottom:2px;
+}
+.mobile-menu-link:hover{background:var(--bg-elev);}
+.mobile-menu-link.current-page{
+  background:rgba(31,174,140,0.12);border-color:rgba(31,174,140,0.4);
+  color:var(--teal-light);font-weight:700;
+}
+.menu-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mobile-menu-logout{
+  display:flex;align-items:center;gap:10px;width:100%;
+  text-align:right;padding:10px 10px;font-size:12.5px;color:#E0654F;
+  background:transparent;border:none;border-top:1px solid var(--border);margin-top:4px;
+  cursor:pointer;font-family:inherit;border-radius:8px;transition:.15s;
+}
+.mobile-menu-logout:hover{background:rgba(224,101,79,0.1);}
+.theme-switch{
+  width:42px;height:23px;border-radius:12px;position:relative;flex-shrink:0;
+  background:var(--border-strong);border:none;cursor:pointer;transition:background .2s;padding:0;
+}
+.theme-switch.on{background:var(--teal);}
+.theme-switch-knob{
+  position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;
+  background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.theme-switch.on .theme-switch-knob{transform:translateX(19px);}
+.content{max-width:820px;margin:0 auto;padding:28px 20px;}
+.page-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--text-secondary);margin-bottom:24px;}
 
-.contact-admin-row{display:flex;gap:10px;margin-bottom:24px;}
-.contact-admin-btn{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
-  height:44px;border-radius:11px;border:1.5px solid rgba(77,214,181,0.4);background:rgba(31,174,140,0.1);
-  color:var(--teal-light);font-size:12.5px;font-weight:700;font-family:inherit;
-  text-decoration:none;cursor:pointer;transition:.2s;
-}
-.contact-admin-btn:hover{border-color:var(--teal);background:rgba(31,174,140,0.18);}
+.today-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:28px;}
+.today-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;position:relative;overflow:hidden;transition:.2s;}
+.today-card.active-group{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal);}
+.today-card .grp{font-size:13px;color:var(--text-secondary);margin-bottom:6px;}
+.today-card .status{font-size:14px;font-weight:700;}
+.today-card .status.morning{color:var(--morning);}
+.today-card .status.evening{color:var(--evening);}
+.today-card .status.rest{color:var(--rest);}
 
-.contact-modal-overlay{
-  display:none;position:fixed;inset:0;z-index:300;
-  background:rgba(6,10,16,0.75);align-items:center;justify-content:center;padding:20px;overflow-y:auto;
-}
-.contact-modal-overlay.show{display:flex;}
-.contact-modal-card{
-  width:min(440px, 100%);background:var(--bg-card);border:1px solid var(--border-strong);
-  border-radius:20px;padding:26px;box-shadow:0 20px 50px rgba(0,0,0,.4);max-height:90vh;overflow-y:auto;
-}
-.contact-modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.contact-modal-header h2{font-size:17px;font-weight:800;margin:0;}
-.contact-modal-header .fullpage-form-close{
-  width:34px;height:34px;border-radius:50%;background:var(--bg);border:1px solid var(--border-strong);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary);transition:.2s;flex-shrink:0;
-}
-.contact-modal-header .fullpage-form-close:hover{border-color:var(--teal);color:var(--teal);}
-.contact-type-btn{
-  flex:1;height:42px;border-radius:10px;border:1px solid var(--border-strong);background:var(--bg);
-  color:var(--text-primary);font-family:inherit;font-size:13px;cursor:pointer;transition:.2s;
-}
-.contact-type-btn.active{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700;}
-.contact-send-btn{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
-  height:48px;border-radius:12px;border:none;font-family:inherit;font-size:14px;font-weight:700;
-  cursor:pointer;transition:.2s;
-}
-.contact-send-whatsapp{background:#25D366;color:#04341c;}
-.contact-send-whatsapp:hover{background:#1ebc59;}
-.contact-send-email{background:#fff;color:#3c4043;border:1px solid #dadce0;}
-.contact-send-email:hover{background:#f8f9fa;}
-.tabs{position:relative;display:flex; background:var(--bg); border-radius:10px; padding:4px; margin-bottom:24px; border:1px solid var(--border);}
-.tab-indicator{
-  position:absolute;top:4px;bottom:4px;left:0;width:0;
-  background:var(--bg-card);border-radius:7px;
-  box-shadow:0 1px 3px rgba(0,0,0,.1);
-  transition:left .32s cubic-bezier(.34,1.35,.64,1), width .32s cubic-bezier(.34,1.35,.64,1);
-  z-index:0;
-}
-.tab{flex:1;position:relative;z-index:1; text-align:center; padding:9px; border-radius:7px; font-size:13px; cursor:pointer; color:var(--text-secondary); transition:color .2s;}
-.tab.active{color:var(--text-primary); font-weight:500;}
-h2{font-size:18px; font-weight:700; margin-bottom:6px;}
-.desc{font-size:13px; color:var(--text-secondary); margin-bottom:22px; line-height:1.6;}
-.field{margin-bottom:16px;}
-.field label{display:block; font-size:12.5px; color:var(--text-secondary); margin-bottom:7px;}
-.input-base{
-  width:100%; height:46px; background:var(--bg); border:1px solid var(--border-strong);
-  border-radius:10px; color:var(--text-primary); font-family:inherit; font-size:14px;
-  padding:0 14px; outline:none; transition:border-color .2s;
-}
-.input-base:focus{border-color:var(--teal);}
+.group-tabs{display:flex;gap:6px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:5px;margin-bottom:20px;}
+.group-tab{flex:1;text-align:center;padding:10px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text-secondary);transition:.2s;}
+.group-tab.active{background:var(--teal);color:#fff;}
 
-/* ===== Floating Label ===== */
-.field.floating{position:relative;margin-bottom:18px;}
-.field.floating label{
-  position:absolute;right:14px;top:23px;transform:translateY(-50%);
-  font-size:14px;color:var(--text-secondary);margin:0;
-  transition:top .18s ease,font-size .18s ease,color .18s ease;
-  pointer-events:none;background:var(--bg);padding:0 4px;
-  z-index:2;
-}
-.field.floating .input-base:focus + label,
-.field.floating .input-base:not(:placeholder-shown) + label,
-.field.floating .phone-unified.focused label,
-.field.floating .phone-unified.filled label{
-  top:0;font-size:11px;color:var(--teal);
-}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-nav-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--border-strong);background:var(--bg-card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-primary);transition:.2s;}
+.cal-nav-btn:hover{border-color:var(--teal);}
+.cal-month-label{font-size:16px;font-weight:700;text-align:center;}
+.cal-month-label .hijri{display:block;font-size:11.5px;color:var(--text-secondary);font-weight:400;margin-top:2px;}
 
-/* ===== مربع الجوال الموحّد: مفتاح الدولة + خط فاصل + رقم الجوال بنفس الصندوق ===== */
-.phone-unified{
-  position:relative;display:flex;align-items:center;
-  height:46px;background:var(--bg);border:1px solid var(--border-strong);
-  border-radius:10px;transition:border-color .2s;
-}
-.phone-unified:focus-within{border-color:var(--teal);}
-.phone-prefix{
-  position:relative;display:flex;align-items:center;gap:5px;
-  padding:0 12px 0 10px;height:100%;cursor:pointer;flex-shrink:0;
-}
-.phone-divider{width:1px;height:22px;background:var(--border-strong);flex-shrink:0;}
-.phone-input-unified{
-  flex:1;min-width:0;height:100%;border:none;background:transparent;outline:none;
-  color:var(--text-primary);font-family:'JetBrains Mono',monospace;font-size:14px;
-  direction:ltr;text-align:right;padding:0 12px;
-}
-#phoneLabel{right:98px;}
-.country-code{font-family:'JetBrains Mono',monospace; font-size:13px; direction:ltr;}
-.country-dropdown{
-  position:absolute; top:44px; right:-4px; width:230px; max-height:240px; overflow-y:auto;
-  background:var(--bg-card); border:1px solid var(--border-strong); border-radius:10px;
-  box-shadow:0 8px 24px rgba(0,0,0,.2); z-index:20; display:none;
-}
-.country-dropdown.open{display:block;}
-.country-option{display:flex; align-items:center; gap:10px; padding:10px 12px; cursor:pointer; font-size:13px;}
-.country-option:hover{background:var(--bg);}
-.error-banner{
-  background:var(--danger-bg); color:var(--danger); font-size:12.5px;
-  padding:10px 12px; border-radius:8px; margin-bottom:16px; display:none; line-height:1.6;
-}
-.error-banner.show{display:block;}
-.member-type-btn.active{border-color:var(--teal)!important;background:var(--teal)!important;color:#fff!important;font-weight:500;}
+.legend{display:flex;gap:16px;justify-content:center;margin-bottom:18px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary);}
+.legend-dot{width:10px;height:10px;border-radius:3px;}
 
-.btn-progress{
-  position:relative; width:100%; height:46px; border-radius:10px; border:none;
-  background:var(--teal); color:#fff; font-family:inherit; font-size:14px; font-weight:700;
-  cursor:pointer; overflow:hidden; transition:opacity .2s;
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;}
+.cal-dow{text-align:center;font-size:10.5px;color:var(--text-secondary);font-weight:600;padding-bottom:4px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cal-day{
+  min-width:0;overflow:hidden;
+  min-height:64px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  padding:4px 2px;position:relative;border:1px solid transparent;
 }
-.btn-progress:disabled{cursor:not-allowed;}
-.btn-progress .label{position:relative; z-index:2; display:flex; align-items:center; justify-content:center; gap:8px; height:100%;}
-.btn-progress .fill{
-  position:absolute; inset:0; width:0%; background:rgba(255,255,255,0.28);
-  transition:width .25s linear; z-index:1;
-}
-.btn-progress.error .fill{background:rgba(255,255,255,0.0);}
-.btn-progress.error{background:var(--danger);}
-.btn-progress .pct{font-family:'JetBrains Mono',monospace; font-size:13px;}
-.btn-progress .check{display:none;}
-.btn-progress.success .check{display:inline;}
-.btn-progress.success .pct, .btn-progress.success .default-label{display:none;}
-.ripple{
-  position:absolute;border-radius:50%;background:rgba(255,255,255,0.45);
-  transform:scale(0);animation:rippleAnim .6s ease-out;
-  pointer-events:none;z-index:3;
-}
-@keyframes rippleAnim{to{transform:scale(3.2);opacity:0;}}
+.cal-day.empty{visibility:hidden;}
+.cal-day .day-num{font-size:14px;font-weight:700;line-height:1;}
+.cal-day .hijri-mid{font-size:9.5px;font-weight:500;opacity:.85;line-height:1;}
+.cal-day .shift-icon{width:14px;height:14px;flex-shrink:0;}
+.cal-day.morning{background:var(--morning-bg);color:var(--morning);}
+.cal-day.evening{background:var(--evening-bg);color:var(--evening);}
+.cal-day.rest{background:var(--rest-bg);color:var(--rest);}
+.cal-day.today{border-color:currentColor;box-shadow:0 0 0 1px currentColor;}
 
-.fingerprint-step{display:none; text-align:center; padding:20px 0;}
-.fingerprint-step.show{display:block;}
-.fp-wrap{position:relative; width:96px; height:96px; margin:0 auto 18px;}
-.fp-icon{
-  position:relative; z-index:2;
-  width:96px; height:96px; border-radius:50%;
-  background: radial-gradient(circle at 35% 30%, var(--bg-elev), var(--bg-card) 70%);
-  box-shadow:
-    inset 0 0 0 7px var(--teal),
-    inset 0 -2px 6px rgba(0,0,0,0.25),
-    0 2px 8px rgba(0,0,0,0.2);
-  display:flex; align-items:center; justify-content:center;
+.info-note{margin-top:24px;font-size:11.5px;color:var(--text-secondary);line-height:1.8;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+@media (max-width:480px){
+  .content{padding:20px 12px;}
+  .cal-day{min-height:52px;padding:3px 1px;gap:1px;}
+  .cal-day .day-num{font-size:12px;}
+  .cal-day .hijri-mid{font-size:8px;}
+  .cal-day .shift-icon{width:11px;height:11px;}
+  .cal-grid{gap:3px;}
+  .today-grid{grid-template-columns:repeat(2,1fr);}
 }
-.fp-icon svg{stroke:var(--text-primary); opacity:0.85;}
-.fp-spinner{
-  position:absolute; inset:-6px; border-radius:50%; z-index:1;
-  background: conic-gradient(from 0deg, transparent 0%, transparent 75%, var(--teal) 92%, transparent 100%);
-  animation: fp-spin 1.1s linear infinite;
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
-}
-.fp-spinner.verifying{
-  background: conic-gradient(from 0deg, transparent 0%, transparent 70%, var(--blue-mid) 92%, transparent 100%);
-  animation-duration:0.7s;
-}
-@keyframes fp-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-.fp-progress{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--teal); margin-top:-10px; margin-bottom:10px; min-height:16px;}
-.fp-icon.verifying svg{opacity:1;}
-.field-disabled{opacity:.5; pointer-events:none;}
-.switch-link{text-align:center; margin-top:18px; font-size:13px; color:var(--text-secondary);}
-.switch-link a{color:var(--teal); cursor:pointer; text-decoration:none; font-weight:500;}
 </style>
 </head>
 <body data-theme="dark" id="bodyEl">
 <script>
 (function(){
-  var saved = localStorage.getItem('sec-theme');
-  if(saved === 'light' || saved === 'dark') document.getElementById('bodyEl').setAttribute('data-theme', saved);
+  var t = localStorage.getItem('sec-theme');
+  if(t==='light'||t==='dark') document.getElementById('bodyEl').setAttribute('data-theme',t);
 })();
 </script>
 
-<div class="auth-card">
-  <div class="brand" id="brandLink">
-    <img class="brand-mark" src="assets/logo-icon.png" alt="شعار الشركة السعودية للطاقة">
-    <div class="brand-text">محطات التوزيع — SEC</div>
-  </div>
-
-  <div class="contact-admin-row">
-    <a href="#" id="callAdminBtn" class="contact-admin-btn" title="اتصال بالمدير">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      اتصال بالمدير
-    </a>
-    <button type="button" id="messageAdminBtn" class="contact-admin-btn">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      مراسلة المدير
-    </button>
-  </div>
-
-  <div class="tabs" id="tabsWrap">
-    <div class="tab-indicator" id="tabIndicator"></div>
-    <div class="tab active" id="tabLogin">تسجيل الدخول</div>
-    <div class="tab" id="tabRegister">عضو جديد</div>
-  </div>
-
-  <div id="errorBanner" class="error-banner"></div>
-
-  <!-- ===== خطوة إدخال الجوال (مشتركة) ===== -->
-  <div id="phoneStep">
-    <h2 id="stepTitle">تسجيل الدخول</h2>
-    <p class="desc" id="stepDesc">أدخل رقم جوالك المسجل، ثم تحقق من هويتك بأفضل وسيلة يدعمها جهازك</p>
-
-    <div class="field floating" id="nameField" style="display:none">
-      <input type="text" class="input-base" id="nameInput" placeholder=" ">
-      <label for="nameInput">الاسم الكامل</label>
-    </div>
-
-    <div class="field" id="memberTypeField" style="display:none">
-      <label>نوع العضوية</label>
-      <div style="display:flex;gap:8px">
-        <button type="button" class="member-type-btn active" data-type="موظف" style="flex:1;height:44px;border-radius:10px;border:1px solid var(--border-strong);background:var(--bg);color:var(--text-primary);font-family:inherit;font-size:13px;cursor:pointer;transition:.2s">موظف</button>
-        <button type="button" class="member-type-btn" data-type="مقاول" style="flex:1;height:44px;border-radius:10px;border:1px solid var(--border-strong);background:var(--bg);color:var(--text-primary);font-family:inherit;font-size:13px;cursor:pointer;transition:.2s">مقاول</button>
+<header>
+  <div class="header-row-main">
+    <div class="brand" id="brandLink" style="cursor:pointer">
+      <img class="brand-mark" src="assets/logo-icon.png" alt="شعار الشركة السعودية للطاقة">
+      <div>
+        <div class="brand-text">تقويم دوام الورديات</div>
+        <div class="brand-sub">نظام 4×4 — الشركة السعودية للطاقة</div>
       </div>
     </div>
-
-    <div class="field" id="shiftField" style="display:none">
-      <label style="display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px">الوردية</label>
-      <select class="input-base" id="regShiftInput" style="cursor:pointer">
-        <option value="">اختر الوردية</option>
-        <option value="أ">أ</option>
-        <option value="ب">ب</option>
-        <option value="ج">ج</option>
-        <option value="د">د</option>
-        <option value="دوام ثابت">دوام ثابت</option>
-      </select>
-    </div>
-
-    <div class="field" id="departmentField" style="display:none">
-      <label style="display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px">القسم</label>
-      <select class="input-base" id="regDepartmentInput" style="cursor:pointer">
-        <option value="">اختر القسم</option>
-        <option value="التشغيل">التشغيل</option>
-        <option value="الصيانة">الصيانة</option>
-        <option value="اللحام">اللحام</option>
-        <option value="الفحص">الفحص</option>
-        <option value="الإنشاءات">الإنشاءات</option>
-        <option value="التخطيط">التخطيط</option>
-        <option value="السلامة">السلامة</option>
-        <option value="أخرى">أخرى</option>
-      </select>
-      <input type="text" class="input-base" id="regDepartmentOther" placeholder="اذكر القسم" style="display:none;margin-top:8px">
-    </div>
-
-    <div class="field floating">
-      <div class="phone-unified" id="phoneUnified">
-        <div class="phone-prefix" id="countrySelect">
-          <span id="selectedFlag">🇸🇦</span>
-          <span class="country-code" id="selectedCode">+966</span>
-          <span style="font-size:9px;color:var(--text-secondary)">▾</span>
-          <div class="country-dropdown" id="countryDropdown"></div>
+    <div class="header-actions" id="headerActions">
+      <a href="auth.html" class="login-link" id="loginLink" style="display:none">تسجيل الدخول</a>
+      <div class="mobile-user-menu" id="mobileUserMenu" style="display:none">
+        <button class="mobile-menu-trigger" id="mobileMenuTrigger">
+          <span id="mobileMenuName">القائمة</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="mobile-menu-panel" id="mobileMenuPanel">
+          <div class="mobile-menu-row">
+            <span class="menu-icon" style="color:#8B6DD6">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v1M12 20v1M4.2 4.2l.7.7M18.4 18.4l.7.7M3 12h1M20 12h1M4.2 19.8l.7-.7M18.4 5.6l.7-.7"/><circle cx="12" cy="12" r="4"/></svg>
+            </span>
+            <span style="flex:1">الوضع الداكن</span>
+            <button class="theme-switch" id="themeSwitchMobile" aria-label="تبديل الوضع الداكن"><span class="theme-switch-knob"></span></button>
+          </div>
+          <a href="index.html" class="mobile-menu-link">
+            <span class="menu-icon" style="color:#2ECC71"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg></span>
+            الصفحة الرئيسية
+          </a>
+          <a href="member.html" class="mobile-menu-link">
+            <span class="menu-icon" style="color:#4A86E8"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            حسابي
+          </a>
+          <a href="shifts.html" class="mobile-menu-link current-page">
+            <span class="menu-icon" style="color:#A479E2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+            تقويم دوام الورديات
+          </a>
+          <a href="admin.html" class="mobile-menu-link" id="mobileAdminLink" style="display:none">
+            <span class="menu-icon" style="color:#F0B429"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z"/><polyline points="9 12 11 14 15 10"/></svg></span>
+            لوحة المدير
+          </a>
+          <button class="mobile-menu-logout" id="mobileLogoutBtn">
+            <span class="menu-icon" style="color:#E0654F"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+            تسجيل الخروج
+          </button>
         </div>
-        <div class="phone-divider"></div>
-        <input type="text" inputmode="tel" class="phone-input-unified" id="phoneInput" placeholder=" " autocomplete="tel">
-        <label for="phoneInput" id="phoneLabel">رقم الجوال</label>
       </div>
     </div>
+  </div>
+</header>
 
-    <button class="btn-progress" id="mainBtn">
-      <span class="label">
-        <span class="default-label" id="mainBtnLabel">متابعة</span>
-        <span class="pct" id="mainBtnPct"></span>
-        <span class="check">✓</span>
-      </span>
-      <span class="fill" id="mainBtnFill"></span>
-    </button>
+<div class="content">
+  <div class="page-title">دوام اليوم لكل وردية</div>
+  <div class="page-sub" id="todayDateLine">—</div>
+  <div class="today-grid" id="todayGrid"></div>
+
+  <div class="group-tabs" id="groupTabs">
+    <div class="group-tab active" data-group="أ">وردية أ</div>
+    <div class="group-tab" data-group="ب">وردية ب</div>
+    <div class="group-tab" data-group="ج">وردية ج</div>
+    <div class="group-tab" data-group="د">وردية د</div>
   </div>
 
-  <!-- ===== خطوة البصمة ===== -->
-  <div class="fingerprint-step" id="fingerprintStep">
-    <div class="fp-wrap">
-      <div class="fp-spinner" id="fpSpinner"></div>
-      <div class="fp-icon" id="fpIcon">
-        <svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke-linecap="round">
-          <path d="M50 28c-13 0-22 9-22 22v8" stroke-width="3.2"/>
-          <path d="M50 22c-17 0-29 12-29 28v9" stroke-width="3.2"/>
-          <path d="M50 35c-9 0-15 6-15 15v10c0 4 1 7 3 10" stroke-width="3.2"/>
-          <path d="M50 42c-5 0-8 3-8 8v9c0 6 2 11 6 15" stroke-width="3.2"/>
-          <path d="M50 49c-1.5 0-2 1-2 2v8c0 9 4 16 11 21" stroke-width="3.2"/>
-          <path d="M65 47v10c0 12-6 21-16 27" stroke-width="3.2"/>
-          <path d="M71 44v12c0 16-9 28-23 35" stroke-width="3.2"/>
-        </svg>
-      </div>
-    </div>
-    <p class="fp-progress" id="fpProgress"></p>
-    <p style="font-size:14px; font-weight:500; margin-bottom:6px;" id="fpTitle">تحقق من هويتك</p>
-    <p style="font-size:12.5px; color:var(--text-secondary)" id="fpSubtitle">سيستخدم جهازك أفضل وسيلة تحقق متوفرة</p>
+  <div class="cal-nav">
+    <div class="cal-nav-btn" id="prevMonthBtn">‹</div>
+    <div class="cal-month-label"><span id="monthLabel">—</span><span class="hijri" id="monthLabelHijri">—</span></div>
+    <div class="cal-nav-btn" id="nextMonthBtn">›</div>
   </div>
 
-  <div class="switch-link" id="switchHint">ما عندك حساب؟ <a id="goRegister">سجّل كعضو جديد</a></div>
-</div>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--morning)"></span>صباحي (7ص - 7م)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--evening)"></span>مسائي (7م - 7ص)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--rest)"></span>راحة</div>
+  </div>
 
-<!-- طبقة نموذج مراسلة المدير — تُفتح بالضغط على "مراسلة المدير" أو تلقائيًا عبر رابط ?contact=1 -->
-<!-- Contact-admin form overlay — opened by clicking "Message admin" or automatically via a ?contact=1 link -->
-<div class="contact-modal-overlay" id="contactModalOverlay">
-  <div class="contact-modal-card">
-    <div class="contact-modal-header">
-      <h2>مراسلة المدير</h2>
-      <div class="fullpage-form-close" id="contactModalCloseBtn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </div>
-    </div>
-    <div class="field floating">
-      <input type="text" class="input-base" id="contactName" placeholder=" ">
-      <label for="contactName">الاسم</label>
-    </div>
-    <div class="field floating">
-      <input type="tel" class="input-base" id="contactPhone" placeholder=" " dir="ltr" style="text-align:left" value="966">
-      <label for="contactPhone">رقم الجوال</label>
-    </div>
-    <div class="field floating">
-      <input type="email" class="input-base" id="contactEmail" placeholder=" " dir="ltr" style="text-align:left">
-      <label for="contactEmail">الإيميل</label>
-    </div>
-    <div class="field" style="margin-bottom:18px">
-      <label style="display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px">نوع العضوية</label>
-      <div style="display:flex;gap:8px">
-        <button type="button" class="contact-type-btn active" data-type="موظف">موظف</button>
-        <button type="button" class="contact-type-btn" data-type="مقاول">مقاول</button>
-      </div>
-    </div>
-    <div class="field" style="margin-bottom:18px">
-      <label style="display:block;font-size:13px;color:var(--text-secondary);margin-bottom:6px">الوردية</label>
-      <select class="input-base" id="contactShift" style="cursor:pointer">
-        <option value="">اختر الوردية</option>
-        <option value="أ">أ</option>
-        <option value="ب">ب</option>
-        <option value="ج">ج</option>
-        <option value="د">د</option>
-        <option value="دوام ثابت">دوام ثابت</option>
-      </select>
-    </div>
-    <div class="field floating">
-      <textarea class="input-base" id="contactMessage" placeholder=" " style="height:90px;padding-top:14px;resize:vertical"></textarea>
-      <label for="contactMessage" style="top:14px">الرسالة</label>
-    </div>
-    <div id="contactModalError" class="error-banner"></div>
-    <div style="display:flex;gap:10px;margin-top:6px">
-      <button type="button" id="sendWhatsappBtn" class="contact-send-btn contact-send-whatsapp">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.876.508 3.649 1.395 5.163L2 22l4.973-1.372A9.943 9.943 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.062a8.048 8.048 0 0 1-4.106-1.13l-.294-.176-3.048.84.822-2.99-.192-.306A8.05 8.05 0 0 1 3.938 12c0-4.446 3.616-8.062 8.062-8.062S20.062 7.554 20.062 12 16.446 20.062 12 20.062z"/></svg>
-        واتساب
-      </button>
-      <button type="button" id="sendEmailBtn" class="contact-send-btn contact-send-email">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 6c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6z" fill="#fff"/><path d="M2 6.5l10 7 10-7" stroke="#EA4335" stroke-width="1.6" fill="none"/><path d="M2 6l8.5 6L2 17.5V6z" fill="#4285F4"/><path d="M22 6l-8.5 6L22 17.5V6z" fill="#34A853"/><path d="M2 6c0-1.1.9-2 2-2h1l7 5.2L19 4h1c1.1 0 2 .9 2 2l-10 7.2L2 6z" fill="#EA4335"/><path d="M2 17.5V6l8.5 6-7 5.5A2 2 0 0 1 2 17.5z" fill="#FBBC05"/></svg>
-        إيميل
-      </button>
-    </div>
+  <div class="cal-grid" id="calGrid"></div>
+
+  <div class="info-note">
+    المرجع المعتمد للحساب: يوم الخميس 2/7/2026م الموافق 17/1/1448هـ — وردية أ أول يوم صباحي، د أول يوم مسائي، ج أول يوم راحة، ب ثالث يوم راحة. دورة كل وردية 8 أيام (يومان صباح، يومان مساء، أربعة أيام راحة)، والتقويم محسوب رياضياً من هذا التاريخ بدون أي بيانات مخزّنة، فهو صحيح لأي تاريخ ماضٍ أو مستقبلي.
   </div>
 </div>
 
 <script>
-/* ===== الثيم ===== */
-const phone10ToFull = (code, local) => code + local.replace(/^0+/, '');
-document.getElementById('brandLink').addEventListener('click', ()=>{ location.href = 'index.html'; });
+/* ===== المرجع الأساسي المؤكد ===== */
+const REF_DATE_UTC = Date.UTC(2026, 6, 2); // الخميس 2/7/2026م — منتصف الليل UTC كمرجع أيام كامل بدون كسور
+const GROUP_REF_CYCLE = { 'أ':1, 'د':3, 'ج':5, 'ب':7 }; // موضع كل وردية بدورة الـ8 أيام بتاريخ المرجع
 
-/* ===== قائمة الدول الخليجية/العربية، السعودية افتراضي ===== */
-const countries = [
-  {code:'+966', flag:'🇸🇦', name:'السعودية'},
-  {code:'+971', flag:'🇦🇪', name:'الإمارات'},
-  {code:'+973', flag:'🇧🇭', name:'البحرين'},
-  {code:'+965', flag:'🇰🇼', name:'الكويت'},
-  {code:'+974', flag:'🇶🇦', name:'قطر'},
-  {code:'+968', flag:'🇴🇲', name:'عُمان'},
-  {code:'+20',  flag:'🇪🇬', name:'مصر'},
-  {code:'+962',  flag:'🇯🇴', name:'الأردن'},
-];
-let selectedCountry = countries[0];
+function dateToUTCms(y,m,d){ return Date.UTC(y, m, d); }
 
-let selectedMemberType = 'موظف';
-document.querySelectorAll('.member-type-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.member-type-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    selectedMemberType = btn.dataset.type;
+function cycleDayFor(group, dateUTCms){
+  const daysSince = Math.round((dateUTCms - REF_DATE_UTC) / 86400000);
+  const ref = GROUP_REF_CYCLE[group];
+  return ((ref - 1 + daysSince) % 8 + 8) % 8 + 1; // نتيجة دائماً بين 1 و8
+}
+const SHIFT_ICONS = {
+  morning: `<svg class="shift-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.2" y1="4.2" x2="5.6" y2="5.6"/><line x1="18.4" y1="18.4" x2="19.8" y2="19.8"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.2" y1="19.8" x2="5.6" y2="18.4"/><line x1="18.4" y1="5.6" x2="19.8" y2="4.2"/></svg>`,
+  evening: `<svg class="shift-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5A8.5 8.5 0 1 1 11.5 3 6.8 6.8 0 0 0 21 12.5z"/></svg>`,
+  rest: `<svg class="shift-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>`
+};
+function shiftInfoFor(cycleDay){
+  if(cycleDay <= 2) return { cls:'morning', label:'صباحي' };
+  if(cycleDay <= 4) return { cls:'evening', label:'مسائي' };
+  return { cls:'rest', label:'راحة' };
+}
+function shiftFor(group, dateUTCms){
+  return shiftInfoFor(cycleDayFor(group, dateUTCms));
+}
+
+/* ===== التاريخ الهجري عبر واجهة المتصفح القياسية (بدون مكتبة خارجية) ===== */
+const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn', { day:'numeric', month:'numeric', year:'numeric' });
+const hijriMonthFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn', { month:'long', year:'numeric' });
+function hijriShort(dateUTCms){
+  try{ return hijriFormatter.format(new Date(dateUTCms)); }catch(e){ return ''; }
+}
+function hijriMonthYear(dateUTCms){
+  try{ return hijriMonthFormatter.format(new Date(dateUTCms)); }catch(e){ return ''; }
+}
+
+const GREGORIAN_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const DOW_LABELS = ['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+
+let selectedGroup = 'أ';
+let viewYear, viewMonth; // ميلادي، month صفر-محور
+
+(function initView(){
+  const now = new Date();
+  viewYear = now.getUTCFullYear();
+  viewMonth = now.getUTCMonth();
+})();
+
+function renderTodayGrid(){
+  const todayUTC = dateToUTCms(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate());
+  document.getElementById('todayDateLine').textContent =
+    `اليوم: ${new Date().toLocaleDateString('ar-SA', {weekday:'long', day:'numeric', month:'long', year:'numeric'})} — ${hijriShort(todayUTC)} هـ`;
+
+  const grid = document.getElementById('todayGrid');
+  grid.innerHTML = '';
+  ['أ','ب','ج','د'].forEach(g=>{
+    const info = shiftFor(g, todayUTC);
+    const card = document.createElement('div');
+    card.className = 'today-card' + (g===selectedGroup ? ' active-group' : '');
+    card.innerHTML = `<div class="grp">وردية ${g}</div><div class="status ${info.cls}">${info.label}</div>`;
+    card.addEventListener('click', ()=>{ selectedGroup = g; syncGroupTabs(); renderAll(); });
+    grid.appendChild(card);
   });
-});
-document.getElementById('regDepartmentInput').addEventListener('change', function(){
-  document.getElementById('regDepartmentOther').style.display = this.value === 'أخرى' ? 'block' : 'none';
-});
+}
 
-/* ===== التواصل مع المدير — جلب بيانات المدير مرة واحدة عند تحميل الصفحة ===== */
-/* Contact admin — fetch admin contact info once on page load */
-let adminContactInfo = { phone: '', email: '' };
-async function loadAdminContact(){
-  try{
-    const res = await callBackend('getAdminContactInfo', {});
-    console.log('[تشخيص التواصل] استجابة جلب بيانات المدير:', res);
-    if(res.success && res.phone){
-      adminContactInfo = { phone: res.phone, email: res.email };
-      document.getElementById('callAdminBtn').href = 'tel:+' + res.phone.replace(/^\+/, '');
-    } else {
-      console.warn('[تشخيص التواصل] بيانات المدير غير مكتملة بشيت الإعدادات أو الدالة غير موجودة بالنسخة المنشورة');
-    }
-  }catch(e){
-    console.error('[تشخيص التواصل] فشل الاتصال بالخادم لجلب بيانات المدير:', e);
+function syncGroupTabs(){
+  document.querySelectorAll('.group-tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.group === selectedGroup);
+  });
+}
+
+function renderCalendar(){
+  const firstOfMonth = dateToUTCms(viewYear, viewMonth, 1);
+  document.getElementById('monthLabel').textContent = `${GREGORIAN_MONTHS[viewMonth]} ${viewYear}`;
+  document.getElementById('monthLabelHijri').textContent = hijriMonthYear(firstOfMonth) + ' هـ';
+
+  const daysInMonth = new Date(Date.UTC(viewYear, viewMonth+1, 0)).getUTCDate();
+  const firstDow = new Date(firstOfMonth).getUTCDay(); // 0=أحد
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  DOW_LABELS.forEach(d=>{
+    const el = document.createElement('div');
+    el.className = 'cal-dow'; el.textContent = d;
+    grid.appendChild(el);
+  });
+  for(let i=0;i<firstDow;i++){
+    const empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    grid.appendChild(empty);
+  }
+  const todayStr = new Date().toISOString().slice(0,10);
+  for(let day=1; day<=daysInMonth; day++){
+    const dUTC = dateToUTCms(viewYear, viewMonth, day);
+    const info = shiftFor(selectedGroup, dUTC);
+    const isToday = new Date(dUTC).toISOString().slice(0,10) === todayStr;
+    const cell = document.createElement('div');
+    cell.className = `cal-day ${info.cls}${isToday ? ' today' : ''}`;
+    cell.innerHTML = `<span class="day-num">${day}</span><span class="hijri-mid">${hijriShort(dUTC).split('/')[0]}</span>${SHIFT_ICONS[info.cls]}`;
+    cell.title = info.label;
+    grid.appendChild(cell);
   }
 }
 
-document.getElementById('messageAdminBtn').addEventListener('click', ()=>{
-  console.log('[تشخيص التواصل] ضُغط زر مراسلة المدير');
-  document.getElementById('contactModalOverlay').classList.add('show');
-});
-document.getElementById('contactModalCloseBtn').addEventListener('click', ()=>{
-  document.getElementById('contactModalOverlay').classList.remove('show');
-});
+function renderAll(){
+  renderTodayGrid();
+  renderCalendar();
+}
 
-let selectedContactType = 'موظف';
-document.querySelectorAll('.contact-type-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.contact-type-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    selectedContactType = btn.dataset.type;
+document.querySelectorAll('.group-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    selectedGroup = tab.dataset.group;
+    syncGroupTabs();
+    renderAll();
   });
 });
-
-/* يبني نص الرسالة الموحّد (كل البيانات مجتمعة) لاستخدامه بكلا زرّي الإرسال / Builds the unified message text (all fields together) used by both send buttons */
-function buildContactMessage_(){
-  const name = document.getElementById('contactName').value.trim();
-  const phone = document.getElementById('contactPhone').value.trim();
-  const email = document.getElementById('contactEmail').value.trim();
-  const shift = document.getElementById('contactShift').value;
-  const message = document.getElementById('contactMessage').value.trim();
-  console.log('[تشخيص التواصل] قيم الحقول عند الإرسال:', {name, phone, email, shift, message});
-  const errEl = document.getElementById('contactModalError');
-  errEl.classList.remove('show');
-  errEl.textContent = '';
-
-  if(!name){ errEl.textContent = 'الرجاء إدخال الاسم'; errEl.classList.add('show'); return null; }
-  if(!phone || phone.length < 9){ errEl.textContent = 'الرجاء إدخال رقم جوال صحيح'; errEl.classList.add('show'); return null; }
-  if(!shift){ errEl.textContent = 'الرجاء اختيار الوردية'; errEl.classList.add('show'); return null; }
-  if(!message){ errEl.textContent = 'الرجاء كتابة الرسالة'; errEl.classList.add('show'); return null; }
-
-  return `رسالة من نظام إحداثيات محطات SEC\n\nالاسم: ${name}\nرقم الجوال: ${phone}\nالإيميل: ${email || '—'}\nنوع العضوية: ${selectedContactType}\nالوردية: ${shift}\n\nالرسالة:\n${message}`;
-}
-
-document.getElementById('sendWhatsappBtn').addEventListener('click', ()=>{
-  console.log('[تشخيص التواصل] ضُغط زر واتساب');
-  const text = buildContactMessage_();
-  console.log('[تشخيص التواصل] نص الرسالة الناتج (null يعني فشل تحقق):', text);
-  if(!text) return;
-  if(!adminContactInfo.phone){
-    document.getElementById('contactModalError').textContent = 'تعذّر جلب رقم المدير من الخادم — تأكد من نشر آخر نسخة';
-    document.getElementById('contactModalError').classList.add('show');
-    return;
-  }
-  const waPhone = adminContactInfo.phone.replace(/^\+/, '').replace(/\D/g, '');
-  window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(text)}`, '_blank');
+document.getElementById('prevMonthBtn').addEventListener('click', ()=>{
+  viewMonth--; if(viewMonth<0){ viewMonth=11; viewYear--; }
+  renderCalendar();
 });
-
-document.getElementById('sendEmailBtn').addEventListener('click', ()=>{
-  const text = buildContactMessage_();
-  if(!text) return;
-  if(!adminContactInfo.email){
-    document.getElementById('contactModalError').textContent = 'تعذّر جلب إيميل المدير من الخادم — تأكد من نشر آخر نسخة';
-    document.getElementById('contactModalError').classList.add('show');
-    return;
-  }
-  const subject = 'رسالة من نظام إحداثيات محطات SEC';
-  window.location.href = `mailto:${adminContactInfo.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+document.getElementById('nextMonthBtn').addEventListener('click', ()=>{
+  viewMonth++; if(viewMonth>11){ viewMonth=0; viewYear++; }
+  renderCalendar();
 });
-const dropdown = document.getElementById('countryDropdown');
-const phoneUnified = document.getElementById('phoneUnified');
-const phonePrefix = document.getElementById('countrySelect');
-function positionPhoneLabel(){
-  document.getElementById('phoneLabel').style.right = (phonePrefix.offsetWidth + 13) + 'px';
-}
-countries.forEach(c=>{
-  const opt = document.createElement('div');
-  opt.className = 'country-option';
-  opt.innerHTML = `<span>${c.flag}</span><span style="font-family:'JetBrains Mono',monospace">${c.code}</span><span style="color:var(--text-secondary)">${c.name}</span>`;
-  opt.addEventListener('click', ()=>{
-    selectedCountry = c;
-    document.getElementById('selectedFlag').textContent = c.flag;
-    document.getElementById('selectedCode').textContent = c.code;
-    dropdown.classList.remove('open');
-    positionPhoneLabel();
-  });
-  dropdown.appendChild(opt);
-});
-document.getElementById('countrySelect').addEventListener('click', (e)=>{
-  e.stopPropagation();
-  dropdown.classList.toggle('open');
-});
-document.addEventListener('click', ()=> dropdown.classList.remove('open'));
-positionPhoneLabel();
-
-/* ===== تحويل أرقام عربية لإنجليزية بالإدخال + تفعيل عنوان الجوال العائم ===== */
-const phoneInput = document.getElementById('phoneInput');
-function syncPhoneFloating(){
-  phoneUnified.classList.toggle('filled', phoneInput.value.trim().length > 0);
-}
-phoneInput.addEventListener('input', ()=>{
-  const arabicIndic = '٠١٢٣٤٥٦٧٨٩';
-  phoneInput.value = phoneInput.value.replace(/[٠-٩]/g, d => arabicIndic.indexOf(d)).replace(/[^\d]/g,'');
-  syncPhoneFloating();
-});
-phoneInput.addEventListener('focus', ()=> phoneUnified.classList.add('focused'));
-phoneInput.addEventListener('blur', ()=> phoneUnified.classList.remove('focused'));
-
-/* ===== التبديل بين تسجيل الدخول / عضو جديد ===== */
-let mode = 'login';
-const tabLogin = document.getElementById('tabLogin');
-const tabRegister = document.getElementById('tabRegister');
-const tabIndicator = document.getElementById('tabIndicator');
-function moveTabIndicator(el){
-  tabIndicator.style.width = el.offsetWidth + 'px';
-  tabIndicator.style.left = el.offsetLeft + 'px';
-}
-moveTabIndicator(tabLogin);
-window.addEventListener('resize', ()=> moveTabIndicator(mode==='login' ? tabLogin : tabRegister));
-function setMode(m){
-  mode = m;
-  tabLogin.classList.toggle('active', m==='login');
-  tabRegister.classList.toggle('active', m==='register');
-  moveTabIndicator(m==='login' ? tabLogin : tabRegister);
-  document.getElementById('nameField').style.display = m==='register' ? 'block':'none';
-  document.getElementById('memberTypeField').style.display = m==='register' ? 'block':'none';
-  document.getElementById('shiftField').style.display = m==='register' ? 'block':'none';
-  document.getElementById('departmentField').style.display = m==='register' ? 'block':'none';
-  document.getElementById('stepTitle').textContent = m==='login' ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
-  document.getElementById('stepDesc').textContent = m==='login'
-    ? 'أدخل رقم جوالك المسجل، ثم تحقق من هويتك بأفضل وسيلة يدعمها جهازك'
-    : 'سجّل بياناتك، ثم فعّل التحقق الآمن بجهازك فورًا لتأمين الدخول';
-  document.getElementById('switchHint').innerHTML = m==='login'
-    ? 'ما عندك حساب؟ <a id="goRegister">سجّل كعضو جديد</a>'
-    : 'عندك حساب؟ <a id="goLogin">سجّل الدخول</a>';
-  hideError();
-  bindSwitchLinks();
-}
-function bindSwitchLinks(){
-  const r = document.getElementById('goRegister');
-  const l = document.getElementById('goLogin');
-  if(r) r.addEventListener('click', ()=>setMode('register'));
-  if(l) l.addEventListener('click', ()=>setMode('login'));
-}
-tabLogin.addEventListener('click', ()=>setMode('login'));
-tabRegister.addEventListener('click', ()=>setMode('register'));
-bindSwitchLinks();
-
-function showError(msg){
-  const el = document.getElementById('errorBanner');
-  el.textContent = msg; el.classList.add('show');
-}
-function hideError(){ document.getElementById('errorBanner').classList.remove('show'); }
-
-/* ============================================================
- *  مكوّن زر التقدم القابل لإعادة الاستخدام
- *  منع التكرار: disable فوري + قفل أي حقل بالنموذج
- * ============================================================ */
-function ProgressButton(btnEl, labelEl, pctEl, fillEl, formFields){
-  let running = false;
-  return {
-    async run(taskFn){
-      if(running) return; // حماية إضافية من النقر المزدوج
-      running = true;
-      btnEl.disabled = true;
-      btnEl.classList.remove('error','success');
-      formFields.forEach(f=>f.classList.add('field-disabled'));
-      labelEl.style.display='none';
-      pctEl.style.display='inline';
-
-      let progress = 0;
-      const tick = setInterval(()=>{
-        progress = Math.min(progress + Math.random()*14, 92);
-        fillEl.style.width = progress+'%';
-        pctEl.textContent = Math.round(progress)+'%';
-      }, 120);
-
-      try{
-        const result = await taskFn();
-        clearInterval(tick);
-        fillEl.style.width = '100%';
-        pctEl.textContent = '100%';
-        await new Promise(r=>setTimeout(r,250));
-        btnEl.classList.add('success');
-        await new Promise(r=>setTimeout(r,500));
-        return result;
-      }catch(err){
-        clearInterval(tick);
-        btnEl.classList.add('error');
-        fillEl.style.width = '0%';
-        showError(err.message || 'حدث خطأ، حاول مرة أخرى');
-        throw err;
-      }finally{
-        running = false;
-        btnEl.disabled = false;
-        btnEl.classList.remove('error','success');
-        labelEl.style.display='inline';
-        pctEl.style.display='none';
-        fillEl.style.width='0%';
-        formFields.forEach(f=>f.classList.remove('field-disabled'));
-      }
-    }
-  };
-}
-
-const mainBtn = document.getElementById('mainBtn');
-mainBtn.addEventListener('click', (e)=>{
-  const rect = mainBtn.getBoundingClientRect();
-  const size = Math.max(rect.width, rect.height);
-  const ripple = document.createElement('span');
-  ripple.className = 'ripple';
-  ripple.style.width = ripple.style.height = size + 'px';
-  ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
-  ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
-  mainBtn.appendChild(ripple);
-  setTimeout(()=> ripple.remove(), 650);
-});
-const mainBtnLabel = document.getElementById('mainBtnLabel');
-const mainBtnPct = document.getElementById('mainBtnPct');
-const mainBtnFill = document.getElementById('mainBtnFill');
-const formFields = [phoneInput, document.getElementById('nameInput'), document.getElementById('countrySelect')];
-const progressBtn = ProgressButton(mainBtn, mainBtnLabel, mainBtnPct, mainBtnFill, formFields);
-
-/* ============================================================
- *  استدعاء الباكند الفعلي
- * ============================================================ */
+/* ===== حالة تسجيل الدخول بالهيدر — نفس آلية الصفحة الرئيسية (جلسة متجددة 12 ساعة) ===== */
+/* Header login state — same mechanism as the homepage (12h renewing session) */
+const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
 const API_URL = 'https://script.google.com/macros/s/AKfycbyxZUSLZNa6UlZLINsfAEe8CmQPoNGJbpnNtUDxP019TfL8uLh_5fuP0e5HE6daP8dh1w/exec';
 async function callBackend(action, payload){
-  const res = await fetch(API_URL, {
-    method:'POST',
-    body: JSON.stringify({ action, ...payload })
-  });
+  const res = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action, ...payload }) });
   let json;
-  try{
-    json = await res.json();
-  }catch(parseErr){
-    // الخادم رجّع HTML بدل JSON — يحصل أحيانًا بسبب ازدحام مؤقت بجوجل نفسها، مو خطأ بكودنا
-    // Server returned HTML instead of JSON — sometimes happens due to a transient hiccup on Google's side, not our code
-    return { success:false, error: 'تعذّر الاتصال بالخادم مؤقتًا، حاول مرة أخرى بعد قليل' };
-  }
-  if(json.error){
-    return { success:false, error: json.error, ...json };
-  }
+  try{ json = await res.json(); }catch(e){ return { success:false, error:'تعذّر الاتصال بالخادم' }; }
+  if(json.error) return { success:false, error: json.error, ...json };
   return { success:true, ...json };
 }
-loadAdminContact(); // يُستدعى هنا بعد تعريف API_URL وcallBackend مباشرة — استدعاؤه مبكرًا بمكان تعريفه السابق كان يسبب خطأ "الوصول قبل التهيئة"
-
-/* ============================================================
- *  تحويلات base64url <-> ArrayBuffer (مطلوبة لتبادل بيانات WebAuthn)
- * ============================================================ */
-function b64urlToBuffer(b64url){
-  let b64 = b64url.replace(/-/g,'+').replace(/_/g,'/');
-  while(b64.length % 4) b64 += '=';
-  const raw = atob(b64);
-  const buf = new Uint8Array(raw.length);
-  for(let i=0;i<raw.length;i++) buf[i] = raw.charCodeAt(i);
-  return buf.buffer;
-}
-function bufferToB64url(buf){
-  const bytes = new Uint8Array(buf);
-  let str = '';
-  for(let i=0;i<bytes.length;i++) str += String.fromCharCode(bytes[i]);
-  return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
-
-mainBtn.addEventListener('click', async ()=>{
-  hideError();
-  const phone = selectedCountry.code + phoneInput.value.trim();
-  if(phoneInput.value.trim().length < 8){
-    showError('الرجاء إدخال رقم جوال صحيح'); return;
-  }
-  if(mode==='register' && document.getElementById('nameInput').value.trim().length < 2){
-    showError('الرجاء إدخال الاسم الكامل'); return;
-  }
-  if(mode==='register' && !document.getElementById('regShiftInput').value){
-    showError('الرجاء اختيار الوردية'); return;
-  }
-  if(mode==='register' && !document.getElementById('regDepartmentInput').value){
-    showError('الرجاء اختيار القسم'); return;
-  }
-  if(mode==='register' && document.getElementById('regDepartmentInput').value==='أخرى' && !document.getElementById('regDepartmentOther').value.trim()){
-    showError('الرجاء ذكر اسم القسم'); return;
-  }
-  if(!window.PublicKeyCredential){
-    showError('هذا المتصفح لا يدعم تسجيل الدخول الآمن بالمصادقة البيومترية. الرجاء استخدام متصفح حديث مثل Chrome أو Safari أو Edge.');
-    return;
-  }
-
+(function(){
+  const raw = localStorage.getItem('sec-session');
+  const loginLink = document.getElementById('loginLink');
+  const mobileUserMenu = document.getElementById('mobileUserMenu');
+  if(!raw){ loginLink.style.display = 'block'; return; }
   try{
-    await progressBtn.run(async ()=>{
-      let result;
-      if(mode==='login'){
-        result = await startWebAuthnLogin(phone);
-      } else {
-        const name = document.getElementById('nameInput').value.trim();
-        const shift = document.getElementById('regShiftInput').value;
-        const departmentSelect = document.getElementById('regDepartmentInput').value;
-        const department = departmentSelect==='أخرى' ? document.getElementById('regDepartmentOther').value.trim() : departmentSelect;
-        const reg = await callBackend('registerUser', {name, phone, memberType: selectedMemberType, shift, department});
-        if(!reg.success) throw new Error(reg.error || 'تعذّر إنشاء الحساب');
-        result = await startWebAuthnRegistration(phone, name);
-      }
-      if(result && result.success){
-        await new Promise(r=>setTimeout(r, 700));
-        window.location.href = 'index.html'; // الجميع يدخل الرئيسية أولاً؛ المدير يفتح لوحته من القائمة عند الحاجة
-      }
-      return result;
-    });
+    const session = JSON.parse(raw);
+    const age = Date.now() - (session.ts || 0);
+
+    /* ===== إصلاح خروج الجلسة الفوري ==========================
+     * كان الشرط السابق يمسح الجلسة بالكامل (localStorage.removeItem)
+     * إذا كان session.name فارغًا لأي سبب طارئ — وبما أن الجلسة
+     * مشتركة بين كل صفحات الموقع، هذا كان يُظهر المستخدم "خارجًا من
+     * الموقع بالكامل" بمجرد دخوله هذه الصفحة تحديدًا. الآن فقط
+     * انتهاء عمر الجلسة الفعلي (12 ساعة) يمسحها، بنفس منطق
+     * index.html بالضبط — لا فرق سلوك بين الصفحات بعد الآن.
+     * ========================================================== */
+    if(age > SESSION_MAX_AGE_MS){
+      localStorage.removeItem('sec-session');
+      localStorage.removeItem('sec-phone');
+      loginLink.style.display = 'block';
+      return;
+    }
+    if(!session.name){
+      // جلسة بلا اسم — حالة غير متوقعة، لكن لا تكفي لتبرير مسح جلسة
+      // المستخدم الحقيقية. نعرض الصفحة كضيف مؤقتًا فقط دون أي حذف.
+      loginLink.style.display = 'block';
+      return;
+    }
+
+    session.ts = Date.now(); // تجديد النافذة من آخر نشاط فعلي
+    localStorage.setItem('sec-session', JSON.stringify(session));
+
+    loginLink.style.display = 'none';
+    mobileUserMenu.style.display = 'block';
+    document.getElementById('mobileMenuName').textContent = session.name.split(' ')[0];
+    if(session.role === 'admin') document.getElementById('mobileAdminLink').style.display = 'flex';
+
+    // ربط وردية العضو تلقائيًا — تُجلب من الخادم مباشرة (لا تُخزَّن محليًا) لضمان أحدث قيمة دائمًا حتى لو عدّلها العضو للتو بصفحة "حسابي"
+    // Auto-linking the member's own shift — fetched fresh from the server (never cached locally) to always reflect the latest value even if just edited on the account page
+    // إصلاح: هذا الاستدعاء الآن معزول تمامًا ولا يمكن أن يمس الجلسة إطلاقًا مهما فشل — لا حذف، لا إعادة توجيه
+    if(session.phone){
+      callBackend('getMemberProfile', { phone: session.phone }).then(res=>{
+        if(res && res.success && ['أ','ب','ج','د'].includes(res.shift)){
+          selectedGroup = res.shift;
+          syncGroupTabs();
+          renderAll();
+        }
+      }).catch(()=>{ /* فشل الجلب لا يمنع استخدام الصفحة بوضعها الافتراضي، ولا يمس الجلسة إطلاقًا */ });
+    }
   }catch(e){
-    document.getElementById('fingerprintStep').classList.remove('show');
-    document.getElementById('fpIcon').classList.remove('verifying');
-    document.getElementById('fpSpinner').classList.remove('verifying');
-    document.getElementById('fpProgress').textContent = '';
-    document.getElementById('phoneStep').style.display='block';
+    // خطأ غير متوقع بمعالجة الجلسة — نعرض الصفحة كضيف دون مسح أي بيانات محلية
+    loginLink.style.display = 'block';
+  }
+})();
+
+document.getElementById('mobileLogoutBtn').addEventListener('click', ()=>{
+  if(confirm('تسجيل الخروج؟')){
+    localStorage.removeItem('sec-session');
+    localStorage.removeItem('sec-phone');
+    location.reload();
   }
 });
+document.getElementById('brandLink').addEventListener('click', ()=> location.href = 'index.html');
 
-/* ============================================================
- *  WebAuthn — حماية من تكدّس الطلبات المعلّقة (AbortController)
- *  هذا تحديدًا يمنع مشكلة "تتكرر نافذة البصمة بعدد الضغطات"
- * ============================================================ */
-let activeAbortController = null;
-function abortPendingWebAuthn(){
-  if(activeAbortController){
-    activeAbortController.abort();
-    activeAbortController = null;
-  }
-}
-
-/* ============================================================
- *  WebAuthn — تسجيل بصمة جديدة (registration ceremony)
- * ============================================================ */
-async function startWebAuthnRegistration(phone, displayName){
-  document.getElementById('phoneStep').style.display='none';
-  document.getElementById('fingerprintStep').classList.add('show');
-  setAuthIcon();
-  document.getElementById('fpTitle').textContent = 'سجّل بصمتك الآن لتأمين حسابك';
-  document.getElementById('fpSubtitle').textContent = 'سيستخدم جهازك أفضل وسيلة تحقق متوفرة';
-  const fpProgress = startFpProgress();
-
-  const begin = await callBackend('generateRegisterChallenge', {phone});
-  if(!begin.success) throw new Error(begin.error || 'تعذّر بدء تسجيل البصمة');
-
-  abortPendingWebAuthn();
-  activeAbortController = new AbortController();
-
-  let credential;
-  try{
-    credential = await navigator.credentials.create({
-      signal: activeAbortController.signal,
-      publicKey: {
-        challenge: b64urlToBuffer(begin.challenge),
-        rp: { id: begin.rpId, name: begin.rpName },
-        user: {
-          id: b64urlToBuffer(begin.userIdB64),
-          name: begin.userName,
-          displayName: begin.userDisplayName || displayName
-        },
-        pubKeyCredParams: [{ type:'public-key', alg:-7 }],
-        authenticatorSelection: { userVerification:'required' },
-        timeout: 60000,
-        attestation: 'none'
-      }
-    });
-  }catch(err){
-    throw new Error(err.name==='NotAllowedError' ? 'تم إلغاء العملية أو رفض البصمة' : 'تعذّر تسجيل البصمة على هذا الجهاز');
-  }finally{
-    activeAbortController = null;
-  }
-
-  document.getElementById('fpTitle').textContent = 'جاري التحقق من البصمة...';
-  document.getElementById('fpIcon').classList.add('verifying');
-  document.getElementById('fpSpinner').classList.add('verifying');
-  const result = await callBackend('registerCredential', {
-    phone,
-    credentialId: bufferToB64url(credential.rawId),
-    attestationObjectB64: bufferToB64url(credential.response.attestationObject),
-    clientDataJSONB64: bufferToB64url(credential.response.clientDataJSON),
-    deviceName: guessDeviceName()
-  });
-  if(!result.success){ fpProgress.fail(); throw new Error(result.error || 'فشل حفظ البصمة بالخادم'); }
-  fpProgress.finish();
-
-  saveSession(phone, result.name || displayName, result.role || 'member');
-  document.getElementById('fpTitle').textContent = 'تم تسجيل البصمة بنجاح';
-  return result;
-}
-
-/* ============================================================
- *  WebAuthn — الدخول ببصمة موجودة (authentication ceremony)
- * ============================================================ */
-async function startWebAuthnLogin(phone){
-  document.getElementById('phoneStep').style.display='none';
-  document.getElementById('fingerprintStep').classList.add('show');
-  setAuthIcon();
-  document.getElementById('fpTitle').textContent = 'تحقق من هويتك';
-  document.getElementById('fpSubtitle').textContent = 'سيستخدم جهازك أفضل وسيلة تحقق متوفرة';
-  const fpProgress = startFpProgress();
-
-  const begin = await callBackend('generateLoginChallenge', {phone});
-  if(!begin.success){
-    if(begin.notRegistered){
-      // عضو موجود بالنظام لكن بدون بصمة مسجّلة (مثلًا عضو منقول من موقع سابق)
-      // ينتقل مباشرة لتفعيل البصمة، بدون المرور بـ registerUser من جديد
-      fpProgress.fail();
-      document.getElementById('fpTitle').textContent = 'لا توجد بصمة مسجّلة، سيتم تفعيلها الآن';
-      try{
-        const result = await startWebAuthnRegistration(phone, begin.name || '');
-        return result;
-      }catch(regErr){
-        throw regErr;
-      }
-    }
-    throw new Error(begin.error || 'تعذّر بدء تسجيل الدخول');
-  }
-
-  abortPendingWebAuthn();
-  activeAbortController = new AbortController();
-
-  let credential;
-  try{
-    credential = await navigator.credentials.get({
-      signal: activeAbortController.signal,
-      publicKey: {
-        challenge: b64urlToBuffer(begin.challenge),
-        rpId: begin.rpId,
-        allowCredentials: begin.allowCredentialIds.map(id => ({ type:'public-key', id: b64urlToBuffer(id) })),
-        userVerification: 'required',
-        timeout: 60000
-      }
-    });
-  }catch(err){
-    throw new Error(err.name==='NotAllowedError' ? 'تم إلغاء العملية أو رفض البصمة' : 'تعذّر التحقق من البصمة على هذا الجهاز');
-  }finally{
-    activeAbortController = null;
-  }
-
-  document.getElementById('fpTitle').textContent = 'جاري التحقق من البصمة...';
-  document.getElementById('fpIcon').classList.add('verifying');
-  document.getElementById('fpSpinner').classList.add('verifying');
-  const result = await callBackend('verifyAssertion', {
-    phone,
-    credentialId: bufferToB64url(credential.rawId),
-    authenticatorDataB64: bufferToB64url(credential.response.authenticatorData),
-    clientDataJSONB64: bufferToB64url(credential.response.clientDataJSON),
-    signatureB64: bufferToB64url(credential.response.signature)
-  });
-  if(!result.success){ fpProgress.fail(); throw new Error(result.error || 'فشل التحقق من تسجيل الدخول'); }
-  fpProgress.finish();
-
-  saveSession(phone, result.name, result.role || 'member');
-  return result;
-}
-
-function saveSession(phone, name, role){
-  localStorage.setItem('sec-phone', phone);
-  localStorage.setItem('sec-session', JSON.stringify({phone, name, role, ts: Date.now()}));
-}
-
-function startFpProgress(){
-  const el = document.getElementById('fpProgress');
-  let p = 0;
-  el.textContent = '0%';
-  const timer = setInterval(()=>{
-    p = Math.min(p + Math.random()*9, 94);
-    el.textContent = Math.round(p) + '%';
-  }, 180);
-  return {
-    finish(){ clearInterval(timer); el.textContent = '100%'; },
-    fail(){ clearInterval(timer); el.textContent = ''; }
-  };
-}
-
-function guessDeviceName(){
-  const ua = navigator.userAgent;
-  if(/iPhone/.test(ua)) return 'iPhone';
-  if(/iPad/.test(ua)) return 'iPad';
-  if(/Android/.test(ua)) return 'جهاز أندرويد';
-  if(/Macintosh/.test(ua)) return 'Mac';
-  if(/Windows/.test(ua)) return 'كمبيوتر ويندوز';
-  return 'جهاز غير معروف';
-}
-
-/* ============================================================
- *  أيقونة المصادقة تتكيّف مع الجهاز — الواجهة لا "تفرض" طريقة معيّنة،
- *  فقط تعرض إشارة بصرية مرجّحة؛ نظام التشغيل نفسه يتولى فعليًا
- *  اختيار وعرض أفضل وسيلة تحقق متاحة (Face ID / بصمة / PIN...)
- * ============================================================ */
-const AUTH_ICONS = {
-  fingerprint: `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke-linecap="round">
-    <path d="M50 28c-13 0-22 9-22 22v8" stroke-width="3.2"/>
-    <path d="M50 22c-17 0-29 12-29 28v9" stroke-width="3.2"/>
-    <path d="M50 35c-9 0-15 6-15 15v10c0 4 1 7 3 10" stroke-width="3.2"/>
-    <path d="M50 42c-5 0-8 3-8 8v9c0 6 2 11 6 15" stroke-width="3.2"/>
-    <path d="M50 49c-1.5 0-2 1-2 2v8c0 9 4 16 11 21" stroke-width="3.2"/>
-    <path d="M65 47v10c0 12-6 21-16 27" stroke-width="3.2"/>
-    <path d="M71 44v12c0 16-9 28-23 35" stroke-width="3.2"/>
-  </svg>`,
-  face: `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke-linecap="round">
-    <path d="M20 30V22a6 6 0 016-6h8" stroke-width="3.2"/>
-    <path d="M80 30V22a6 6 0 00-6-6h-8" stroke-width="3.2"/>
-    <path d="M20 70v8a6 6 0 006 6h8" stroke-width="3.2"/>
-    <path d="M80 70v8a6 6 0 01-6 6h-8" stroke-width="3.2"/>
-    <circle cx="38" cy="46" r="3" fill="currentColor" stroke="none"/>
-    <circle cx="62" cy="46" r="3" fill="currentColor" stroke="none"/>
-    <path d="M40 62c4 3 16 3 20 0" stroke-width="3.2"/>
-  </svg>`,
-  windows: `<svg width="46" height="46" viewBox="0 0 100 100" fill="none" stroke-linecap="round">
-    <rect x="18" y="18" width="28" height="28" rx="3" stroke-width="3.2"/>
-    <rect x="54" y="18" width="28" height="28" rx="3" stroke-width="3.2"/>
-    <rect x="18" y="54" width="28" height="28" rx="3" stroke-width="3.2"/>
-    <rect x="54" y="54" width="28" height="28" rx="3" stroke-width="3.2"/>
-  </svg>`
-};
-function detectAuthIconType(){
-  const ua = navigator.userAgent;
-  if(/iPhone|iPad|iPod/.test(ua)) return 'face';       // آيفون/آيباد الحديثة أغلبها Face ID
-  if(/Windows/.test(ua)) return 'windows';              // ويندوز → Windows Hello
-  return 'fingerprint';                                  // أندرويد وماك → بصمة
-}
-function setAuthIcon(){
-  document.getElementById('fpIcon').innerHTML = AUTH_ICONS[detectAuthIconType()];
-}
-
-/* ===== اقتراح آخر رقم جوال مستخدم تلقائيًا ===== */
-window.addEventListener('load', ()=>{
-  const saved = localStorage.getItem('sec-phone');
-  if(saved){
-    const match = countries.find(c => saved.startsWith(c.code));
-    if(match){
-      selectedCountry = match;
-      document.getElementById('selectedFlag').textContent = match.flag;
-      document.getElementById('selectedCode').textContent = match.code;
-      phoneInput.value = saved.slice(match.code.length);
-      positionPhoneLabel();
-      syncPhoneFloating();
-    }
-  }
+const mobileUserMenuEl = document.getElementById('mobileUserMenu');
+document.getElementById('mobileMenuTrigger').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  mobileUserMenuEl.classList.toggle('open');
 });
+document.addEventListener('click', (e)=>{
+  if(!mobileUserMenuEl.contains(e.target)) mobileUserMenuEl.classList.remove('open');
+});
+
+const themeSwitchMobile = document.getElementById('themeSwitchMobile');
+function syncThemeSwitch(){
+  themeSwitchMobile.classList.toggle('on', document.body.getAttribute('data-theme') === 'dark');
+}
+syncThemeSwitch();
+themeSwitchMobile.addEventListener('click', ()=>{
+  const next = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  localStorage.setItem('sec-theme', next);
+  syncThemeSwitch();
+});
+
+renderAll();
 </script>
 </body>
 </html>
