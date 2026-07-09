@@ -232,7 +232,7 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
 
 <header>
   <div class="header-row-main">
-    <div class="brand" id="brandLink" style="cursor:pointer">
+    <div class="brand" id="brandLink" style="cursor:pointer" role="button" tabindex="0" aria-label="الرجوع للصفحة الرئيسية">
       <img class="brand-mark" src="assets/logo-icon.png" alt="شعار الشركة السعودية للطاقة">
       <div>
         <div class="brand-text">لوحة المدير</div>
@@ -289,7 +289,7 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
         <span id="lastUpdateLabel">آخر تحديث: —</span>
       </div>
       <div class="status-bar-item" id="headerDateLine"></div>
-      <button class="status-refresh-btn" id="dataRefreshBtn" title="تحديث لوحة العمليات الآن">
+      <button class="status-refresh-btn" id="dataRefreshBtn" title="تحديث لوحة العمليات الآن" aria-label="تحديث لوحة العمليات الآن">
         <svg id="dataRefreshIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
       </button>
     </div>
@@ -314,7 +314,7 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
   <div class="detail-modal">
     <div class="detail-modal-head">
       <div class="detail-modal-title" id="detailModalTitle">التفاصيل</div>
-      <div class="detail-modal-close" id="detailModalClose">
+      <div class="detail-modal-close" id="detailModalClose" role="button" tabindex="0" aria-label="إغلاق نافذة التفاصيل">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </div>
     </div>
@@ -347,6 +347,10 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbyxZUSLZNa6UlZLINsfAEe8CmQPoNGJbpnNtUDxP019TfL8uLh_5fuP0e5HE6daP8dh1w/exec';
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
 
 /* ============================================================
  *  فحص حالة الاتصال بالخادم — نفس منطق index.html بالضبط
@@ -423,7 +427,11 @@ themeSwitchMobile.addEventListener('click', ()=>{
 });
 
 /* ===== خروج ===== */
-document.getElementById('brandLink').addEventListener('click', ()=>{ location.href = 'index.html'; });
+const goToIndex = ()=>{ location.href = 'index.html'; };
+document.getElementById('brandLink').addEventListener('click', goToIndex);
+document.getElementById('brandLink').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); goToIndex(); }
+});
 
 function doLogout(){
   if(confirm('تسجيل الخروج؟')){
@@ -484,7 +492,7 @@ const ALERT_CATEGORY_ICON = {
 function renderAlertStrip(alertsSummary){
   const chips = Object.keys(alertsSummary)
     .filter(cat => alertsSummary[cat] > 0)
-    .map(cat => `<div class="alert-chip">${ALERT_CATEGORY_ICON[cat]||'⚠️'} ${alertsSummary[cat]} ${cat}</div>`)
+    .map(cat => `<div class="alert-chip">${ALERT_CATEGORY_ICON[cat]||'⚠️'} ${alertsSummary[cat]} ${escapeHtml(cat)}</div>`)
     .join('');
   const strip = document.getElementById('alertStrip');
   if(chips){
@@ -510,7 +518,7 @@ function renderOpsMain(d){
   };
   const breakdownRows = (d.dailyRequestBreakdown || []).map(item => `
     <div class="ops-breakdown-row">
-      <span>${ACTION_LABELS[item.action] || item.action}</span>
+      <span>${escapeHtml(ACTION_LABELS[item.action] || item.action)}</span>
       <b>${item.count.toLocaleString('ar-SA')}</b>
     </div>`).join('');
 
@@ -535,7 +543,7 @@ function renderOpsMain(d){
     </div>
 
     <div class="acc-item" data-section="present">
-      <div class="acc-head">
+      <div class="acc-head" role="button" tabindex="0">
         <div class="acc-head-title">👥 المتواجدون</div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="acc-head-badge">اليوم ${d.activeUsersToday} — الوردية ${d.activeUsersShift}</span>
@@ -546,7 +554,7 @@ function renderOpsMain(d){
     </div>
 
     <div class="acc-item" data-section="additions">
-      <div class="acc-head">
+      <div class="acc-head" role="button" tabindex="0">
         <div class="acc-head-title">+ الإضافات</div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="acc-head-badge">${d.additionsToday} اليوم</span>
@@ -557,7 +565,7 @@ function renderOpsMain(d){
     </div>
 
     <div class="acc-item" data-section="edits">
-      <div class="acc-head">
+      <div class="acc-head" role="button" tabindex="0">
         <div class="acc-head-title">✎ التعديلات</div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="acc-head-badge">${d.editsToday} اليوم</span>
@@ -568,7 +576,7 @@ function renderOpsMain(d){
     </div>
 
     <div class="acc-item" data-section="charts">
-      <div class="acc-head">
+      <div class="acc-head" role="button" tabindex="0">
         <div class="acc-head-title">📈 زوار آخر 7 أيام</div>
         <svg class="acc-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </div>
@@ -576,7 +584,7 @@ function renderOpsMain(d){
     </div>
 
     <div class="acc-item" data-section="peak">
-      <div class="acc-head">
+      <div class="acc-head" role="button" tabindex="0">
         <div class="acc-head-title">🔥 أوقات الذروة</div>
         <svg class="acc-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </div>
@@ -584,7 +592,7 @@ function renderOpsMain(d){
     </div>
 
     <div class="acc-item" data-section="regions">
-      <div class="acc-head">
+      <div class="acc-head" role="button" tabindex="0">
         <div class="acc-head-title">🗺️ نشاط المناطق</div>
         <svg class="acc-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </div>
@@ -592,7 +600,7 @@ function renderOpsMain(d){
     </div>
 
     <div class="acc-item" data-section="quality">
-      <div class="acc-head">
+      <div class="acc-head" role="button" tabindex="0">
         <div class="acc-head-title">⭐ جودة البيانات</div>
         <div style="display:flex;align-items:center;gap:8px">
           <span class="acc-head-badge" style="color:${gaugeColor(qualityPct,'quality')}">${qualityPct}%</span>
@@ -608,12 +616,12 @@ function renderOpsMain(d){
     </div>
 
     <div class="acc-item" data-section="log">
-      <div class="acc-head">
+      <div class="acc-head" role="button" tabindex="0">
         <div class="acc-head-title">⚠️ سجل النظام</div>
         <svg class="acc-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </div>
       <div class="acc-body"><div class="acc-body-inner">
-        ${Object.keys(d.alertsSummary).map(cat => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>${ALERT_CATEGORY_ICON[cat]||''} ${cat}</span><b style="color:var(--text-primary)">${d.alertsSummary[cat]}</b></div>`).join('')}
+        ${Object.keys(d.alertsSummary).map(cat => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>${ALERT_CATEGORY_ICON[cat]||''} ${escapeHtml(cat)}</span><b style="color:var(--text-primary)">${d.alertsSummary[cat]}</b></div>`).join('')}
       </div></div>
     </div>
   `;
@@ -626,7 +634,7 @@ function renderOpsMain(d){
 let presentLoaded = false, additionsLoaded = false, editsLoaded = false, chartsLoaded = false, peakLoaded = false, regionsLoaded = false;
 function wireAccordion(){
   document.querySelectorAll('.acc-head').forEach(head=>{
-    head.addEventListener('click', ()=>{
+    const toggle = ()=>{
       const item = head.closest('.acc-item');
       const wasOpen = item.classList.contains('open');
       document.querySelectorAll('.acc-item.open').forEach(el=> el.classList.remove('open'));
@@ -640,6 +648,10 @@ function wireAccordion(){
         if(section === 'peak' && !peakLoaded) loadPeakHeatmap();
         if(section === 'regions' && !regionsLoaded) loadRegionActivity();
       }
+    };
+    head.addEventListener('click', toggle);
+    head.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
     });
   });
 }
@@ -651,7 +663,7 @@ async function loadPresentPreview(){
   try{
     const res = await fetch(API_URL, {method:'POST', body: JSON.stringify({action:'getActiveUsersDetail', period:'today'})});
     const data = await res.json();
-    const rows = (data.users||[]).slice(0,5).map(u => `<tr><td>${u.name}</td><td dir="ltr">${u.phone}</td><td>${u.shift||'—'}</td><td>${u.lastActivity}</td></tr>`).join('');
+    const rows = (data.users||[]).slice(0,5).map(u => `<tr><td>${escapeHtml(u.name)}</td><td dir="ltr">${escapeHtml(u.phone)}</td><td>${escapeHtml(u.shift||'—')}</td><td>${escapeHtml(u.lastActivity)}</td></tr>`).join('');
     document.getElementById('accPresentBody').innerHTML = (data.users && data.users.length
       ? `<table><tr><th>الاسم</th><th>الجوال</th><th>الوردية</th><th>آخر نشاط</th></tr>${rows}</table>`
       : '<div class="coming-soon">لا يوجد نشاط اليوم بعد</div>')
@@ -666,7 +678,7 @@ async function loadAdditionsPreview(){
   try{
     const res = await fetch(API_URL, {method:'POST', body: JSON.stringify({action:'getChangesLog', type:'إضافة_محطة_جديدة', limit:5})});
     const data = await res.json();
-    const rows = (data.changes||[]).map(c => `<tr><td>${c.stationId}</td><td>${c.memberName}</td><td>${c.date}</td></tr>`).join('');
+    const rows = (data.changes||[]).map(c => `<tr><td>${escapeHtml(c.stationId)}</td><td>${escapeHtml(c.memberName)}</td><td>${escapeHtml(c.date)}</td></tr>`).join('');
     document.getElementById('accAdditionsBody').innerHTML = (data.changes && data.changes.length
       ? `<table><tr><th>المحطة</th><th>العضو</th><th>التاريخ</th></tr>${rows}</table>`
       : '<div class="coming-soon">لا توجد إضافات مسجّلة بعد</div>')
@@ -681,7 +693,7 @@ async function loadEditsPreview(){
   try{
     const res = await fetch(API_URL, {method:'POST', body: JSON.stringify({action:'getChangesLog', type:'تعديل_إحداثية', limit:5})});
     const data = await res.json();
-    const rows = (data.changes||[]).map(c => `<tr><td>${c.stationId}</td><td>${c.memberName}</td><td>${c.date}</td></tr>`).join('');
+    const rows = (data.changes||[]).map(c => `<tr><td>${escapeHtml(c.stationId)}</td><td>${escapeHtml(c.memberName)}</td><td>${escapeHtml(c.date)}</td></tr>`).join('');
     document.getElementById('accEditsBody').innerHTML = (data.changes && data.changes.length
       ? `<table><tr><th>المحطة</th><th>العضو</th><th>التاريخ</th></tr>${rows}</table>`
       : '<div class="coming-soon">لا توجد تعديلات مسجّلة بعد</div>')
@@ -736,6 +748,9 @@ function closeDetailModal(){
   document.getElementById('detailModalOverlay').classList.remove('show');
 }
 document.getElementById('detailModalClose').addEventListener('click', closeDetailModal);
+document.getElementById('detailModalClose').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); closeDetailModal(); }
+});
 document.getElementById('detailModalOverlay').addEventListener('click', (e)=>{
   if(e.target.id === 'detailModalOverlay') closeDetailModal();
 });
@@ -771,7 +786,7 @@ async function fetchAndRenderDetail(){
       return;
     }
     const headHtml = '<tr>' + cfg.columns.map(c=>`<th>${c}</th>`).join('') + '</tr>';
-    const bodyHtml = rows.map(r => '<tr>' + r.cells.map(v => `<td dir="${/^\+?\d[\d\s]*$/.test(String(v))?'ltr':'rtl'}">${v}</td>`).join('') + '</tr>').join('');
+    const bodyHtml = rows.map(r => '<tr>' + r.cells.map(v => `<td dir="${/^\+?\d[\d\s]*$/.test(String(v))?'ltr':'rtl'}">${escapeHtml(v)}</td>`).join('') + '</tr>').join('');
     wrap.innerHTML = `<table>${headHtml}${bodyHtml}</table>`;
   }catch(e){
     wrap.innerHTML = '<div class="coming-soon">تعذّر تحميل التفاصيل</div>';
@@ -870,7 +885,7 @@ async function loadRegionActivity(){
     const maxCount = Math.max(...data.regions.map(r=>r.count));
     document.getElementById('accRegionsBody').innerHTML = data.regions.map(r => `
       <div class="region-bar-row">
-        <div class="region-bar-label">${r.region}</div>
+        <div class="region-bar-label">${escapeHtml(r.region)}</div>
         <div class="region-bar-track"><div class="region-bar-fill" style="width:${Math.round((r.count/maxCount)*100)}%"></div></div>
         <div class="region-bar-count">${r.count}</div>
       </div>`).join('');
@@ -886,7 +901,7 @@ async function loadDashboard(){
   fetching = true;
   lastFetch = Date.now(); // كان مفقودًا بالكامل — بدونه، فحص "مضى وقت كافٍ" يفشل دائمًا ويُعيد التحميل عند كل رجوع للتبويب مهما كان قريبًا
   document.getElementById('dataRefreshIcon').style.animation = 'spin .7s linear infinite';
-  presentLoaded = false; changesLoaded = false; chartsLoaded = false; peakLoaded = false; regionsLoaded = false;
+  presentLoaded = false; additionsLoaded = false; editsLoaded = false; chartsLoaded = false; peakLoaded = false; regionsLoaded = false;
 
   try{
     const res = await fetch(API_URL, {method:'POST', body: JSON.stringify({action:'getOperationsDashboard', phone: session.phone})});
@@ -896,7 +911,7 @@ async function loadDashboard(){
     lastSuccessfulCheckAt = new Date();
     refreshLastUpdateLabel();
   }catch(err){
-    document.getElementById('opsMain').innerHTML = `<div class="err-msg">تعذّر تحميل البيانات: ${err.message}</div>`;
+    document.getElementById('opsMain').innerHTML = `<div class="err-msg">تعذّر تحميل البيانات: ${escapeHtml(err.message)}</div>`;
   }finally{
     fetching = false;
     document.getElementById('dataRefreshIcon').style.animation = '';

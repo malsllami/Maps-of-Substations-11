@@ -120,7 +120,7 @@ h2{font-size:17px;font-weight:700;margin-bottom:4px;}
 </script>
 
 <header>
-  <div class="brand" id="brandLink" style="cursor:pointer">
+  <div class="brand" id="brandLink" style="cursor:pointer" role="button" tabindex="0" aria-label="الرجوع للصفحة الرئيسية">
     <img class="brand-mark" src="assets/logo-icon.png" alt="شعار الشركة السعودية للطاقة">
     <div>
       <div class="brand-text">حسابي</div>
@@ -301,7 +301,11 @@ function doLogout(){
   location.href = 'auth.html';
 }
 document.getElementById('mobileLogoutBtn').addEventListener('click', doLogout);
-document.getElementById('brandLink').addEventListener('click', ()=> location.href='index.html');
+const goToIndexFromMember = ()=> location.href='index.html';
+document.getElementById('brandLink').addEventListener('click', goToIndexFromMember);
+document.getElementById('brandLink').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); goToIndexFromMember(); }
+});
 
 async function pingBackend(){
   const res = await fetch(API_URL, { method:'POST', body: JSON.stringify({ action:'ping' }) });

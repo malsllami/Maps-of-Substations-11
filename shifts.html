@@ -141,7 +141,7 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
 
 <header>
   <div class="header-row-main">
-    <div class="brand" id="brandLink" style="cursor:pointer">
+    <div class="brand" id="brandLink" style="cursor:pointer" role="button" tabindex="0" aria-label="الرجوع للصفحة الرئيسية">
       <img class="brand-mark" src="assets/logo-icon.png" alt="شعار الشركة السعودية للطاقة">
       <div>
         <div class="brand-text">تقويم دوام الورديات</div>
@@ -195,10 +195,10 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px s
   <div class="today-grid" id="todayGrid"></div>
 
   <div class="group-tabs" id="groupTabs">
-    <div class="group-tab active" data-group="أ">وردية أ</div>
-    <div class="group-tab" data-group="ب">وردية ب</div>
-    <div class="group-tab" data-group="ج">وردية ج</div>
-    <div class="group-tab" data-group="د">وردية د</div>
+    <div class="group-tab active" data-group="أ" role="tab" tabindex="0" aria-selected="true">وردية أ</div>
+    <div class="group-tab" data-group="ب" role="tab" tabindex="0" aria-selected="false">وردية ب</div>
+    <div class="group-tab" data-group="ج" role="tab" tabindex="0" aria-selected="false">وردية ج</div>
+    <div class="group-tab" data-group="د" role="tab" tabindex="0" aria-selected="false">وردية د</div>
   </div>
 
   <div class="cal-nav">
@@ -279,15 +279,24 @@ function renderTodayGrid(){
     const info = shiftFor(g, todayUTC);
     const card = document.createElement('div');
     card.className = 'today-card' + (g===selectedGroup ? ' active-group' : '');
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `اختيار وردية ${g}`);
     card.innerHTML = `<div class="grp">وردية ${g}</div><div class="status ${info.cls}">${info.label}</div>`;
-    card.addEventListener('click', ()=>{ selectedGroup = g; syncGroupTabs(); renderAll(); });
+    const selectCard = ()=>{ selectedGroup = g; syncGroupTabs(); renderAll(); };
+    card.addEventListener('click', selectCard);
+    card.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); selectCard(); }
+    });
     grid.appendChild(card);
   });
 }
 
 function syncGroupTabs(){
   document.querySelectorAll('.group-tab').forEach(t=>{
-    t.classList.toggle('active', t.dataset.group === selectedGroup);
+    const isSelected = t.dataset.group === selectedGroup;
+    t.classList.toggle('active', isSelected);
+    t.setAttribute('aria-selected', String(isSelected));
   });
 }
 
@@ -330,10 +339,14 @@ function renderAll(){
 }
 
 document.querySelectorAll('.group-tab').forEach(tab=>{
-  tab.addEventListener('click', ()=>{
+  const selectTab = ()=>{
     selectedGroup = tab.dataset.group;
     syncGroupTabs();
     renderAll();
+  };
+  tab.addEventListener('click', selectTab);
+  tab.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); selectTab(); }
   });
 });
 document.getElementById('prevMonthBtn').addEventListener('click', ()=>{
@@ -424,7 +437,11 @@ document.getElementById('mobileLogoutBtn').addEventListener('click', ()=>{
     location.reload();
   }
 });
-document.getElementById('brandLink').addEventListener('click', ()=> location.href = 'index.html');
+const goToIndexFromShifts = ()=> location.href = 'index.html';
+document.getElementById('brandLink').addEventListener('click', goToIndexFromShifts);
+document.getElementById('brandLink').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); goToIndexFromShifts(); }
+});
 
 const mobileUserMenuEl = document.getElementById('mobileUserMenu');
 document.getElementById('mobileMenuTrigger').addEventListener('click', (e)=>{

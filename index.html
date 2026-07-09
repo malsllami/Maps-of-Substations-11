@@ -194,7 +194,6 @@ header{
 }
 :root{
   --globe-size: clamp(360px, 92vw, 760px);
-  --map-toolbar-h: 45px;
 }
 body.guest-mode{
   --globe-size: clamp(400px, 100vw, 860px);
@@ -484,7 +483,7 @@ body.guest-mode h1{
 }
 .intro-text{
   font-family:'JetBrains Mono',monospace;
-  font-size:13px;letter-spacing:3px;color:#4DD6B5;
+  font-size:13px;letter-spacing:3px;color:var(--teal-light);
   opacity:0;text-align:center;
   animation:introTextIn .5s ease-out .85s forwards;
 }
@@ -919,8 +918,7 @@ body.guest-mode h1{
 .storage-bar-wrap{display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--text-secondary);flex:1;min-width:160px;}
 .storage-bar-track{flex:1;height:8px;border-radius:4px;background:var(--bg-elev);border:1px solid var(--border-strong);overflow:hidden;}
 .storage-bar-fill{height:100%;min-width:2px;border-radius:4px;background:linear-gradient(90deg, var(--blue-mid), var(--teal-light));transition:width .4s ease;}
-/* ===== سطر كمية بيانات المحطات المحمّلة فعليًا بالذاكرة المؤقتة (مضاف حديثًا) ===== */
-/* ===== Actual loaded stations-cache size line (newly added) ===== */
+/* ===== سطر كمية بيانات المحطات المحمّلة فعليًا بالذاكرة المؤقتة ===== */
 .stations-cache-info{
   width:100%;display:flex;align-items:center;justify-content:center;gap:6px;
   font-size:10.5px;color:var(--text-secondary);
@@ -1102,7 +1100,7 @@ footer{
       <div class="status-bar-item" id="headerDateLine"></div>
       <div class="conn-refresh-group">
         <div class="conn-pill-div"></div>
-        <button class="status-refresh-btn" id="dataRefreshBtn" title="تحديث بيانات المحطات — لو لاحظت نتائج بحث غير محدّثة">
+        <button class="status-refresh-btn" id="dataRefreshBtn" title="تحديث بيانات المحطات — لو لاحظت نتائج بحث غير محدّثة" aria-label="تحديث بيانات المحطات">
           <svg id="dataRefreshIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
         </button>
       </div>
@@ -1144,7 +1142,7 @@ footer{
 
     <div class="map-toolbar-bar">
       <div class="toolbar-scroll" id="toolbarScroll">
-        <div class="map-mode-chip" id="mapModeChip" title="نوع الخريطة">
+        <div class="map-mode-chip" id="mapModeChip" title="نوع الخريطة" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false" aria-label="نوع الخريطة">
           <span class="mm-icon" id="mapModeChipIcon"></span>
           <span id="mapModeChipLabel">تلقائي</span>
           <span class="mm-auto-badge" id="mapModeAutoBadge">تلقائي</span>
@@ -1208,10 +1206,10 @@ footer{
     <div id="map-container"></div>
 
     <div class="zoom-controls" id="zoomControls">
-      <div class="zoom-btn" id="zoomInBtn" title="تكبير">
+      <div class="zoom-btn" id="zoomInBtn" title="تكبير" role="button" tabindex="0" aria-label="تكبير الخريطة">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </div>
-      <div class="zoom-btn" id="zoomOutBtn" title="تصغير">
+      <div class="zoom-btn" id="zoomOutBtn" title="تصغير" role="button" tabindex="0" aria-label="تصغير الخريطة">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </div>
     </div>
@@ -1249,7 +1247,7 @@ footer{
   <div class="fullpage-form-overlay" id="addStationOverlay">
     <div class="fullpage-form-header">
       <div class="fullpage-form-title">+ إضافة محطة جديدة</div>
-      <div class="fullpage-form-close" id="addStationCloseBtn">
+      <div class="fullpage-form-close" id="addStationCloseBtn" role="button" tabindex="0" aria-label="إغلاق نموذج إضافة المحطة">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </div>
     </div>
@@ -1320,7 +1318,7 @@ footer{
   <div class="fullpage-form-overlay" id="editStationOverlay">
     <div class="fullpage-form-header">
       <div class="fullpage-form-title" id="editStationTitle">تعديل المحطة</div>
-      <div class="fullpage-form-close" id="editStationCloseBtn">
+      <div class="fullpage-form-close" id="editStationCloseBtn" role="button" tabindex="0" aria-label="إغلاق نموذج تعديل المحطة">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </div>
     </div>
@@ -1383,7 +1381,6 @@ footer{
       <div class="storage-bar-track"><div class="storage-bar-fill" id="storageBarFill"></div></div>
       <span id="storageUsageLabel">0 MB / 50 MB</span>
     </div>
-    <!-- سطر جديد: كمية بيانات المحطات المحمّلة فعليًا بالذاكرة المؤقتة -->
     <div class="stations-cache-info" id="stationsCacheInfo">بيانات المحطات المحمّلة بالذاكرة المؤقتة: —</div>
   </div>
 </section>
@@ -1412,6 +1409,13 @@ function renewSessionActivity_(){
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+// للقيم المُدرجة داخل onclick="fn('${...}')" — يهرّب أولاً كسلسلة JS (لأن &#39; تُفكّ قبل تنفيذ معالج الحدث)
+// ثم يهرّب الناتج كسمة HTML، لمنع كسر كل من سياق JS وسياق السمة معًا
+function escapeJsAttr(str){
+  const jsEscaped = String(str).replace(/[\\'\n\r]/g, ch => ({'\\':'\\\\',"'":"\\'",'\n':'\\n','\r':'\\r'}[ch]));
+  return escapeHtml(jsEscaped);
 }
 
 const STATIONS_CACHE_KEY = 'sec-stations-cache-v1';
@@ -1469,18 +1473,9 @@ function showLoadProgress_(loaded, total){
   if(el) el.textContent = total ? `جاري تحميل بيانات المحطات: ${loaded}/${total}` : `جاري تحميل بيانات المحطات: ${loaded}`;
 }
 
-/* ============================================================
- *  سطر "بيانات المحطات المحمّلة بالذاكرة المؤقتة" — مؤشر جديد يعرض
- *  عدد المحطات الفعلي المحمَّل بالذاكرة الآن + حجم الكاش المضغوط
- *  فعليًا داخل localStorage، منفصل عن شريط "الذاكرة المستخدمة" العام
- *  الذي يحسب كل مفاتيح التخزين المحلي مجتمعة بلا تفصيل
- * ============================================================ */
-/* ============================================================
- *  "Stations data loaded in cache" line — a new indicator showing
- *  the actual station count currently loaded in memory + the real
- *  compressed cache size inside localStorage, separate from the
- *  general "storage used" bar which lumps every key together
- * ============================================================ */
+/* سطر "بيانات المحطات المحمّلة بالذاكرة المؤقتة" — يعرض عدد المحطات الفعلي
+ * المحمَّل بالذاكرة الآن + حجم الكاش المضغوط داخل localStorage، منفصل عن
+ * شريط "الذاكرة المستخدمة" العام الذي يحسب كل مفاتيح التخزين المحلي مجتمعة */
 function updateStationsCacheInfo(){
   const el = document.getElementById('stationsCacheInfo');
   if(!el) return;
@@ -2086,8 +2081,15 @@ const feederToggleBtn = document.getElementById('feederToggleBtn');
 const moreToggleBtn = document.getElementById('moreToggleBtn');
 const outageToggleBtn = document.getElementById('outageToggleBtn');
 const outagePanel = document.getElementById('outagePanel');
-document.getElementById('zoomInBtn').addEventListener('click', ()=>{ if(leafletMap) leafletMap.zoomIn(); });
-document.getElementById('zoomOutBtn').addEventListener('click', ()=>{ if(leafletMap) leafletMap.zoomOut(); });
+// يفعّل عنصر div بدور زر (role=button) بالنقر أو بلوحة المفاتيح (Enter/Space) لدعم إمكانية الوصول
+function bindActivatable(el, handler){
+  el.addEventListener('click', handler);
+  el.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); handler(e); }
+  });
+}
+bindActivatable(document.getElementById('zoomInBtn'), ()=>{ if(leafletMap) leafletMap.zoomIn(); });
+bindActivatable(document.getElementById('zoomOutBtn'), ()=>{ if(leafletMap) leafletMap.zoomOut(); });
 const morePanel = document.getElementById('morePanel');
 
 document.getElementById('searchLensIcon').addEventListener('click', (e)=>{
@@ -2390,12 +2392,14 @@ function setMapMode(mode){
 function closeAllMapDropdowns(){
   mapModePanel.classList.remove('show');
   mapModeChip.classList.remove('open');
+  mapModeChip.setAttribute('aria-expanded', 'false');
   morePanel.classList.remove('show');
   outagePanel.classList.remove('show');
 }
 function closeMapModePanel(){
   mapModePanel.classList.remove('show');
   mapModeChip.classList.remove('open');
+  mapModeChip.setAttribute('aria-expanded', 'false');
 }
 mapModeChip.addEventListener('click', (e)=>{
   e.stopPropagation();
@@ -2404,7 +2408,11 @@ mapModeChip.addEventListener('click', (e)=>{
   if(willOpen){
     mapModePanel.classList.add('show');
     mapModeChip.classList.add('open');
+    mapModeChip.setAttribute('aria-expanded', 'true');
   }
+});
+mapModeChip.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); mapModeChip.click(); }
 });
 document.querySelectorAll('.map-mode-opt').forEach(btn=>{
   btn.addEventListener('click', ()=> setMapMode(btn.dataset.mode));
@@ -2599,7 +2607,7 @@ function nearbyPinIcon(id, color, tier, isTransformer){
   return L.divIcon({
     className:'',
     html:`<div class="nearby-pin-wrap" style="transform:scale(${scale});opacity:${opacity};transform-origin:bottom center;">
-      <div class="nearby-pin-card" style="border-color:${color}">${isTransformer ? '⚡' : ''}${id}</div>
+      <div class="nearby-pin-card" style="border-color:${color}">${isTransformer ? '⚡' : ''}${escapeHtml(id)}</div>
       <div class="nearby-pin-tail" style="border-top-color:${color}"></div>
     </div>`,
     iconSize:[w, h+6], iconAnchor:[w/2, h+6]
@@ -2643,11 +2651,11 @@ function renderNearbyMarkers(){
         <div class="sb-data-row" style="margin-bottom:8px">
           <div class="sb-data-cell">
             <div class="cell-label">${isTransformer ? '⚡' : '🏭'} رقم المحطة</div>
-            <div class="cell-value" style="font-size:12px">${s.id}</div>
+            <div class="cell-value" style="font-size:12px">${escapeHtml(s.id)}</div>
           </div>
           ${s.feeder ? `<div class="sb-data-cell">
             <div class="cell-label">🔌 المغذي</div>
-            <div class="cell-value" style="font-size:12px">${s.feeder}</div>
+            <div class="cell-value" style="font-size:12px">${escapeHtml(s.feeder)}</div>
           </div>` : ''}
           <div class="sb-data-cell">
             <div class="cell-label">📏 المسافة</div>
@@ -2656,10 +2664,10 @@ function renderNearbyMarkers(){
         </div>
         <div class="st-actions">
           <a href="${gmapsUrl}" target="_blank" rel="noopener" class="st-btn primary">قوقل ماب 🧭</a>
-          <button onclick="window.editNearbyStation('${s.id}')" class="st-btn">تعديل ✏️</button>
+          <button onclick="window.editNearbyStation('${escapeJsAttr(s.id)}')" class="st-btn">تعديل ✏️</button>
         </div>
       </div>`);
-    marker.bindTooltip(`${s.id} — ${s._dist.toFixed(2)} كم`, {direction:'top', offset:[0,-16]});
+    marker.bindTooltip(`${escapeHtml(s.id)} — ${s._dist.toFixed(2)} كم`, {direction:'top', offset:[0,-16]});
     marker.addTo(leafletMap);
     nearbyMarkers.push(marker);
   });
@@ -2686,6 +2694,8 @@ async function activateNearbyMode(mode){
 
   if(nearbyModeActive === mode){
     nearbyModeActive = null;
+    if(mode === 'nearby') nearbyToastShown = false;
+    if(mode === 'feeder') feederToastShown = false;
     clearNearbyMarkers();
     mapToolHint.classList.remove('show');
     updateNearbyButtonStates();
@@ -2721,8 +2731,7 @@ async function activateNearbyMode(mode){
       .filter(s => String(s.id) !== String(currentStation.id))
       .map(s => ({...s, _dist: haversineKm(currentStation.lat, currentStation.lng, s.lat, s.lng)}));
 
-    const bounds = [[currentStation.lat, currentStation.lng], ...nearbyFullData.map(s=>[s.lat,s.lng])];
-    if(bounds.length > 1) leafletMap.setView([currentStation.lat, currentStation.lng], 17);
+    if(nearbyFullData.length > 0) leafletMap.setView([currentStation.lat, currentStation.lng], 17);
 
     renderNearbyMarkers();
     if(!leafletMap._nearbyHandlerBound){
@@ -2784,7 +2793,7 @@ function renderOutageRoute_(found, notFound){
     const letter = outageLetterFor(i);
     const color = s.type === 'تحويل' ? '#8B6DD6' : teal();
     const marker = L.marker([s.lat, s.lng], { icon: outageLetterIcon(letter, color) });
-    marker.bindPopup(`<div style="font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl;font-size:13px"><b>${letter}) ${s.name}</b><br>رقم: ${s.id}</div>`);
+    marker.bindPopup(`<div style="font-family:'IBM Plex Sans Arabic',sans-serif;direction:rtl;font-size:13px"><b>${letter}) ${escapeHtml(s.name)}</b><br>رقم: ${escapeHtml(s.id)}</div>`);
     marker.addTo(leafletMap);
     outageMarkers.push(marker);
     bounds.push([s.lat, s.lng]);
@@ -2801,7 +2810,7 @@ function renderOutageRoute_(found, notFound){
     ? `https://www.google.com/maps/dir/?api=1&destination=${destination.lat},${destination.lng}&waypoints=${encodeURIComponent(waypointsStr)}&travelmode=driving`
     : `https://www.google.com/maps?q=${destination.lat},${destination.lng}`;
 
-  const notFoundNote = notFound.length ? ` — تعذّر إيجاد: ${notFound.join('، ')}` : '';
+  const notFoundNote = notFound.length ? ` — تعذّر إيجاد: ${escapeHtml(notFound.join('، '))}` : '';
   const orderLabel = found.length > 1 ? `بالترتيب A→${outageLetterFor(found.length-1)}` : '';
   mapToolHint.classList.add('show');
   mapToolHint.innerHTML = `محطات العطل (${found.length}) ${orderLabel}${notFoundNote} <a href="${gmapsUrl}" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;background:rgba(31,174,140,0.16);color:var(--teal-light);border:1px solid rgba(77,214,181,0.5);padding:6px 14px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600">الانتقال بالترتيب على قوقل ماب</a>`;
@@ -2820,6 +2829,7 @@ document.getElementById('outageSubmitBtn').addEventListener('click', async ()=>{
   clearOutageMarkers();
   clearNearbyMarkers(); resetMeasure(); resetRoute();
   measureActive = false; routeActive = false; nearbyModeActive = null;
+  nearbyToastShown = false; feederToastShown = false;
   setActiveTool(null);
   mapToolHint.classList.add('show');
   mapToolHint.textContent = 'جاري البحث عن المحطات...';
@@ -3011,7 +3021,7 @@ function closeAddStationPanel(){
   addStationOverlay.classList.remove('show');
 }
 addStationToggle.addEventListener('click', ()=> openAddStationPanel());
-document.getElementById('addStationCloseBtn').addEventListener('click', closeAddStationPanel);
+bindActivatable(document.getElementById('addStationCloseBtn'), closeAddStationPanel);
 
 document.querySelectorAll('#addStationPanel .type-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -3210,15 +3220,15 @@ function renderStationOnMap(s){
       <div class="sb-data-row">
         <div class="sb-data-cell">
           <div class="cell-label">${s.type === 'تحويل' ? '⚡ رقم المحطة' : '🏭 رقم المحطة'}</div>
-          <div class="cell-value">${s.id}</div>
+          <div class="cell-value">${escapeHtml(s.id)}</div>
         </div>
         ${s.feeder ? `<div class="sb-data-cell">
           <div class="cell-label">🔌 المغذي</div>
-          <div class="cell-value">${s.feeder}</div>
+          <div class="cell-value">${escapeHtml(s.feeder)}</div>
         </div>` : ''}
         ${s.region ? `<div class="sb-data-cell">
           <div class="cell-label">📍 المنطقة</div>
-          <div class="cell-value ar">${s.region}</div>
+          <div class="cell-value ar">${escapeHtml(s.region)}</div>
         </div>` : ''}
       </div>
       <div class="st-actions">
@@ -3272,11 +3282,11 @@ function openEditForm(){
           ${isDistribution ? `
           <div style="margin-bottom:18px;">
             <label class="form-field-label">المغذي</label>
-            <input id="editFeeder" class="edit-input" value="${s.feeder || ''}" placeholder="مثال: SNB38">
+            <input id="editFeeder" class="edit-input" value="${escapeHtml(s.feeder || '')}" placeholder="مثال: SNB38">
           </div>
           <div style="margin-bottom:18px;">
             <label class="form-field-label">المنطقة</label>
-            <input id="editRegion" class="edit-input" value="${s.region || ''}" placeholder="مثال: القرينية">
+            <input id="editRegion" class="edit-input" value="${escapeHtml(s.region || '')}" placeholder="مثال: القرينية">
           </div>` : ''}
           <label class="form-field-label">الإحداثيات (خط العرض والطول)</label>
           <div style="display:flex;gap:14px;margin-bottom:18px;">
@@ -3368,6 +3378,9 @@ function openEditForm(){
 
   document.getElementById('cancelEditBtn').addEventListener('click', ()=> document.getElementById('editStationOverlay').classList.remove('show'));
   document.getElementById('editStationCloseBtn').onclick = ()=> document.getElementById('editStationOverlay').classList.remove('show');
+  document.getElementById('editStationCloseBtn').onkeydown = (e)=>{
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); document.getElementById('editStationOverlay').classList.remove('show'); }
+  };
 
   document.getElementById('saveEditBtn').addEventListener('click', async function(){
     const btn = this;
@@ -3458,6 +3471,7 @@ function goBackToSearch(){
   cardsSection.classList.remove('hidden');
   measureActive = false; routeActive = false;
   resetMeasure(); resetRoute(); clearNearbyMarkers(); nearbyModeActive = null; morePanel.classList.remove('show'); updateNearbyButtonStates();
+  nearbyToastShown = false; feederToastShown = false;
   clearOutageMarkers(); outagePanel.classList.remove('show'); document.getElementById('outageInput').value=''; document.getElementById('outageError').textContent='';
   setActiveTool(null);
   stationTable.classList.remove('show');
