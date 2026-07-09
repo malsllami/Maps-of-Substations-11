@@ -381,6 +381,12 @@ const REF_DATE_UTC = Date.UTC(2026, 6, 2); // الخميس 2/7/2026م — منت
 const GROUP_REF_CYCLE = { 'أ':1, 'د':3, 'ج':5, 'ب':7 }; // موضع كل وردية بدورة الـ8 أيام بتاريخ المرجع
 
 function dateToUTCms(y,m,d){ return Date.UTC(y, m, d); }
+/* اليوم الحالي بالتوقيت المحلي لجهاز المستخدم — وليس UTC، لتفادي ظهور "اليوم" على تاريخ الأمس بين منتصف الليل والساعة 3 فجرًا بتوقيت السعودية (UTC+3) */
+/* Today in the user's local time — not UTC, to avoid "today" showing as yesterday between midnight and 3am Saudi time (UTC+3) */
+function todayLocalUTCms(){
+  const now = new Date();
+  return dateToUTCms(now.getFullYear(), now.getMonth(), now.getDate());
+}
 
 function cycleDayFor(group, dateUTCms){
   const daysSince = Math.round((dateUTCms - REF_DATE_UTC) / 86400000);
@@ -419,12 +425,12 @@ let viewYear, viewMonth; // ميلادي، month صفر-محور
 
 (function initView(){
   const now = new Date();
-  viewYear = now.getUTCFullYear();
-  viewMonth = now.getUTCMonth();
+  viewYear = now.getFullYear();
+  viewMonth = now.getMonth();
 })();
 
 function renderTodayGrid(){
-  const todayUTC = dateToUTCms(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate());
+  const todayUTC = todayLocalUTCms();
   document.getElementById('todayDateLine').textContent =
     `اليوم: ${new Date().toLocaleDateString('ar-SA-u-nu-latn', {weekday:'long', day:'numeric', month:'long', year:'numeric'})} — ${hijriShort(todayUTC)} هـ`;
 
@@ -449,7 +455,7 @@ function renderTodayGrid(){
 }
 
 function syncGroupTabs(){
-  const todayUTC = dateToUTCms(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate());
+  const todayUTC = todayLocalUTCms();
   document.querySelectorAll('.group-tab').forEach(t=>{
     const isSelected = t.dataset.group === selectedGroup;
     const info = shiftFor(t.dataset.group, todayUTC);
@@ -482,11 +488,12 @@ function renderCalendar(){
     empty.className = 'cal-day empty';
     grid.appendChild(empty);
   }
-  const todayStr = new Date().toISOString().slice(0,10);
+  const now = new Date();
+  const todayY = now.getFullYear(), todayM = now.getMonth(), todayD = now.getDate();
   for(let day=1; day<=daysInMonth; day++){
     const dUTC = dateToUTCms(viewYear, viewMonth, day);
     const info = shiftFor(selectedGroup, dUTC);
-    const isToday = new Date(dUTC).toISOString().slice(0,10) === todayStr;
+    const isToday = (viewYear === todayY && viewMonth === todayM && day === todayD);
     const cell = document.createElement('div');
     cell.className = `cal-day ${info.cls}${isToday ? ' today' : ''}`;
     cell.innerHTML = `<span class="day-num">${day}</span><span class="hijri-mid">${hijriShort(dUTC).split('/')[0]}</span>${SHIFT_ICONS[info.cls]}`;
