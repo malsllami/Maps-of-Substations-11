@@ -271,7 +271,7 @@ let viewYear, viewMonth; // ميلادي، month صفر-محور
 function renderTodayGrid(){
   const todayUTC = dateToUTCms(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate());
   document.getElementById('todayDateLine').textContent =
-    `اليوم: ${new Date().toLocaleDateString('ar-SA', {weekday:'long', day:'numeric', month:'long', year:'numeric'})} — ${hijriShort(todayUTC)} هـ`;
+    `اليوم: ${new Date().toLocaleDateString('ar-SA-u-nu-latn', {weekday:'long', day:'numeric', month:'long', year:'numeric'})} — ${hijriShort(todayUTC)} هـ`;
 
   const grid = document.getElementById('todayGrid');
   grid.innerHTML = '';

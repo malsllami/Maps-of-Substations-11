@@ -427,7 +427,7 @@ async function loadProfile(){
   } else {
     document.getElementById('departmentInput').value = res.department || '';
   }
-  document.getElementById('lastLoginVal').textContent = res.lastLogin ? new Date(res.lastLogin).toLocaleString('ar-SA') : 'أول دخول';
+  document.getElementById('lastLoginVal').textContent = res.lastLogin ? new Date(res.lastLogin).toLocaleString('ar-SA-u-nu-latn') : 'أول دخول';
   if(res.stats){
     document.getElementById('statTotal').textContent = res.stats.total;
     document.getElementById('statAdditions').textContent = res.stats.additions;

@@ -399,7 +399,7 @@ async function checkConnection(){
 }
 function renderHeaderDate(){
   const el = document.getElementById('headerDateLine');
-  if(el) el.textContent = new Date().toLocaleDateString('ar-SA-u-ca-gregory', {day:'numeric', month:'long', year:'numeric'});
+  if(el) el.textContent = new Date().toLocaleDateString('ar-SA-u-ca-gregory-nu-latn', {day:'numeric', month:'long', year:'numeric'});
 }
 renderHeaderDate();
 setInterval(renderHeaderDate, 60 * 60 * 1000);
@@ -409,7 +409,7 @@ document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState=
 const session = JSON.parse(localStorage.getItem('sec-session') || '{}');
 let fetching = false;
 
-document.getElementById('greetLine').textContent = 'مرحبًا ' + (session.name || 'المدير') + ' — ' + new Date().toLocaleDateString('ar-SA', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+document.getElementById('greetLine').textContent = 'مرحبًا ' + (session.name || 'المدير') + ' — ' + new Date().toLocaleDateString('ar-SA-u-nu-latn', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 
 /* ===== ثيم ===== */
 function setTheme(next){
@@ -519,7 +519,7 @@ function renderOpsMain(d){
   const breakdownRows = (d.dailyRequestBreakdown || []).map(item => `
     <div class="ops-breakdown-row">
       <span>${escapeHtml(ACTION_LABELS[item.action] || item.action)}</span>
-      <b>${item.count.toLocaleString('ar-SA')}</b>
+      <b>${item.count.toLocaleString('ar-SA-u-nu-latn')}</b>
     </div>`).join('');
 
   document.getElementById('opsMain').innerHTML = `
@@ -527,7 +527,7 @@ function renderOpsMain(d){
       <div class="ops-status-ring">${renderRing(quotaPct, 'quota', 84)}</div>
       <div class="ops-status-info">
         <div class="ops-status-title">⚡ طلبات اليوم على السكربت</div>
-        <div class="ops-status-count-line"><b class="ops-status-count">${d.dailyRequests.toLocaleString('ar-SA')}</b> من <b class="ops-status-count">${d.dailyRequestLimit.toLocaleString('ar-SA')}</b> طلب</div>
+        <div class="ops-status-count-line"><b class="ops-status-count">${d.dailyRequests.toLocaleString('ar-SA-u-nu-latn')}</b> من <b class="ops-status-count">${d.dailyRequestLimit.toLocaleString('ar-SA-u-nu-latn')}</b> طلب</div>
         <div class="ops-status-sub">${d.currentShiftLabel}</div>
       </div>
     </div>
@@ -539,7 +539,7 @@ function renderOpsMain(d){
     <div class="ops-row3">
       <div class="ops-pill"><b style="color:var(--teal)">${d.additionsToday}</b><span>إضافات اليوم</span></div>
       <div class="ops-pill"><b style="color:var(--blue-mid)">${d.editsToday}</b><span>تعديلات اليوم</span></div>
-      <div class="ops-pill"><b>${d.totalStations.toLocaleString('ar-SA')}</b><span>إجمالي المحطات</span><span style="display:block;font-size:9.5px;margin-top:2px;opacity:.75">توزيع ${(d.totalStationsDistribution||0).toLocaleString('ar-SA')} · تحويل ${(d.totalStationsSubstations||0).toLocaleString('ar-SA')}</span></div>
+      <div class="ops-pill"><b>${d.totalStations.toLocaleString('ar-SA-u-nu-latn')}</b><span>إجمالي المحطات</span><span style="display:block;font-size:11.5px;font-weight:700;margin-top:4px"><span style="color:var(--teal)">توزيع ${(d.totalStationsDistribution||0).toLocaleString('ar-SA-u-nu-latn')}</span> · <span style="color:var(--blue-mid)">تحويل ${(d.totalStationsSubstations||0).toLocaleString('ar-SA-u-nu-latn')}</span></span></div>
     </div>
 
     <div class="acc-item" data-section="present">

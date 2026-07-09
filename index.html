@@ -921,7 +921,7 @@ body.guest-mode h1{
 /* ===== سطر كمية بيانات المحطات المحمّلة فعليًا بالذاكرة المؤقتة ===== */
 .stations-cache-info{
   width:100%;display:flex;align-items:center;justify-content:center;gap:6px;
-  font-size:10.5px;color:var(--text-secondary);
+  font-size:11.5px;color:var(--text-secondary);flex-wrap:wrap;
   padding-top:8px;margin-top:2px;border-top:1px solid var(--border);
   font-family:'JetBrains Mono',monospace;
 }
@@ -990,9 +990,9 @@ body.guest-mode #loginBtn{display:none;}
 }
 .stat-card.expanded .stat-panel{max-height:160px;margin-top:14px;}
 .stat-panel-inner{border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:8px;}
-.stat-panel-row{display:flex;justify-content:space-between;font-size:12.5px;}
-.stat-panel-row .v{font-family:'JetBrains Mono',monospace;color:var(--teal);direction:ltr;}
-.legend-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:6px;}
+.stat-panel-row{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;}
+.stat-panel-row .v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--text-primary);direction:ltr;}
+.legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:7px;}
 footer{
   text-align:center;padding:12px 20px;font-size:10px;color:var(--text-secondary);opacity:.7;
   border-top:1px solid var(--border);
@@ -1493,7 +1493,10 @@ function updateStationsCacheInfo(){
   });
   const count = distIds.size + subIds.size;
   const compressedMB = (raw.length * 2) / (1024*1024); // تقدير UTF-16 تقريبي، نفس منطق شريط الذاكرة العام
-  el.innerHTML = `بيانات المحطات المحمّلة بالذاكرة المؤقتة: <b>${count.toLocaleString('ar-SA')}</b> محطة (توزيع ${distIds.size.toLocaleString('ar-SA')} | تحويل ${subIds.size.toLocaleString('ar-SA')}) — ${compressedMB.toFixed(2)} MB مضغوطة`;
+  el.innerHTML = `بيانات المحطات المحمّلة بالذاكرة المؤقتة: <b>${count.toLocaleString('ar-SA-u-nu-latn')}</b> محطة `
+    + `(<span style="color:var(--teal);font-weight:700;font-size:12.5px">توزيع ${distIds.size.toLocaleString('ar-SA-u-nu-latn')}</span>`
+    + ` | <span style="color:var(--blue-mid);font-weight:700;font-size:12.5px">تحويل ${subIds.size.toLocaleString('ar-SA-u-nu-latn')}</span>) `
+    + `— ${compressedMB.toFixed(2)} MB مضغوطة`;
 }
 
 let _isRefreshingStationsCache = false;
@@ -1638,7 +1641,7 @@ async function checkConnection(){
 }
 function renderHeaderDate(){
   const el = document.getElementById('headerDateLine');
-  if(el) el.textContent = new Date().toLocaleDateString('ar-SA-u-ca-gregory', {day:'numeric', month:'long', year:'numeric'});
+  if(el) el.textContent = new Date().toLocaleDateString('ar-SA-u-ca-gregory-nu-latn', {day:'numeric', month:'long', year:'numeric'});
 }
 renderHeaderDate();
 setInterval(renderHeaderDate, 60 * 60 * 1000);
@@ -1677,16 +1680,16 @@ async function loadStats(){
     document.getElementById('countAdditions').textContent = stats.additions;
     document.getElementById('countEdits').textContent = stats.edits;
     document.getElementById('panelStations').innerHTML = `
-      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--teal)"></span>محطات توزيع</span><span class="v">${stats.distribution}</span></div>
-      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--blue-mid)"></span>محطات تحويل</span><span class="v">${stats.substations}</span></div>
+      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--teal)"></span>محطات توزيع</span><span class="v" style="color:var(--teal)">${stats.distribution}</span></div>
+      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--blue-mid)"></span>محطات تحويل</span><span class="v" style="color:var(--blue-mid)">${stats.substations}</span></div>
       <div class="stat-panel-row"><span>آخر تحديث</span><span class="v" id="panelStationsUpdate">—</span></div>`;
     document.getElementById('panelAdditions').innerHTML = `
-      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--teal)"></span>توزيع</span><span class="v">${stats.additionsDistribution}</span></div>
-      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--blue-mid)"></span>تحويل</span><span class="v">${stats.additionsSubstations}</span></div>
+      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--teal)"></span>توزيع</span><span class="v" style="color:var(--teal)">${stats.additionsDistribution}</span></div>
+      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--blue-mid)"></span>تحويل</span><span class="v" style="color:var(--blue-mid)">${stats.additionsSubstations}</span></div>
       <div class="stat-panel-row"><span>آخر تحديث</span><span class="v" id="panelAdditionsUpdate">—</span></div>`;
     document.getElementById('panelEdits').innerHTML = `
-      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--teal)"></span>توزيع</span><span class="v">${stats.editsDistribution}</span></div>
-      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--blue-mid)"></span>تحويل</span><span class="v">${stats.editsSubstations}</span></div>
+      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--teal)"></span>توزيع</span><span class="v" style="color:var(--teal)">${stats.editsDistribution}</span></div>
+      <div class="stat-panel-row"><span><span class="legend-dot" style="background:var(--blue-mid)"></span>تحويل</span><span class="v" style="color:var(--blue-mid)">${stats.editsSubstations}</span></div>
       <div class="stat-panel-row"><span>آخر تحديث</span><span class="v" id="panelEditsUpdate">—</span></div>`;
     refreshPanelUpdateLabels();
   }catch(e){ console.error('فشل تحميل الإحصائيات', e); }
@@ -2902,7 +2905,7 @@ const hijriFormatterCompact_ = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalq
 function formatDbFreshness_(isoString){
   try{
     const d = new Date(isoString);
-    const gregorian = d.toLocaleString('ar-SA', {day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'});
+    const gregorian = d.toLocaleString('ar-SA-u-nu-latn', {day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'});
     const hijri = hijriFormatterCompact_.format(d);
     return `${gregorian} م — ${hijri} هـ`;
   }catch(e){ return '—'; }
