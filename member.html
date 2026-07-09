@@ -389,6 +389,9 @@ function hideMsgs(){ document.getElementById('errorBanner').classList.remove('sh
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
+function isValidEmail_(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
+}
 /* list مُرتّبة الأحدث أولًا من الخادم مسبقًا — نعرضها بنفس الترتيب بدون فرز إضافي */
 function renderContributionTable_(list, tbodyId, cardId, emptyMsg){
   const tbody = document.getElementById(tbodyId);
@@ -456,8 +459,8 @@ saveBtn.addEventListener('click', async ()=>{
   const deptSelect = document.getElementById('departmentInput').value;
   const department = deptSelect === 'أخرى' ? document.getElementById('departmentOtherInput').value.trim() : deptSelect;
 
-  if(!name){ showError('الرجاء إدخال الاسم الكامل'); return; }
-  if(!email){ showError('الرجاء إدخال الإيميل'); return; }
+  if(name.length < 3){ showError('الرجاء إدخال اسم صحيح (٣ أحرف على الأقل)'); return; }
+  if(!isValidEmail_(email)){ showError('الرجاء إدخال بريد إلكتروني صحيح'); return; }
   if(!shift){ showError('الرجاء اختيار الوردية'); return; }
   if(!department){ showError('الرجاء اختيار القسم'); return; }
 

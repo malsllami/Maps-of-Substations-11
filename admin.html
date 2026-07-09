@@ -539,7 +539,7 @@ function renderOpsMain(d){
     <div class="ops-row3">
       <div class="ops-pill"><b style="color:var(--teal)">${d.additionsToday}</b><span>إضافات اليوم</span></div>
       <div class="ops-pill"><b style="color:var(--blue-mid)">${d.editsToday}</b><span>تعديلات اليوم</span></div>
-      <div class="ops-pill"><b>${d.totalStations.toLocaleString('ar-SA')}</b><span>إجمالي المحطات</span></div>
+      <div class="ops-pill"><b>${d.totalStations.toLocaleString('ar-SA')}</b><span>إجمالي المحطات</span><span style="display:block;font-size:9.5px;margin-top:2px;opacity:.75">توزيع ${(d.totalStationsDistribution||0).toLocaleString('ar-SA')} · تحويل ${(d.totalStationsSubstations||0).toLocaleString('ar-SA')}</span></div>
     </div>
 
     <div class="acc-item" data-section="present">
