@@ -549,9 +549,13 @@ const phoneInput = document.getElementById('phoneInput');
 function syncPhoneFloating(){
   phoneUnified.classList.toggle('filled', phoneInput.value.trim().length > 0);
 }
+/* مفتاح الدولة مُختار مسبقًا من القائمة، فما نقبل صفرًا بادئًا بالرقم المحلي (عادة كتابة "05XXXXXXXX" رغم اختيار +966) */
+function stripLeadingZeros_(digits){
+  return digits.replace(/^0+/, '');
+}
 phoneInput.addEventListener('input', ()=>{
   const arabicIndic = '٠١٢٣٤٥٦٧٨٩';
-  phoneInput.value = phoneInput.value.replace(/[٠-٩]/g, d => arabicIndic.indexOf(d)).replace(/[^\d]/g,'');
+  phoneInput.value = stripLeadingZeros_(phoneInput.value.replace(/[٠-٩]/g, d => arabicIndic.indexOf(d)).replace(/[^\d]/g,''));
   syncPhoneFloating();
 });
 phoneInput.addEventListener('focus', ()=> phoneUnified.classList.add('focused'));
@@ -720,7 +724,8 @@ function bufferToB64url(buf){
 
 mainBtn.addEventListener('click', async ()=>{
   hideError();
-  const phone = selectedCountry.code + phoneInput.value.trim();
+  phoneInput.value = stripLeadingZeros_(phoneInput.value.trim()); // إعادة تحقق دفاعية قبل الإرسال مباشرة
+  const phone = selectedCountry.code + phoneInput.value;
   if(phoneInput.value.trim().length < 8){
     showError('الرجاء إدخال رقم جوال صحيح'); return;
   }
@@ -986,7 +991,7 @@ window.addEventListener('load', ()=>{
       selectedCountry = match;
       document.getElementById('selectedFlag').textContent = match.flag;
       document.getElementById('selectedCode').textContent = match.code;
-      phoneInput.value = saved.slice(match.code.length);
+      phoneInput.value = stripLeadingZeros_(saved.slice(match.code.length));
       positionPhoneLabel();
       syncPhoneFloating();
     }
