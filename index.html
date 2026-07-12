@@ -1128,7 +1128,7 @@ footer{
         <span class="ssb-icon" id="stationSearchLensIcon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </span>
-        <input id="stationSearchInput" type="text" placeholder="ابحث عن محطة أخرى..." inputmode="text" name="x_stationSearchInput_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <input id="stationSearchInput" type="text" placeholder="ابحث عن محطة أخرى..." inputmode="text" name="x_stationSearchInput_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false" dir="ltr">
       </div>
     </div>
     <div class="station-search-progress" id="stationSearchProgress">
@@ -1225,7 +1225,7 @@ footer{
     <div class="search-wrap globe-bottom-anchor">
       <div class="search-lens" id="searchLens">
         <svg id="searchLensIcon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input id="searchInput" type="text" placeholder="مثال: 39070 أو ABN" inputmode="text" name="x_searchInput_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <input id="searchInput" type="text" placeholder="مثال: 39070 أو ABN" inputmode="text" name="x_searchInput_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false" dir="ltr">
       </div>
       <div class="search-hint" id="searchHint"></div>
       <div class="search-progress" id="searchProgress">
@@ -1265,7 +1265,7 @@ footer{
           </div>
           <div>
             <label class="form-field-label" for="newStationId">رقم المحطة</label>
-            <input id="newStationId" class="edit-input" placeholder="مثال: 39070" name="x_newStationId_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input id="newStationId" class="edit-input" placeholder="مثال: 39070" name="x_newStationId_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false" dir="ltr">
           </div>
           <div id="feederRegionRow" style="display:flex;gap:14px;">
             <div style="flex:1">
@@ -1281,14 +1281,14 @@ footer{
             <div>
               <label class="form-field-label">الإحداثيات (خط العرض والطول)</label>
               <div style="display:flex;gap:14px;margin-bottom:14px;">
-                <input id="newStationLat" class="edit-input" placeholder="مثال: 21.523456" name="x_newStationLat_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
-                <input id="newStationLng" class="edit-input" placeholder="مثال: 39.187654" name="x_newStationLng_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
+                <input id="newStationLat" class="edit-input" placeholder="مثال: 21.523456" name="x_newStationLat_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false" dir="ltr">
+                <input id="newStationLng" class="edit-input" placeholder="مثال: 39.187654" name="x_newStationLng_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false" dir="ltr">
               </div>
               <button class="use-gps-btn" id="newStationGpsBtn" type="button">📍 استخدام موقعي الحالي</button>
               <div class="paste-coord-row">
                 <span class="paste-coord-label">أو الصق الإحداثية مباشرة (بصيغة: خط العرض,خط الطول)</span>
                 <div style="display:flex;gap:10px;">
-                  <input id="newStationPasteCoord" class="edit-input" placeholder="مثال: 21.5234,39.1876" style="flex:1" name="x_newStationPasteCoord_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
+                  <input id="newStationPasteCoord" class="edit-input" placeholder="مثال: 21.5234,39.1876" style="flex:1" name="x_newStationPasteCoord_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false" dir="ltr">
                   <button type="button" class="paste-apply-btn" id="newStationPasteApply">تطبيق</button>
                 </div>
               </div>
@@ -2109,9 +2109,17 @@ document.addEventListener('click', (e)=>{
   }
 });
 
+/* إزالة الرموز غير المرئية (علامات اتجاه النص RTL/LTR الخفية، مسافات صفرية العرض، إلخ) اللي
+ * تلتصق بالنص أحيانًا عند اللصق من تطبيقات خارجية (خصوصًا واتساب بنص عربي ممزوج بأرقام) —
+ * هذي الرموز لا تظهر بصريًا لكنها تكسر المطابقة الدقيقة، ويمكن تنتقل لقاعدة البيانات لو
+ * استُخدمت مباشرة بدون تنظيف (مثلاً كرقم محطة جديدة) */
+function stripInvisibleChars_(str){
+  return String(str).replace(/[\u200B-\u200F\u202A-\u202E\u2060-\u2069\uFEFF]/g, '');
+}
+
 function normalizeDigits(str){
   const arabicIndic = '٠١٢٣٤٥٦٧٨٩';
-  return str.replace(/[٠-٩]/g, d=>arabicIndic.indexOf(d));
+  return stripInvisibleChars_(str).replace(/[٠-٩]/g, d=>arabicIndic.indexOf(d));
 }
 
 function hasValidSession(){
@@ -2235,7 +2243,7 @@ function retryStationSearch(){
 
 async function performSearch(){
   if(isSearching) return;
-  const raw = searchInput.value.trim();
+  const raw = stripInvisibleChars_(searchInput.value.trim());
   if(!raw) return;
 
   if(!hasValidSession()){
@@ -2281,7 +2289,7 @@ searchInput.addEventListener('keydown', (e)=>{
 let isStationPageSearching = false;
 async function performStationPageSearch(){
   if(isStationPageSearching) return;
-  const raw = stationSearchInput.value.trim();
+  const raw = stripInvisibleChars_(stationSearchInput.value.trim());
   if(!raw) return;
 
   if(!hasValidSession()){
@@ -3080,7 +3088,7 @@ document.getElementById('addStationSubmitBtn').addEventListener('click', async f
 
   if(!hasValidSession()){ errEl.textContent = 'سجّل دخول أولاً لإضافة محطة'; return; }
 
-  const stationId = document.getElementById('newStationId').value.trim();
+  const stationId = stripInvisibleChars_(document.getElementById('newStationId').value.trim());
   const region = document.getElementById('newStationRegion').value.trim();
   const lat = parseFloat(document.getElementById('newStationLat').value);
   const lng = parseFloat(document.getElementById('newStationLng').value);
@@ -3280,14 +3288,14 @@ function openEditForm(){
           </div>` : ''}
           <label class="form-field-label">الإحداثيات (خط العرض والطول)</label>
           <div style="display:flex;gap:14px;margin-bottom:18px;">
-            <input id="editLat" class="edit-input" placeholder="مثال: 21.523456" value="${Number(s.lat).toFixed(6)}" name="x_editLat_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
-            <input id="editLng" class="edit-input" placeholder="مثال: 39.187654" value="${Number(s.lng).toFixed(6)}" name="x_editLng_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input id="editLat" class="edit-input" placeholder="مثال: 21.523456" value="${Number(s.lat).toFixed(6)}" name="x_editLat_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false" dir="ltr">
+            <input id="editLng" class="edit-input" placeholder="مثال: 39.187654" value="${Number(s.lng).toFixed(6)}" name="x_editLng_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false" dir="ltr">
           </div>
           <button id="useGpsBtn" type="button" class="use-gps-btn">📍 استخدام موقعي الحالي</button>
           <div class="paste-coord-row">
             <span class="paste-coord-label">أو الصق الإحداثية مباشرة (بصيغة: خط العرض,خط الطول)</span>
             <div style="display:flex;gap:10px;">
-              <input id="editPasteCoord" class="edit-input" placeholder="مثال: 21.5234,39.1876" style="flex:1" name="x_editPasteCoord_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
+              <input id="editPasteCoord" class="edit-input" placeholder="مثال: 21.5234,39.1876" style="flex:1" name="x_editPasteCoord_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false" dir="ltr">
               <button type="button" class="paste-apply-btn" id="editPasteApply">تطبيق</button>
             </div>
           </div>
