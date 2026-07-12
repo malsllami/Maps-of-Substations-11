@@ -1264,16 +1264,16 @@ footer{
             </div>
           </div>
           <div>
-            <label class="form-field-label">رقم المحطة</label>
+            <label class="form-field-label" for="newStationId">رقم المحطة</label>
             <input id="newStationId" class="edit-input" placeholder="مثال: 39070" name="x_newStationId_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
           </div>
           <div id="feederRegionRow" style="display:flex;gap:14px;">
             <div style="flex:1">
-              <label class="form-field-label">المغذي (اختياري)</label>
+              <label class="form-field-label" for="newStationFeeder">المغذي (اختياري)</label>
               <input id="newStationFeeder" class="edit-input" placeholder="مثال: SNB38" name="x_newStationFeeder_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
             </div>
             <div style="flex:1">
-              <label class="form-field-label">المنطقة</label>
+              <label class="form-field-label" for="newStationRegion">المنطقة</label>
               <input id="newStationRegion" class="edit-input" placeholder="مثال: القرينية" name="x_newStationRegion_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
             </div>
           </div>
@@ -1299,7 +1299,7 @@ footer{
             </div>
           </div>
           <div>
-            <label class="form-field-label">سبب الإضافة</label>
+            <label class="form-field-label" for="newStationReason">سبب الإضافة</label>
             <input id="newStationReason" class="edit-input" placeholder="مثال: محطة جديدة بحي القرينية لتغذية المنطقة الصناعية" name="x_newStationReason_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
           </div>
           <div id="addStationError" class="add-station-error"></div>
@@ -3271,11 +3271,11 @@ function openEditForm(){
         <div>
           ${isDistribution ? `
           <div style="margin-bottom:18px;">
-            <label class="form-field-label">المغذي</label>
+            <label class="form-field-label" for="editFeeder">المغذي</label>
             <input id="editFeeder" class="edit-input" value="${s.feeder || ''}" placeholder="مثال: SNB38" name="x_editFeeder_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
           </div>
           <div style="margin-bottom:18px;">
-            <label class="form-field-label">المنطقة</label>
+            <label class="form-field-label" for="editRegion">المنطقة</label>
             <input id="editRegion" class="edit-input" value="${s.region || ''}" placeholder="مثال: القرينية" name="x_editRegion_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
           </div>` : ''}
           <label class="form-field-label">الإحداثيات (خط العرض والطول)</label>
@@ -3297,7 +3297,7 @@ function openEditForm(){
           <button type="button" class="edit-map-sat-btn" id="editMapSatBtn" title="تبديل القمر الصناعي">🛰️</button>
         </div>
       </div>
-      <label class="form-field-label" style="margin-top:18px">سبب التعديل</label>
+      <label class="form-field-label" for="editReason" style="margin-top:18px">سبب التعديل</label>
       <input id="editReason" class="edit-input" placeholder="مثال: تصحيح موقع المحطة بعد معاينة ميدانية" name="x_editReason_nofill" autocomplete="new-password" data-lpignore="true" data-form-type="other" autocorrect="off" autocapitalize="off" spellcheck="false">
       <div class="add-station-progress-track" id="editProgressTrack" style="display:none;margin-top:8px;">
         <div class="add-station-progress-fill" id="editProgressFill"></div>
