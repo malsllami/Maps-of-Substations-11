@@ -342,6 +342,8 @@ body.guest-mode h1{
   cursor:pointer;transition:width .45s cubic-bezier(.25,.8,.3,1),border-radius .45s,background .3s,border-color .3s,box-shadow .3s;
   overflow:visible;
   position:relative;
+  isolation:isolate;
+  contain:paint;
   box-shadow:0 4px 18px rgba(0,0,0,0.35), 0 0 26px rgba(77,214,181,0.28);
 }
 [data-theme="light"] .search-lens{
@@ -357,12 +359,15 @@ body.guest-mode h1{
 .search-lens.open{
   width:340px;border-radius:27px;
   background:rgba(255,255,255,0.12);
-  -webkit-backdrop-filter:blur(14px);
-  backdrop-filter:blur(14px);
   border:1px solid rgba(77,214,181,0.5);
   justify-content:flex-start;padding:0 18px;gap:10px;
   box-shadow:0 8px 24px rgba(0,0,0,0.18);
   transition:width .45s cubic-bezier(.25,.8,.3,1),border-radius .45s,background .3s,border-color .25s,box-shadow .25s;
+}
+.search-lens.open.blur-ready{
+  transition:width .45s cubic-bezier(.25,.8,.3,1),border-radius .45s,background .3s,border-color .25s,box-shadow .25s,backdrop-filter .2s;
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
 }
 .search-lens.open:focus-within{
   border-color:var(--teal-light);
@@ -2112,12 +2117,14 @@ document.getElementById('searchLensIcon').addEventListener('click', (e)=>{
 searchLens.addEventListener('click', (e)=>{
   if(!searchLens.classList.contains('open')){
     searchLens.classList.add('open');
-    setTimeout(()=>searchInput.focus(), 200);
+    searchInput.focus();
+    setTimeout(()=>searchLens.classList.add('blur-ready'), 460);
   }
 });
 document.addEventListener('click', (e)=>{
   if(!searchLens.contains(e.target) && searchInput.value==='' && !mapContainer.classList.contains('active')){
     searchLens.classList.remove('open');
+    searchLens.classList.remove('blur-ready');
   }
 });
 
@@ -2152,6 +2159,30 @@ function enableLiveDigitConversion_(inputEl){
     }
   });
 }
+
+/* تصفية فورية لحقول البحث والإحداثيات: أي رمز خارج القائمة المسموحة لهذا الحقل (مثل نص
+ * صفحة كامل قد يلتصق أحيانًا عند اللصق على بعض الأجهزة) يُحذف فور ظهوره في الحقل، بدل
+ * الانتظار حتى لحظة البحث/الحفظ — لأن هذي الحقول لا تحتاج أصلًا غير أرقام/حروف محدودة */
+function guardTextInput_(inputEl, allowedCharsRegex, maxLen){
+  if(!inputEl) return;
+  inputEl.addEventListener('input', function(){
+    const start = this.selectionStart;
+    const end = this.selectionEnd;
+    const clean = this.value.replace(allowedCharsRegex, '').slice(0, maxLen);
+    if(clean !== this.value){
+      this.value = clean;
+      if(start !== null && end !== null){
+        try{ this.setSelectionRange(Math.min(start, clean.length), Math.min(end, clean.length)); }catch(e){}
+      }
+    }
+  });
+}
+const SEARCH_QUERY_CHARS_ = /[^0-9٠-٩A-Za-z\-]/g;
+const COORD_NUMBER_CHARS_ = /[^0-9.\-]/g;
+const COORD_PAIR_CHARS_ = /[^0-9.,\-\s]/g;
+guardTextInput_(searchInput, SEARCH_QUERY_CHARS_, 24);
+guardTextInput_(stationSearchInput, SEARCH_QUERY_CHARS_, 24);
+guardTextInput_(document.getElementById('newStationId'), SEARCH_QUERY_CHARS_, 24);
 
 function hasValidSession(){
   const raw = localStorage.getItem('sec-session');
@@ -2317,6 +2348,9 @@ async function performSearch(){
 [searchInput, stationSearchInput, document.getElementById('newStationId'),
  document.getElementById('newStationLat'), document.getElementById('newStationLng'),
  document.getElementById('newStationPasteCoord')].forEach(enableLiveDigitConversion_);
+guardTextInput_(document.getElementById('newStationLat'), COORD_NUMBER_CHARS_, 20);
+guardTextInput_(document.getElementById('newStationLng'), COORD_NUMBER_CHARS_, 20);
+guardTextInput_(document.getElementById('newStationPasteCoord'), COORD_PAIR_CHARS_, 40);
 
 searchInput.addEventListener('keydown', (e)=>{
   if(e.key==='Enter') performSearch();
@@ -3210,6 +3244,7 @@ function goToStation(s){
   addRecentStation(s);
   if(!leafletMap) initMap();
   searchLens.classList.remove('open');
+  searchLens.classList.remove('blur-ready');
   document.getElementById('heroContent').classList.add('hidden');
   cardsSection.classList.add('hidden');
   if(mapContainer.classList.contains('active')){
@@ -3370,6 +3405,9 @@ function openEditForm(){
     enableLiveDigitConversion_(document.getElementById('editLat'));
     enableLiveDigitConversion_(document.getElementById('editLng'));
     enableLiveDigitConversion_(document.getElementById('editPasteCoord'));
+    guardTextInput_(document.getElementById('editLat'), COORD_NUMBER_CHARS_, 20);
+    guardTextInput_(document.getElementById('editLng'), COORD_NUMBER_CHARS_, 20);
+    guardTextInput_(document.getElementById('editPasteCoord'), COORD_PAIR_CHARS_, 40);
     document.getElementById('editLat').addEventListener('input', syncPreviewFromInputs);
     document.getElementById('editLng').addEventListener('input', syncPreviewFromInputs);
 
