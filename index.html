@@ -2776,6 +2776,7 @@ function renderNearbyMarkers(){
         <div class="st-actions">
           <a href="${gmapsUrl}" target="_blank" rel="noopener" class="st-btn primary">قوقل ماب 🧭</a>
           <button onclick="window.editNearbyStation('${s.id}')" class="st-btn">تعديل ✏️</button>
+          ${isAdminSession_() ? `<button onclick="window.deleteNearbyStation('${s.id}')" class="st-btn" style="color:#E0654F;border-color:rgba(224,101,79,0.4)">حذف 🗑️</button>` : ''}
         </div>
       </div>`);
     marker.bindTooltip(`${s.id} — ${s._dist.toFixed(2)} كم`, {direction:'top', offset:[0,-16]});
@@ -3344,6 +3345,7 @@ function renderStationOnMap(s){
       <div class="st-actions">
         <a class="st-btn primary" href="${mapsUrl}" target="_blank" rel="noopener">قوقل ماب 🧭</a>
         <button class="st-btn" id="openEditBtn">تعديل ✏️</button>
+        ${isAdminSession_() ? `<button class="st-btn" id="deleteStationBtn" style="color:#E0654F;border-color:rgba(224,101,79,0.4)">حذف 🗑️</button>` : ''}
       </div>
       ${s._dataBuiltAt ? `<div class="db-freshness-note">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5A8.5 8.5 0 1 1 3 12.5a8.38 8.38 0 0 1 .9-3.8"/><path d="M21 3v6h-6"/></svg>
@@ -3354,6 +3356,8 @@ function renderStationOnMap(s){
   searchAndBackRow.classList.add('show');
   document.getElementById('stationSearchBar').classList.add('compact');
   document.getElementById('openEditBtn').addEventListener('click', openEditForm);
+  const deleteBtn = document.getElementById('deleteStationBtn');
+  if(deleteBtn) deleteBtn.addEventListener('click', ()=> confirmDeleteStation_(s));
 }
 
 let editPreviewMap = null, editPreviewMarker = null;
@@ -3364,6 +3368,36 @@ window.editNearbyStation = function(id){
   goToStation(s);
   setTimeout(openEditForm, 200);
 };
+
+/* حذف محطة نهائيًا — للمدير فقط، بدون أي سجل تدقيق حسب الطلب الصريح */
+/* Permanently delete a station — admin only, with no audit trail per explicit request */
+function isAdminSession_(){
+  try{ return JSON.parse(localStorage.getItem('sec-session') || '{}').role === 'admin'; }
+  catch(e){ return false; }
+}
+window.deleteNearbyStation = function(id){
+  const s = window._nearbyStationLookup && window._nearbyStationLookup[id];
+  if(!s) return;
+  confirmDeleteStation_(s);
+};
+async function confirmDeleteStation_(s){
+  if(!isAdminSession_()) return;
+  if(!confirm(`هل أنت متأكد من حذف المحطة ${s.id} نهائيًا من قاعدة البيانات؟ لا يمكن التراجع عن هذا الإجراء.`)) return;
+  const session = JSON.parse(localStorage.getItem('sec-session') || '{}');
+  try{
+    const res = await callBackend('deleteStation', { phone: session.phone, stationId: s.id, type: s.type });
+    if(!res.success){ alert(res.error || 'تعذّر حذف المحطة'); return; }
+    if(isStationsLoaded){
+      allStationsLocal = allStationsLocal.filter(st => !(String(st.id).toUpperCase() === String(s.id).toUpperCase() && st.type === s.type));
+      saveStationsToLocalCache_(allStationsLocal);
+    }
+    alert('تم حذف المحطة نهائيًا');
+    if(leafletMap) leafletMap.closePopup();
+    goBackToSearch();
+  }catch(e){
+    alert('تعذّر الاتصال بالخادم');
+  }
+}
 
 function openEditForm(){
   try{
