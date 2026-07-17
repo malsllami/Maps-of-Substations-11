@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تسجيل الدخول | محطات التوزيع</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0D1826">
-<link rel="apple-touch-icon" href="assets/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -400,10 +397,39 @@ h2{font-size:18px; font-weight:700; margin-bottom:6px;}
 </div>
 
 <script>
-/* تسجيل خدمة العامل — تُمكّن تثبيت الموقع كتطبيق (PWA) / Register service worker — enables installing the site as an app (PWA) */
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(()=>{}));
+function stripInvisibleChars_(str){
+  return String(str).replace(/[\u200B-\u200F\u202A-\u202E\u2060-\u2069\uFEFF]/g, '');
 }
+
+function normalizeDigits(str){
+  const arabicIndic = '٠١٢٣٤٥٦٧٨٩';
+  return stripInvisibleChars_(str).replace(/[٠-٩]/g, d=>arabicIndic.indexOf(d));
+}
+
+/* تحويل فوري للأرقام العربية إلى إنجليزية أثناء الإدخال مباشرة — الحقل يقبل الأرقام العربية
+ * بالكتابة، لكن تنعكس بصريًا كأرقام إنجليزية بنفس اللحظة، بدل انتظار لحظة البحث/الإرسال.
+ * التحويل حرف-بحرف بنفس الطول تمامًا (١ رقم عربي = ١ رقم إنجليزي)، فموضع المؤشر يبقى صحيحًا
+ * بعد إعادة ضبطه يدويًا (المتصفح يفقده تلقائيًا عند تعديل value برمجيًا) */
+function enableLiveDigitConversion_(inputEl){
+  if(!inputEl) return;
+  inputEl.addEventListener('input', function(){
+    const start = this.selectionStart;
+    const end = this.selectionEnd;
+    const converted = normalizeDigits(this.value);
+    if(converted !== this.value){
+      this.value = converted;
+      if(start !== null && end !== null){
+        try{ this.setSelectionRange(start, end); }catch(e){}
+      }
+    }
+  });
+}
+
+[document.getElementById('nameInput'), document.getElementById('regEmailInput'),
+ document.getElementById('regDepartmentOther'), document.getElementById('contactName'),
+ document.getElementById('contactPhone'), document.getElementById('contactEmail'),
+ document.getElementById('contactMessage')].forEach(enableLiveDigitConversion_);
+
 /* ===== الثيم ===== */
 const phone10ToFull = (code, local) => code + local.replace(/^0+/, '');
 const goToIndexFromAuth = ()=>{ location.href = 'index.html'; };
