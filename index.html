@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>محطات التوزيع | الشركة السعودية للطاقة</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0D1826">
-<link rel="apple-touch-icon" href="assets/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
@@ -1088,14 +1085,6 @@ footer{
             <span class="menu-icon" style="color:#F0B429"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5z"/><polyline points="9 12 11 14 15 10"/></svg></span>
             لوحة المدير
           </a>
-          <button type="button" class="mobile-menu-link" id="menuShareBtn" style="width:100%;text-align:right;background:transparent;border:1px solid transparent;font-family:inherit;cursor:pointer">
-            <span class="menu-icon" style="color:#4DD6B5"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span>
-            مشاركة
-          </button>
-          <button type="button" class="mobile-menu-link" id="menuInstallApp" style="display:none;width:100%;text-align:right;background:transparent;border:1px solid transparent;font-family:inherit;cursor:pointer">
-            <span class="menu-icon" style="color:#5C9EFF"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
-            تثبيت التطبيق
-          </button>
           <button class="mobile-menu-logout" id="mobileLogoutBtn">
             <span class="menu-icon" style="color:#E0654F"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
             تسجيل الخروج
@@ -1507,7 +1496,7 @@ function updateStationsCacheInfo(){
     return;
   }
   const compressedMB = (raw.length * 2) / (1024*1024); // تقدير UTF-16 تقريبي، نفس منطق شريط الذاكرة العام
-  el.innerHTML = `بيانات المحطات المحمّلة بالذاكرة المؤقتة: <b>${count.toLocaleString('ar-SA')}</b> محطة (${compressedMB.toFixed(2)} MB مضغوطة)`;
+  el.innerHTML = `بيانات المحطات المحمّلة بالذاكرة المؤقتة: <b>${count}</b> محطة (${compressedMB.toFixed(2)} MB مضغوطة)`;
 }
 
 let _isRefreshingStationsCache = false;
@@ -1663,7 +1652,7 @@ async function checkConnection(){
 }
 function renderHeaderDate(){
   const el = document.getElementById('headerDateLine');
-  if(el) el.textContent = new Date().toLocaleDateString('ar-SA-u-ca-gregory', {day:'numeric', month:'long', year:'numeric'});
+  if(el) el.textContent = new Date().toLocaleDateString('ar-SA-u-ca-gregory-nu-latn', {day:'numeric', month:'long', year:'numeric'});
 }
 renderHeaderDate();
 setInterval(renderHeaderDate, 60 * 60 * 1000);
@@ -1855,36 +1844,6 @@ mobileMenuTrigger.addEventListener('click', (e)=>{
 document.addEventListener('click', (e)=>{
   if(!mobileUserMenu.contains(e.target)) mobileUserMenu.classList.remove('open');
 });
-
-/* ===== مشاركة الموقع + تثبيته كتطبيق (PWA) — متاحة من القائمة بكل صفحات الموقع ===== */
-/* Share the site + install it as an app (PWA) — available from the menu on every page */
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(()=>{}));
-}
-document.getElementById('menuShareBtn').addEventListener('click', async ()=>{
-  mobileUserMenu.classList.remove('open');
-  const shareData = { title: document.title, text: 'نظام الإحداثيات الجغرافية لمحطات الشركة السعودية للطاقة', url: location.href };
-  try{
-    if(navigator.share){ await navigator.share(shareData); }
-    else{ await navigator.clipboard.writeText(shareData.url); alert('تم نسخ رابط الموقع'); }
-  }catch(e){}
-});
-let deferredInstallPrompt_ = null;
-const menuInstallBtn_ = document.getElementById('menuInstallApp');
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault();
-  deferredInstallPrompt_ = e;
-  menuInstallBtn_.style.display = 'flex';
-});
-menuInstallBtn_.addEventListener('click', async ()=>{
-  mobileUserMenu.classList.remove('open');
-  if(!deferredInstallPrompt_) return;
-  deferredInstallPrompt_.prompt();
-  await deferredInstallPrompt_.userChoice;
-  deferredInstallPrompt_ = null;
-  menuInstallBtn_.style.display = 'none';
-});
-window.addEventListener('appinstalled', ()=>{ menuInstallBtn_.style.display = 'none'; });
 
 const themeSwitchMobile = document.getElementById('themeSwitchMobile');
 function syncThemeSwitch(){
@@ -2201,6 +2160,24 @@ function enableLiveDigitConversion_(inputEl){
   });
 }
 
+/* تحويل فوري للأرقام العربية إلى إنجليزية + تحويل الحروف الصغيرة إلى كبيرة أثناء الكتابة —
+ * تُستخدم فقط على حقول الأكواد (رقم المحطة، المغذي، مربعات البحث)، وليس الحقول النصية الحرة،
+ * لأن toUpperCase لا يؤثر على الحروف العربية إطلاقًا فهي آمنة حتى مع نص عربي مختلط */
+function enableLiveCodeNormalization_(inputEl){
+  if(!inputEl) return;
+  inputEl.addEventListener('input', function(){
+    const start = this.selectionStart;
+    const end = this.selectionEnd;
+    const converted = normalizeDigits(this.value).toUpperCase();
+    if(converted !== this.value){
+      this.value = converted;
+      if(start !== null && end !== null){
+        try{ this.setSelectionRange(start, end); }catch(e){}
+      }
+    }
+  });
+}
+
 /* تصفية فورية لحقول البحث والإحداثيات: أي رمز خارج القائمة المسموحة لهذا الحقل (مثل نص
  * صفحة كامل قد يلتصق أحيانًا عند اللصق على بعض الأجهزة) يُحذف فور ظهوره في الحقل، بدل
  * الانتظار حتى لحظة البحث/الحفظ — لأن هذي الحقول لا تحتاج أصلًا غير أرقام/حروف محدودة */
@@ -2218,7 +2195,7 @@ function guardTextInput_(inputEl, allowedCharsRegex, maxLen){
     }
   });
 }
-const SEARCH_QUERY_CHARS_ = /[^0-9٠-٩A-Za-z\- ]/g;
+const SEARCH_QUERY_CHARS_ = /[^0-9٠-٩A-Za-z\-]/g;
 const COORD_NUMBER_CHARS_ = /[^0-9.\-]/g;
 const COORD_PAIR_CHARS_ = /[^0-9.,\-\s]/g;
 guardTextInput_(searchInput, SEARCH_QUERY_CHARS_, 24);
@@ -2385,10 +2362,15 @@ async function performSearch(){
   }
 }
 
-// تفعيل التحويل الفوري للأرقام العربية على كل حقول البحث/الإدخال الرقمية
-[searchInput, stationSearchInput, document.getElementById('newStationId'),
- document.getElementById('newStationLat'), document.getElementById('newStationLng'),
+// تفعيل التحويل الفوري للأرقام العربية على حقول الإحداثيات
+[document.getElementById('newStationLat'), document.getElementById('newStationLng'),
  document.getElementById('newStationPasteCoord')].forEach(enableLiveDigitConversion_);
+// تفعيل تحويل الأرقام العربية + الحروف الصغيرة لكبيرة على حقول أكواد المحطات/البحث
+[searchInput, stationSearchInput, document.getElementById('newStationId'),
+ document.getElementById('newStationFeeder')].forEach(enableLiveCodeNormalization_);
+// تفعيل تحويل الأرقام العربية فقط على الحقول النصية الحرة
+[document.getElementById('newStationRegion'), document.getElementById('newStationReason'),
+ document.getElementById('outageInput'), document.getElementById('homepageOutageInput')].forEach(enableLiveDigitConversion_);
 guardTextInput_(document.getElementById('newStationLat'), COORD_NUMBER_CHARS_, 20);
 guardTextInput_(document.getElementById('newStationLng'), COORD_NUMBER_CHARS_, 20);
 guardTextInput_(document.getElementById('newStationPasteCoord'), COORD_PAIR_CHARS_, 40);
@@ -2776,7 +2758,6 @@ function renderNearbyMarkers(){
         <div class="st-actions">
           <a href="${gmapsUrl}" target="_blank" rel="noopener" class="st-btn primary">قوقل ماب 🧭</a>
           <button onclick="window.editNearbyStation('${s.id}')" class="st-btn">تعديل ✏️</button>
-          ${isAdminSession_() ? `<button onclick="window.deleteNearbyStation('${s.id}')" class="st-btn" style="color:#E0654F;border-color:rgba(224,101,79,0.4)">حذف 🗑️</button>` : ''}
         </div>
       </div>`);
     marker.bindTooltip(`${s.id} — ${s._dist.toFixed(2)} كم`, {direction:'top', offset:[0,-16]});
@@ -3004,7 +2985,7 @@ const hijriFormatterCompact_ = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalq
 function formatDbFreshness_(isoString){
   try{
     const d = new Date(isoString);
-    const gregorian = d.toLocaleString('ar-SA', {day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'});
+    const gregorian = d.toLocaleString('ar-SA-u-nu-latn', {day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'});
     const hijri = hijriFormatterCompact_.format(d);
     return `${gregorian} م — ${hijri} هـ`;
   }catch(e){ return '—'; }
@@ -3345,7 +3326,6 @@ function renderStationOnMap(s){
       <div class="st-actions">
         <a class="st-btn primary" href="${mapsUrl}" target="_blank" rel="noopener">قوقل ماب 🧭</a>
         <button class="st-btn" id="openEditBtn">تعديل ✏️</button>
-        ${isAdminSession_() ? `<button class="st-btn" id="deleteStationBtn" style="color:#E0654F;border-color:rgba(224,101,79,0.4)">حذف 🗑️</button>` : ''}
       </div>
       ${s._dataBuiltAt ? `<div class="db-freshness-note">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5A8.5 8.5 0 1 1 3 12.5a8.38 8.38 0 0 1 .9-3.8"/><path d="M21 3v6h-6"/></svg>
@@ -3356,8 +3336,6 @@ function renderStationOnMap(s){
   searchAndBackRow.classList.add('show');
   document.getElementById('stationSearchBar').classList.add('compact');
   document.getElementById('openEditBtn').addEventListener('click', openEditForm);
-  const deleteBtn = document.getElementById('deleteStationBtn');
-  if(deleteBtn) deleteBtn.addEventListener('click', ()=> confirmDeleteStation_(s));
 }
 
 let editPreviewMap = null, editPreviewMarker = null;
@@ -3368,36 +3346,6 @@ window.editNearbyStation = function(id){
   goToStation(s);
   setTimeout(openEditForm, 200);
 };
-
-/* حذف محطة نهائيًا — للمدير فقط، بدون أي سجل تدقيق حسب الطلب الصريح */
-/* Permanently delete a station — admin only, with no audit trail per explicit request */
-function isAdminSession_(){
-  try{ return JSON.parse(localStorage.getItem('sec-session') || '{}').role === 'admin'; }
-  catch(e){ return false; }
-}
-window.deleteNearbyStation = function(id){
-  const s = window._nearbyStationLookup && window._nearbyStationLookup[id];
-  if(!s) return;
-  confirmDeleteStation_(s);
-};
-async function confirmDeleteStation_(s){
-  if(!isAdminSession_()) return;
-  if(!confirm(`هل أنت متأكد من حذف المحطة ${s.id} نهائيًا من قاعدة البيانات؟ لا يمكن التراجع عن هذا الإجراء.`)) return;
-  const session = JSON.parse(localStorage.getItem('sec-session') || '{}');
-  try{
-    const res = await callBackend('deleteStation', { phone: session.phone, stationId: s.id, type: s.type });
-    if(!res.success){ alert(res.error || 'تعذّر حذف المحطة'); return; }
-    if(isStationsLoaded){
-      allStationsLocal = allStationsLocal.filter(st => !(String(st.id).toUpperCase() === String(s.id).toUpperCase() && st.type === s.type));
-      saveStationsToLocalCache_(allStationsLocal);
-    }
-    alert('تم حذف المحطة نهائيًا');
-    if(leafletMap) leafletMap.closePopup();
-    goBackToSearch();
-  }catch(e){
-    alert('تعذّر الاتصال بالخادم');
-  }
-}
 
 function openEditForm(){
   try{
@@ -3480,6 +3428,9 @@ function openEditForm(){
     enableLiveDigitConversion_(document.getElementById('editLat'));
     enableLiveDigitConversion_(document.getElementById('editLng'));
     enableLiveDigitConversion_(document.getElementById('editPasteCoord'));
+    enableLiveCodeNormalization_(document.getElementById('editFeeder'));
+    enableLiveDigitConversion_(document.getElementById('editRegion'));
+    enableLiveDigitConversion_(document.getElementById('editReason'));
     guardTextInput_(document.getElementById('editLat'), COORD_NUMBER_CHARS_, 20);
     guardTextInput_(document.getElementById('editLng'), COORD_NUMBER_CHARS_, 20);
     guardTextInput_(document.getElementById('editPasteCoord'), COORD_PAIR_CHARS_, 40);
